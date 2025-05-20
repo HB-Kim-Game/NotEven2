@@ -1,0 +1,64 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "MovableObject.h"
+#include "IngredientEnums.h"
+#include "IngredientStruct.h"
+#include "FoodIngredient.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class NOTEVEN_API AFoodIngredient : public AMovableObject
+{
+	GENERATED_BODY()
+
+public:
+
+	AFoodIngredient();
+
+	virtual void BeginPlay() override;
+
+	virtual void InitializeIngredient(FIngredientData data, FIngredientPlaceData place);
+
+	FIngredientData GetIngredientData() const;
+
+	EIngredientState GetIngredientState() const;
+
+	TArray<FIngredientPlaceRule> GetIngredientPlaceRules() const;
+
+	void AddCookingProgress(float addProgress);
+
+	float GetNormalizedCookingProgress() const;
+
+	void SetState(EIngredientState newState);
+
+protected:
+	// ID, 이름, 상태에 따른 에셋 Path
+	UPROPERTY()
+	FIngredientData Data;
+
+	// 조리 상태
+	UPROPERTY()
+	EIngredientState CurrentState;
+
+	// 상태에 따른 올라갈 수 있는 장소 모음
+	UPROPERTY()
+	FIngredientPlaceData PlaceData;
+
+	UPROPERTY()
+	TMap<EIngredientState, UStaticMesh*> IngredientMeshes;
+
+	// 현재 상태에서 요리된 정도
+	float CurrentCookingProgress = 0.f;
+	float MaxCookingProgress = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStaticMeshComponent* MeshComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* BoxComp;
+};
