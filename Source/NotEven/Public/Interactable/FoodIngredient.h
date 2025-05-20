@@ -22,6 +22,21 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void InitializeIngredient(FIngredientData data, FIngredientPlaceData place);
+
+	FIngredientData GetIngredientData() const;
+
+	EIngredientState GetIngredientState() const;
+
+	TArray<FIngredientPlaceRule> GetIngredientPlaceRules() const;
+
+	void AddCookingProgress(float addProgress);
+
+	float GetNormalizedCookingProgress() const;
+
+	void SetState(EIngredientState newState);
+
+protected:
 	// ID, 이름, 상태에 따른 에셋 Path
 	UPROPERTY()
 	FIngredientData Data;
@@ -34,9 +49,12 @@ public:
 	UPROPERTY()
 	FIngredientPlaceData PlaceData;
 
-	// 현재 상태에서 요리된 정도
 	UPROPERTY()
-	float CookingProgress = 0.0f;
+	TMap<EIngredientState, UStaticMesh*> IngredientMeshes;
+
+	// 현재 상태에서 요리된 정도
+	float CurrentCookingProgress = 0.f;
+	float MaxCookingProgress = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* MeshComp;

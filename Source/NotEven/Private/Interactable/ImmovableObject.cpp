@@ -1,32 +1,32 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "../Public/MovableObject.h"
+#include "ImmovableObject.h"
 
 // Sets default values
-AMovableObject::AMovableObject()
+AImmovableObject::AImmovableObject()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
+void AImmovableObject::Interact()
+{
+	
+}
+
 // Called when the game starts or when spawned
-void AMovableObject::BeginPlay()
+void AImmovableObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AMovableObject::Tick(float DeltaTime)
+void AImmovableObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-void AMovableObject::Interact()
-{
-	
 }
 

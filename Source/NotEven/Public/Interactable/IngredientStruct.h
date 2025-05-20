@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Public/IngredientEnums.h"
+#include "IngredientEnums.h"
 #include "IngredientStruct.generated.h"
 
 /**
@@ -31,6 +31,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
+
+	UPROPERTY(EDITAnywhere, BlueprintReadWrite)
+	float MaxCookingProgress;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FIngredientMeshPath> MeshPaths;
