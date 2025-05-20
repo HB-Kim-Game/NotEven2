@@ -28,6 +28,8 @@ ANotEvenPlayer::ANotEvenPlayer()
 	{
 		IMC_Player = tempIMC.Object;
 	}
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 }
 
