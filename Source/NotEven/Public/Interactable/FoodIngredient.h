@@ -36,6 +36,8 @@ public:
 
 	void SetState(EIngredientState newState);
 
+	virtual void Interact(class ANotEvenPlayer* player) override;
+
 protected:
 	// ID, 이름, 상태에 따른 에셋 Path
 	UPROPERTY()
