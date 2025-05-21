@@ -90,5 +90,6 @@ void ANotEvenPlayer::OnActionMove(const FInputActionValue& value)
 
 void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 {
-	
+	FVector forwordDir = this->GetActorRotation().Vector();
+	LaunchCharacter(forwordDir*DashDistance,true,true);
 }

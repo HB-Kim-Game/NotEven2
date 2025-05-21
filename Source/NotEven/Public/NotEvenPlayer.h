@@ -44,4 +44,6 @@ public:
 	void OnActionMove(const FInputActionValue& value);
 	void OnActionDash(const FInputActionValue& value);
 
+	float DashDistance = 2000.f;
+
 };
