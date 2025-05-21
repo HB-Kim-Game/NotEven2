@@ -88,6 +88,9 @@ struct FRecipe : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxCookingTime;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FRecipeIngredientData> RequiredIngredients;
