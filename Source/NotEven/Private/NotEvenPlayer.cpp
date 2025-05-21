@@ -6,7 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NotEvenGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ANotEvenPlayer::ANotEvenPlayer()
@@ -54,6 +56,34 @@ void ANotEvenPlayer::BeginPlay()
 	
 }
 
+void ANotEvenPlayer::Destroyed()
+{
+	Super::Destroyed();
+
+	if (UWorld* World = GetWorld())
+	{
+		if (auto* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
+		{
+			gm->GetOnPlayerDied().Broadcast(this);
+		}
+	}
+}
+
+void ANotEvenPlayer::CallRestartPlayer()
+{
+	AController* controllerRef = GetController();
+
+	Destroy();
+
+	if (UWorld* World = GetWorld())
+	{
+		if (ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
+		{
+			gm-> RestartPlayer(controllerRef);
+		}
+	}
+}
+
 // Called every frame
 void ANotEvenPlayer::Tick(float DeltaTime)
 {
@@ -93,3 +123,28 @@ void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 	FVector forwordDir = this->GetActorRotation().Vector();
 	LaunchCharacter(forwordDir*DashDistance,true,true);
 }
+
+// void ANotEvenPlayer::PlayerDie()
+// {
+// 	APlayerController* pc = Cast<APlayerController>(GetController());
+// 	if (pc)
+// 	{
+// 		pc->UnPossess();
+// 	}
+//
+// 	//일정시간 후 파괴 및 리스폰
+// 	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+// 	{
+// 		ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(UGameplayStatics::GetGameMode(this));
+// 		if (gm)
+// 		{
+// 			gm->RequestRespawn(GetController());
+// 		}
+// 		Destroy();
+// 	});
+// }
+//
+// void ANotEvenPlayer::ResetPlayer()
+// {
+// 	
+// }

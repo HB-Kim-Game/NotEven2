@@ -44,7 +44,7 @@ void ACamera::BeginPlay()
 		SetActorRotation(newRot);
 
 		// 자기 자신을 ViewTarget으로 설정
-		PC->SetViewTargetWithBlend(this, 1.0f);
+		PC->SetViewTargetWithBlend(this,1.f);
 	
 }
 

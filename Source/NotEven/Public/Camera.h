@@ -23,12 +23,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	class UCameraComponent* CameraComp;
-
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* SceneComp;
-
-	FVector CameraOffset;
-
+	
+	UPROPERTY(EditAnywhere)
+	class UCameraComponent* CameraComp;
+	
 };

@@ -20,6 +20,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Destroyed();
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -46,4 +49,9 @@ public:
 
 	float DashDistance = 2000.f;
 
+	void CallRestartPlayer();
+	// //플레이어 죽음처리
+	// void PlayerDie();
+	// //리스폰 시 초기화
+	// void ResetPlayer();
 };
