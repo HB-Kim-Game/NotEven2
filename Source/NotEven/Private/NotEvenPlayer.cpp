@@ -60,7 +60,7 @@ void ANotEvenPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FTransform t =  FTransform(GetControlRotation());
-	Direction = t.TransformVector(Direction);
+	//Direction = t.TransformVector(Direction);
 	AddMovementInput(Direction);
 
 	Direction = FVector::ZeroVector;
