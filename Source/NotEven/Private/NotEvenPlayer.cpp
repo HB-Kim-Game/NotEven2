@@ -9,6 +9,7 @@
 #include "NotEvenGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 // Sets default values
 ANotEvenPlayer::ANotEvenPlayer()
@@ -33,6 +34,8 @@ ANotEvenPlayer::ANotEvenPlayer()
 	}
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	PhysicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandleComp"));
 	
 }
 

@@ -56,6 +56,9 @@ public:
 	void CallRestartPlayerDelay();
 	
 	FTimerHandle DelayTimer;
+
+	UPROPERTY(EditAnywhere)
+	class UPhysicsHandleComponent* PhysicsHandleComp;
 	// //플레이어 죽음처리
 	// void PlayerDie();
 	// //리스폰 시 초기화
