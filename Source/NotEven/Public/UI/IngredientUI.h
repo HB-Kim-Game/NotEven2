@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IngredientEnums.h"
 #include "Blueprint/UserWidget.h"
 #include "IngredientUI.generated.h"
 
@@ -19,4 +20,7 @@ public:
 	class UVerticalBox* IconPanel;
 
 	void ShowIngredient(struct FRecipeIngredientData data);
+
+	UPROPERTY(EditAnywhere)
+	TMap<EIngredientState, class UTexture2D*> Icons;
 };

@@ -25,6 +25,9 @@ public:
 	float MaxCookingTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CurrentCookingTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<struct FRecipeIngredientData> RequiredIngredients;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

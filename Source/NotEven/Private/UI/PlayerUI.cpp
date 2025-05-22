@@ -14,24 +14,4 @@ void UPlayerUI::NativeConstruct()
 
 	PlayTime->SetMaxTime(180.f);
 	PlayTime->SetIsPlaying(true);
-
-	UDataTable* temp = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/KHB/DataTable/RecipeTable.RecipeTable'"));
-
-	if (temp->GetRowNames().Num() > 0)
-	{
-		if (FRecipe* data = temp->FindRow<FRecipe>(FName("RawFish"), FString("")))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("RawFish"));
-			auto* tempObject = NewObject<URecipeData>();
-			tempObject->RequiredIngredients = data->RequiredIngredients;
-			tempObject->IconImagePath = data->IconImagePath;
-			tempObject->MaxCookingTime = data->MaxCookingTime;
-
-			TArray<URecipeData*> tempArray;
-			tempArray.Add(tempObject);
-
-			OrderListViewer->FetchDatas(tempArray);
-		}
-	}
-
 }

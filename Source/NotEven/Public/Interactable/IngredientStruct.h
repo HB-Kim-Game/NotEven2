@@ -37,6 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FIngredientMeshPath> MeshPaths;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString IconAssetPath;
 };
 
 USTRUCT(Atomic, BlueprintType)

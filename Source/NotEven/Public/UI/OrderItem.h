@@ -6,6 +6,7 @@
 #include "ListViewer/UIViewerItemBase.h"
 #include "OrderItem.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnOrderFailed, class URecipeData*)
 /**
  * 
  */
@@ -35,11 +36,15 @@ public:
 	UPROPERTY()
 	TArray<class UIngredientUI*> Ingredients;
 
+	FOnOrderFailed OnOrderFailed;
+
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	
-	float CurrentCookingTime = 0.0f;
 
 	UPROPERTY()
 	class URecipeData* RecipeData;
+
+	float CurrentCookingTime;
+
+	bool bIsReceiveOrder = false;
 };

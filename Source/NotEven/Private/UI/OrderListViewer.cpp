@@ -6,6 +6,7 @@
 #include "OrderItem.h"
 #include "UIViewerItemBase.h"
 #include "Components/HorizontalBox.h"
+#include "GameManager/OrderManager.h"
 
 int32 UOrderListViewer::GetCursor() const
 {
@@ -31,25 +32,24 @@ void UOrderListViewer::RefreshOnDataFetched()
 {
 	Super::RefreshOnDataFetched();
 
-	for (auto item : SpawnItems)
+	for (int j = 0; j < SpawnItems.Num(); j++)
 	{
-		item->SetVisibility(ESlateVisibility::Collapsed);
+		SpawnItems[j]->FetchData(nullptr);
+		SpawnItems[j]->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
 	for (int i = 0; i < FetchedDatas.Num(); i++)
 	{
+		SpawnItems[i]->FetchData(FetchedDatas[i]);
 		SpawnItems[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
-		// i가 CurrentOrderCount 이상일 경우 애니메이션 재생
 	}
 
 	CurrentOrderCount = FetchedDatas.Num();
 }
 
-void UOrderListViewer::OnDataFetched()
+void UOrderListViewer::SetOrderManager(class UOrderManager* orderManager)
 {
-	Super::OnDataFetched();
-
-	MoveCursor(0);
+	OrderManager = orderManager;
 }
 
 void UOrderListViewer::InitializeItem()
@@ -65,6 +65,11 @@ void UOrderListViewer::InitializeItem()
 			SpawnItems.Add(item);
 			item->SetVisibility(ESlateVisibility::Collapsed);
 			castPanel->AddChildToHorizontalBox(item);
+
+			item->OnOrderFailed.Add(FOnOrderFailed::FDelegate::CreateLambda([item,this](URecipeData* data)
+			{
+				this->OrderManager->RemoveOrder(data);
+			}));
 		}
 	}
 	

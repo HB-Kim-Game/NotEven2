@@ -25,10 +25,20 @@ public:
 
 	virtual void RefreshOnDataFetched() override;
 
-	virtual void OnDataFetched() override;
+	void SetOrderManager(class UOrderManager* orderManager);
+
+	int32 GetSpawnItemsCount() const;
 
 protected:
 	virtual void InitializeItem() override;
 
 	int32 CurrentOrderCount = 0;
+
+	UPROPERTY()
+	class UOrderManager* OrderManager;
 };
+
+inline int32 UOrderListViewer::GetSpawnItemsCount() const
+{
+	return SpawnItems.Num();
+}

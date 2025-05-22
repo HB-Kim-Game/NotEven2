@@ -3,7 +3,10 @@
 
 #include "FoodIngredient.h"
 
+#include "IngredientActorIcon.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AFoodIngredient::AFoodIngredient()
 {
@@ -12,20 +15,54 @@ AFoodIngredient::AFoodIngredient()
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	SetRootComponent(BoxComp);
 
-	BoxComp->SetSimulatePhysics(false);
+	BoxComp->SetSimulatePhysics(true);
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-	BoxComp->SetCollisionProfileName(FName("OverlapAllDynamic"));
+	BoxComp->SetCollisionProfileName(FName("BlockAllDynamic"));
+	BoxComp->SetBoxExtent(FVector(30.f, 30.f, 10.f));
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(BoxComp);
-	MeshComp->SetSimulatePhysics(true);
+	MeshComp->SetSimulatePhysics(false);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-	MeshComp->SetCollisionProfileName(FName("BlockAllDynamic"));
+	MeshComp->SetCollisionProfileName(FName("OverlapAllDynamic"));
+
+	IconWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidgetComp"));
+	IconWidgetComp->SetupAttachment(BoxComp);
+
+	ConstructorHelpers::FClassFinder<UIngredientActorIcon> iconClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_IngredientActorIcon.WBP_IngredientActorIcon_C'"));
+
+	if (iconClass.Succeeded())
+	{
+		IconClass = iconClass.Class;
+	}
+	
+	IconWidgetComp->SetWidgetClass(IconClass);
 }
 
 void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetActorScale3D(FVector(2.5f, 2.5f, 2.5f));
+	
+	IconWidget = Cast<UIngredientActorIcon>(IconWidgetComp->GetWidget());
+	IconWidgetComp->SetDrawSize(FVector2D(20.f, 20.f));
+	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+	
+	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	
+	// if (IconWidget)
+	// {
+	// 	IconWidget->SetIconImage(nullptr);
+	// }
+}
+
+void AFoodIngredient::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 300.f));
+	IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 }
 
 void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlaceData place)
@@ -44,7 +81,7 @@ void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlac
 		}
 	}
 
-	SetState(EIngredientState::None);
+	SetState(EIngredientState::Sliced);
 }
 
 FIngredientData AFoodIngredient::GetIngredientData() const
@@ -75,6 +112,17 @@ float AFoodIngredient::GetNormalizedCookingProgress() const
 void AFoodIngredient::SetState(EIngredientState newState)
 {
 	CurrentState = newState;
+
+	if (CurrentState != EIngredientState::None)
+	{
+		if (IconWidget)
+		{
+			// if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
+			// {
+				// IconWidget->SetIconImage(texture);
+			// }
+		}
+	}
 
 	if (auto mesh = IngredientMeshes.Find(newState))
 	{

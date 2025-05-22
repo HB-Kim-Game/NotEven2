@@ -13,13 +13,23 @@ void UOrderItem::FetchData(UObject* Data)
 {
 	Super::FetchData(Data);
 
-
+	if (Data == nullptr)
+	{
+		RecipeData = nullptr;
+	}
+	
 	if (auto cast = Cast<URecipeData>(Data))
 	{
 		RecipeData = cast;
-		CurrentCookingTime = RecipeData->MaxCookingTime;
+		bIsReceiveOrder = true;
 		
-		for (auto* i : Ingredients) i->SetVisibility(ESlateVisibility::Collapsed);
+		float percent = cast->CurrentCookingTime / cast->MaxCookingTime;
+		RemainProgress->SetPercent(percent);
+		FLinearColor color = FMath::Lerp(FLinearColor::Red, FLinearColor::Green, percent);
+		RemainProgress->SetFillColorAndOpacity(color);
+		
+		Ingredients.Empty();
+		IngredientPanel->ClearChildren();
 		
 		for (int j = 0; j < cast->RequiredIngredients.Num(); j++)
 		{
@@ -61,17 +71,17 @@ void UOrderItem::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	if (nullptr == RecipeData) return;
+	if (!bIsReceiveOrder) return;
 
-	float maxCookingTime = RecipeData->MaxCookingTime;
-	if (CurrentCookingTime <= 0.f)
+	if (RecipeData->CurrentCookingTime <= 0.f)
 	{
-		RecipeData = nullptr;
-		CurrentCookingTime = 0.f;
-		SetVisibility(ESlateVisibility::Collapsed);
+		bIsReceiveOrder = false;
+		OnOrderFailed.Broadcast(RecipeData);
+		return;
 	}
 	
-	CurrentCookingTime -= InDeltaTime;
-	float percent = CurrentCookingTime / maxCookingTime;
+	RecipeData->CurrentCookingTime -= InDeltaTime;
+	float percent = RecipeData->CurrentCookingTime / RecipeData->MaxCookingTime;
 	RemainProgress->SetPercent(percent);
 	FLinearColor color = FMath::Lerp(FLinearColor::Red, FLinearColor::Green, percent);
 	RemainProgress->SetFillColorAndOpacity(color);
