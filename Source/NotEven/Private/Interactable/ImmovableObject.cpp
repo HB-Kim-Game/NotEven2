@@ -11,7 +11,7 @@ AImmovableObject::AImmovableObject()
 
 }
 
-void AImmovableObject::Interact()
+void AImmovableObject::Interact(class ANotEvenPlayer* player)
 {
 	
 }

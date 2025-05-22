@@ -16,7 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	AImmovableObject();
 
-	virtual void Interact() override;
+	virtual void Interact(class ANotEvenPlayer* player) override;
 
 protected:
 	// Called when the game starts or when spawned

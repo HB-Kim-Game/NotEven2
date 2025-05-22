@@ -26,30 +26,6 @@ AFoodIngredient::AFoodIngredient()
 void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (UDataTable* DataTable = LoadObject<UDataTable>(nullptr,TEXT("/Game/KHB/DataTable/IngredientTable.IngredientTable")))
-	{
-		if (DataTable->GetRowNames().Num() > 0)
-		{
-			if (FIngredientData* data = DataTable->FindRow<FIngredientData>(DataTable->GetRowNames()[0], FString("")))
-			{
-				Data = *data;
-			}
-		}
-	}
-
-	if (UDataTable* placeTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/KHB/DataTable/PlacementTable.PlacementTable")))
-	{
-		if (placeTable->GetRowNames().Num() > 0)
-		{
-			if (FIngredientPlaceData* data = placeTable->FindRow<FIngredientPlaceData>(placeTable->GetRowNames()[0], FString("")))
-			{
-				PlaceData = *data;
-			}
-		}
-	}
-
-	InitializeIngredient(Data, PlaceData);
 }
 
 void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlaceData place)
@@ -109,5 +85,11 @@ void AFoodIngredient::SetState(EIngredientState newState)
 	}
 	
 	CurrentCookingProgress = 0.0f;
+}
+
+void AFoodIngredient::Interact(class ANotEvenPlayer* player)
+{
+	Super::Interact(player);
+	
 }
 

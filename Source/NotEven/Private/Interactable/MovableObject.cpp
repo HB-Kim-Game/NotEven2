@@ -25,7 +25,7 @@ void AMovableObject::Tick(float DeltaTime)
 
 }
 
-void AMovableObject::Interact()
+void AMovableObject::Interact(class ANotEvenPlayer* player)
 {
 	
 }

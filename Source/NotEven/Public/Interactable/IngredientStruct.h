@@ -48,7 +48,10 @@ struct FRecipeIngredientData : public FTableRowBase
 	FString IngredientID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EIngredientState State;
+	TArray<EIngredientState> RequireStates;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString IconImagePath;
 };
 
 USTRUCT(Atomic, BlueprintType)
@@ -76,7 +79,7 @@ struct FIngredientPlaceData : public FTableRowBase
 };
 
 USTRUCT(Atomic, BlueprintType)
-struct FRecipeData : public FTableRowBase
+struct FRecipe : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -91,4 +94,7 @@ struct FRecipeData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString MeshAssetPath;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString IconImagePath;
 };
