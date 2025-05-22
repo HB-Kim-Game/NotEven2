@@ -12,7 +12,7 @@ public class NotEven : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-		PrivateIncludePaths.AddRange(new string[] { "NotEven/Public", "NotEven/Public/Interactable", "NotEven/Public/ListViewer" });
+		PrivateIncludePaths.AddRange(new string[] { "NotEven/Public", "NotEven/Public/Interactable", "NotEven/Public/ListViewer", "NotEven/Public/UI" });
 		
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

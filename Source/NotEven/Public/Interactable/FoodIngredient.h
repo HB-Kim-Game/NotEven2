@@ -22,6 +22,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	virtual void InitializeIngredient(FIngredientData data, FIngredientPlaceData place);
 
 	FIngredientData GetIngredientData() const;
@@ -63,4 +65,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* BoxComp;
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* IconWidgetComp;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UIngredientActorIcon> IconClass;
+	
+	UPROPERTY()
+	class UIngredientActorIcon* IconWidget;
+
+	UPROPERTY()
+	class APlayerCameraManager* PlayerCameraManager;
 };

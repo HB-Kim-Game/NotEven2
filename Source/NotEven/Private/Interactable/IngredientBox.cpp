@@ -76,6 +76,12 @@ void AIngredientBox::BeginPlay()
 			PlaceData = *data;
 		}
 	}
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		this->Interact(Cast<ANotEvenPlayer>(this->GetWorld()->GetFirstPlayerController()->GetPawn()));
+	}, 5.0f, true);
 }
 
 // Called every frame

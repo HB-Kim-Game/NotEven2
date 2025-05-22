@@ -37,6 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FIngredientMeshPath> MeshPaths;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString IconAssetPath;
 };
 
 USTRUCT(Atomic, BlueprintType)
@@ -88,6 +91,9 @@ struct FRecipe : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxCookingTime;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FRecipeIngredientData> RequiredIngredients;
