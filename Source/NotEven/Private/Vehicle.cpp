@@ -53,12 +53,25 @@ void AVehicle::Tick(float DeltaTime)
 void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//힘의 방향
+	FVector impulseDir = this->GetActorForwardVector();
+	impulseDir.Normalize();
+
+	//힘의 세기
+	float ImpulseStrength = 1500.f;
+
+	FVector impulseResult = impulseDir * ImpulseStrength;
+	
 	ANotEvenPlayer* player = Cast<ANotEvenPlayer>(OtherActor);
 	if (player)
 	{
-		player->CallRestartPlayer();
+		player->UnPossessed();
+		player->GetMesh()->SetSimulatePhysics(true);
+		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("root"),true,true);
+		player->CallRestartPlayerDelay();
 	}
 }
+
 
 void AVehicle::DestroyVehicle()
 {

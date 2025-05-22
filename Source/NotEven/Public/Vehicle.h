@@ -30,6 +30,7 @@ public:
 	class UStaticMeshComponent* meshComp;
 
 	FVector Direction;
+	
 	float Speed = 800.f;
 
 	UFUNCTION()

@@ -20,7 +20,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void Destroyed();
+	// 게임플레이 중 앸터가 소멸되었을 때 호출
+	// virtual void Destroyed();
 
 
 public:	
@@ -49,7 +50,12 @@ public:
 
 	float DashDistance = 2000.f;
 
+	// 플레이어 캐릭터를 재시작할 게임 모드 클래스 호출
 	void CallRestartPlayer();
+
+	void CallRestartPlayerDelay();
+	
+	FTimerHandle DelayTimer;
 	// //플레이어 죽음처리
 	// void PlayerDie();
 	// //리스폰 시 초기화

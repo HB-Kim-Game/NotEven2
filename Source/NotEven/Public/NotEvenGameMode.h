@@ -22,13 +22,18 @@ public:
 	
 	const FOnPlayerDiedSignature& GetOnPlayerDied() const {return OnPlayerDied;}
 
+	// 플레이어의 폰을 스폰 시도
 	virtual void RestartPlayer(AController* NewPlayer) override;
 
+	// 플레이어 캐릭터가 죽으면 호출
 	UFUNCTION()
-	virtual void PlayerDie(ANotEvenPlayer* Player);
+	virtual void PlayerDied(ANotEvenPlayer* Player);
 
+	// 델리게이트를 바인딩할 시그니처
 	UPROPERTY()
 	FOnPlayerDiedSignature OnPlayerDied;
+
+
 	
 
 	

@@ -22,6 +22,7 @@ ANotEvenPlayer::ANotEvenPlayer()
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0,0,-90), FRotator(0,-90,0));
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
 		
 	}
 
@@ -56,25 +57,26 @@ void ANotEvenPlayer::BeginPlay()
 	
 }
 
-void ANotEvenPlayer::Destroyed()
-{
-	Super::Destroyed();
-
-	if (UWorld* World = GetWorld())
-	{
-		if (auto* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
-		{
-			gm->GetOnPlayerDied().Broadcast(this);
-		}
-	}
-}
+// void ANotEvenPlayer::Destroyed()
+// {
+// 	Super::Destroyed();
+//
+// 	// 게임 모드에서 OnPlayerDied 이벤트에 바인딩한 예
+// 	if (UWorld* World = GetWorld())
+// 	{
+// 		if (auto* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
+// 		{
+// 			gm->GetOnPlayerDied().Broadcast(this);
+// 		}
+// 	}
+// }
 
 void ANotEvenPlayer::CallRestartPlayer()
 {
-	AController* controllerRef = GetController();
-
-	Destroy();
-
+	// 폰 컨트롤러에 대한 래퍼런스 구하기
+	APlayerController* controllerRef = GetWorld()->GetFirstPlayerController();
+	
+	//월드와 월드의 게임 모드가 RestartPlayer 함수를 호출하도록 함
 	if (UWorld* World = GetWorld())
 	{
 		if (ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
@@ -84,13 +86,18 @@ void ANotEvenPlayer::CallRestartPlayer()
 	}
 }
 
+void ANotEvenPlayer::CallRestartPlayerDelay()
+{
+	GetWorld()->GetTimerManager().SetTimer(DelayTimer,this,&ANotEvenPlayer::CallRestartPlayer,5.f,false);
+}
+
+
 // Called every frame
 void ANotEvenPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	FTransform t =  FTransform(GetControlRotation());
-	//Direction = t.TransformVector(Direction);
 	AddMovementInput(Direction);
 
 	Direction = FVector::ZeroVector;
@@ -111,7 +118,6 @@ void ANotEvenPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ANotEvenPlayer::OnActionMove(const FInputActionValue& value)
 {
-	//GetCharacterMovement()->RotationRate=FRotator(0,720,0);
 	FVector2D v = value.Get<FVector2D>();
 	Direction.X = v.X;
 	Direction.Y = v.Y;

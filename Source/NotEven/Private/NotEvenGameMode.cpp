@@ -11,21 +11,47 @@ void ANotEvenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// PlayerDied 델리게이트를 게임 모드의 PlayerDied 함수에 바인딩
 	if (!OnPlayerDied.IsBound())
 	{
-		OnPlayerDied.AddDynamic(this, &ANotEvenGameMode::PlayerDie);
+		OnPlayerDied.AddDynamic(this, &ANotEvenGameMode::PlayerDied);
 	}
+		
 }
 
 void ANotEvenGameMode::RestartPlayer(AController* NewPlayer)
 {
+	auto player = NewPlayer->GetPawn();
+
+	if (player != nullptr)
+	{
+		NewPlayer->UnPossess();
+		player->Destroy();
+	}
+	
 	Super::RestartPlayer(NewPlayer);
+
+	// 월드에서 BP_Camera 를 찾는다.
+	// BP_Camera 를 viewTarget 로 지정한다.
+	TArray<AActor*> outPawns;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), outPawns);
+	for (auto actor : outPawns)
+	{
+		if (actor->GetActorNameOrLabel().Contains(TEXT("BP_Camera")))
+		{
+			auto pc = Cast<APlayerController>(NewPlayer);
+			pc->PlayerCameraManager->SetViewTarget(actor);
+			
+			break;
+		}
+	}
 }
 
-void ANotEvenGameMode::PlayerDie(ANotEvenPlayer* Player)
+void ANotEvenGameMode::PlayerDied(ANotEvenPlayer* Player)
 {
-	AController* CharactorController = Player->GetController();
-	RestartPlayer(CharactorController);
+	// 캐릭터의 플레이어 컨트롤러에 대한 래퍼런스 구하기
+	// AController* CharactorController = Player->GetController();
+	// RestartPlayer(CharactorController);
 }
 
 // void ANotEvenGameMode::RequestRespawn(AController* Controller)
