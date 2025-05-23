@@ -58,21 +58,17 @@ void ANotEvenPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// TArray<AActor*> AllActors;
+	// UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
+	// for (auto tempGrabAble : AllActors)
+	// {
+	// 	if (tempGrabAble->GetActorNameOrLabel().Contains(""))
+	// 	{
+	// 		
+	// 	}
+	// }
 }
 
-// void ANotEvenPlayer::Destroyed()
-// {
-// 	Super::Destroyed();
-//
-// 	// 게임 모드에서 OnPlayerDied 이벤트에 바인딩한 예
-// 	if (UWorld* World = GetWorld())
-// 	{
-// 		if (auto* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
-// 		{
-// 			gm->GetOnPlayerDied().Broadcast(this);
-// 		}
-// 	}
-// }
 
 void ANotEvenPlayer::CallRestartPlayer()
 {
