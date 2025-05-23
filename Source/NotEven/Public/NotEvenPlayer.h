@@ -54,7 +54,7 @@ public:
 	// 대쉬 입력
 	void OnActionDash(const FInputActionValue& value);
 	// 잡기 입력
-	void OnActionGrab(const FInputActionValue& value);
+	void OnActionObjGrab(const FInputActionValue& value);
 
 	//대쉬 거리 변수
 	float DashDistance = 2000.f;
@@ -67,14 +67,21 @@ public:
 	// 리스폰 딜레이 타이머
 	FTimerHandle DelayTimer;
 	
-	UPROPERTY(EditAnywhere)
-	class UPhysicsHandleComponent* PhysicsHandleComp;
-
-	// 잡기 상태 변수
-	bool isGrad = false;
+//--------------------------잡기,놓기-----------------------------
 	
-	// //플레이어 죽음처리
-	// void PlayerDie();
-	// //리스폰 시 초기화
-	// void ResetPlayer();
+	// 잡기 상태 변수
+	bool isGrab = false;
+
+	UPROPERTY()
+	AActor* OwnedObj = nullptr;
+
+	UPROPERTY(EditAnywhere,Category=Food)
+	float ObjDistance = 200.f;
+
+	UPROPERTY()
+	TArray<AActor*> ObjActors;
+
+	void AttachGrabObj(AActor* ObjActor);
+	void ReleaseGradObj(AActor* ObjActor);
+	void DetachGrabObj(AActor* ObjActor);
 };

@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -34,8 +35,6 @@ ANotEvenPlayer::ANotEvenPlayer()
 	}
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	PhysicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandleComp"));
 	
 }
 
@@ -58,15 +57,6 @@ void ANotEvenPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// TArray<AActor*> AllActors;
-	// UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
-	// for (auto tempGrabAble : AllActors)
-	// {
-	// 	if (tempGrabAble->GetActorNameOrLabel().Contains(""))
-	// 	{
-	// 		
-	// 	}
-	// }
 }
 
 
@@ -91,6 +81,7 @@ void ANotEvenPlayer::CallRestartPlayerDelay()
 }
 
 
+
 // Called every frame
 void ANotEvenPlayer::Tick(float DeltaTime)
 {
@@ -101,6 +92,17 @@ void ANotEvenPlayer::Tick(float DeltaTime)
 
 	Direction = FVector::ZeroVector;
 
+//--------------------------------------------------------------------------------------//
+	TArray<AActor*> AllActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
+	for (auto tempGrabObj : AllActors)
+	{
+		if (tempGrabObj->GetActorNameOrLabel().Contains("Food"))
+		{
+			ObjActors.Add(tempGrabObj);
+		}
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -112,7 +114,7 @@ void ANotEvenPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		input->BindAction(IA_PlayerMove,ETriggerEvent::Triggered,this,&ANotEvenPlayer::OnActionMove);
 		input->BindAction(IA_PlayerDash,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionDash);
-		input->BindAction(IA_PlayerGrab,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionGrab);
+		input->BindAction(IA_PlayerGrab,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionObjGrab);
 	}
 }
 
@@ -130,32 +132,47 @@ void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 	LaunchCharacter(forwordDir*DashDistance,true,true);
 }
 
-void ANotEvenPlayer::OnActionGrab(const FInputActionValue& value)
+void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
+{
+	if (isGrab)
+	{
+		return;
+	}
+	for (auto tempGrabObj : ObjActors)
+	{
+		if (tempGrabObj && tempGrabObj->IsPendingKillPending() == false && IsValid(tempGrabObj) && tempGrabObj ->GetOwner() != nullptr)
+		{
+			continue;
+		}
+		float distance = FVector::Dist(GetActorLocation(),tempGrabObj->GetActorLocation());
+		if (distance > ObjDistance)
+		{
+			continue;
+		}
+		OwnedObj = tempGrabObj;
+		OwnedObj->SetOwner(this);
+		isGrab = true;
+
+		AttachGrabObj(tempGrabObj);
+		break;
+	}
+}
+
+void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
+{
+	auto* obj = Cast<AMovableObject>(ObjActor);
+	obj ->Interact(this);
+
+	UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::AttachGrabObj"));
+	
+}
+
+void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
+{
+}
+
+void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 {
 	
 }
 
-// void ANotEvenPlayer::PlayerDie()
-// {
-// 	APlayerController* pc = Cast<APlayerController>(GetController());
-// 	if (pc)
-// 	{
-// 		pc->UnPossess();
-// 	}
-//
-// 	//일정시간 후 파괴 및 리스폰
-// 	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
-// 	{
-// 		ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(UGameplayStatics::GetGameMode(this));
-// 		if (gm)
-// 		{
-// 			gm->RequestRespawn(GetController());
-// 		}
-// 		Destroy();
-// 	});
-// }
-//
-// void ANotEvenPlayer::ResetPlayer()
-// {
-// 	
-// }
