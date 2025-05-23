@@ -181,11 +181,11 @@ void AFoodIngredient::Interact(class ANotEvenPlayer* player)
 	{
 		case EIngredientState::None:
 			SetGrab(true);
-			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("GrabPoint"));
+			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
 			break;
 		case EIngredientState::Sliced:
 			SetGrab(true);
-			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("GrabPoint"));
+			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
 			break;
 		default:
 			break;
