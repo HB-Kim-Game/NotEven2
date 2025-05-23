@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "ImmovableObject.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Components/CapsuleComponent.h"
@@ -135,14 +136,27 @@ void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 
 void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 {
-	if (isGrab)
-	{
-		DetachGrabObj(nullptr);
-		return;
-	}
 	TArray<FHitResult> hitResults;
 	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
 	boxExtent.Z = 300.f;
+	
+	if (isGrab)
+	{
+		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+	FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+		{
+			for (auto tempGrabObj : hitResults)
+			{
+				//만약에 팬 이나 도마 이면은 상호 작용하고 싶다
+
+				//return;
+			}
+		}
+		
+		DetachGrabObj(nullptr);
+		return;
+	}
+	
 	
 	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
@@ -154,16 +168,20 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 			return;
 		}
 	}
-
+	
 	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
 	{
 		for (auto tempGrabObj : hitResults)
 		{
-			AttachGrabObj(tempGrabObj.GetActor());
-			
+			if (auto* unGrabObj = Cast<AImmovableObject>(tempGrabObj.GetActor()))
+			{
+				unGrabObj->Interact(this);
+				return;
+			}
 		}
 	}
+
 }
 
 void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)

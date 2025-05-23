@@ -57,8 +57,7 @@ void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetActorScale3D(FVector(2.5f, 2.5f, 2.5f));
-	
+	BoxComp -> SetLinearDamping(2);
 	IconWidget = Cast<UIngredientActorIcon>(IconWidgetComp->GetWidget());
 	IconWidgetComp->SetDrawSize(FVector2D(20.f, 20.f));
 	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
