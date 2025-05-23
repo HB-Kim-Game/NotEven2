@@ -136,6 +136,7 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 {
 	if (isGrab)
 	{
+		DetachGrabObj(nullptr);
 		return;
 	}
 	for (auto tempGrabObj : ObjActors)
@@ -149,9 +150,6 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		{
 			continue;
 		}
-		OwnedObj = tempGrabObj;
-		OwnedObj->SetOwner(this);
-		isGrab = true;
 
 		AttachGrabObj(tempGrabObj);
 		break;
@@ -160,8 +158,10 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 
 void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 {
-	auto* obj = Cast<AMovableObject>(ObjActor);
-	obj ->Interact(this);
+	OwnedObj = Cast<AMovableObject>(ObjActor);
+	OwnedObj->SetOwner(this);
+	OwnedObj->Interact(this);
+	isGrab = true;
 
 	UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::AttachGrabObj"));
 	
@@ -174,6 +174,10 @@ void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
 
 void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 {
-	
+	OwnedObj ->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	OwnedObj -> SetOwner(nullptr);
+	OwnedObj->SetGrab(false);
+	OwnedObj = nullptr;
+	isGrab = false;
 }
 
