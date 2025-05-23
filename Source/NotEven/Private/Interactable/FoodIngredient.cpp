@@ -19,8 +19,8 @@ AFoodIngredient::AFoodIngredient()
 
 	BoxComp->SetSimulatePhysics(true);
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-	BoxComp->SetCollisionProfileName(FName("BlockAllDynamic"));
-	BoxComp->SetBoxExtent(FVector(18.f, 30.f, 10.f));
+	BoxComp->SetCollisionProfileName(FName("GrabObj"));
+	BoxComp->SetBoxExtent(FVector(50.f, 40.f, 25.f));
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(BoxComp);

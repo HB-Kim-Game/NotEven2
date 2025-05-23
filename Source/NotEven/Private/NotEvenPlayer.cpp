@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -139,20 +140,29 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		DetachGrabObj(nullptr);
 		return;
 	}
-	for (auto tempGrabObj : ObjActors)
+	TArray<FHitResult> hitResults;
+	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
+	boxExtent.Z = 300.f;
+	
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
 	{
-		if (tempGrabObj && tempGrabObj->IsPendingKillPending() == false && IsValid(tempGrabObj) && tempGrabObj ->GetOwner() != nullptr)
+		for (auto tempGrabObj : hitResults)
 		{
-			continue;
-		}
-		float distance = FVector::Dist(GetActorLocation(),tempGrabObj->GetActorLocation());
-		if (distance > ObjDistance)
-		{
-			continue;
-		}
+			AttachGrabObj(tempGrabObj.GetActor());
 
-		AttachGrabObj(tempGrabObj);
-		break;
+			return;
+		}
+	}
+
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+	{
+		for (auto tempGrabObj : hitResults)
+		{
+			AttachGrabObj(tempGrabObj.GetActor());
+			
+		}
 	}
 }
 
