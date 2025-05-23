@@ -16,7 +16,6 @@ void UIngredientActorIcon::SetIconImage(UTexture2D* Icon)
 {
 	if (nullptr == Icon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Icon Texture is NULL"));
 		SetVisibility(ESlateVisibility::Collapsed);
 		return;
 	}

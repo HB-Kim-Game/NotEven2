@@ -88,5 +88,8 @@ protected:
 	class UIngredientActorIcon* IconWidget;
 
 	UPROPERTY()
+	class UCookingProgress* ProgressWidget;
+
+	UPROPERTY()
 	class APlayerCameraManager* PlayerCameraManager;
 };
