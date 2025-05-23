@@ -30,3 +30,7 @@ void AMovableObject::Interact(class ANotEvenPlayer* player)
 	
 }
 
+void AMovableObject::SetGrab(bool bGrab)
+{
+}
+

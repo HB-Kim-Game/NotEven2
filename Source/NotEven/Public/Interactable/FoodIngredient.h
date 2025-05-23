@@ -42,7 +42,7 @@ public:
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
-	void SetGrab(bool bGrab);
+	virtual void SetGrab(bool bGrab) override;
 
 	void SetMaxCookingProgress(float progress);
 
@@ -86,6 +86,9 @@ protected:
 	
 	UPROPERTY()
 	class UIngredientActorIcon* IconWidget;
+
+	UPROPERTY()
+	class UCookingProgress* ProgressWidget;
 
 	UPROPERTY()
 	class APlayerCameraManager* PlayerCameraManager;
