@@ -49,11 +49,9 @@ void AIngredientBox::Interact(class ANotEvenPlayer* player)
 	Super::Interact(player);
 	
 	auto* ingredient = GetWorld()->SpawnActor<AFoodIngredient>(AFoodIngredient::StaticClass(),
-		player->GetActorLocation(), FRotator::ZeroRotator);
+		FVector(player->GetActorLocation().X, player->GetActorLocation().Y + 100.f, player->GetActorLocation().Z + 500.f), FRotator::ZeroRotator);
 	
 	ingredient->InitializeIngredient(Data, PlaceData);
-
-	ingredient->AttachToActor(player, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned

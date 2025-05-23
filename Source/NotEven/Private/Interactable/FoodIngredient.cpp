@@ -180,9 +180,11 @@ void AFoodIngredient::Interact(class ANotEvenPlayer* player)
 	switch (CurrentState)
 	{
 		case EIngredientState::None:
+			SetGrab(true);
 			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("GrabPoint"));
 			break;
 		case EIngredientState::Sliced:
+			SetGrab(true);
 			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("GrabPoint"));
 			break;
 		default:
@@ -192,6 +194,8 @@ void AFoodIngredient::Interact(class ANotEvenPlayer* player)
 
 void AFoodIngredient::SetGrab(bool bGrab)
 {
+	Super::SetGrab(bGrab);
+
 	// 잡았을 경우
 	if (bGrab)
 	{

@@ -18,6 +18,8 @@ public:
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
+	virtual void SetGrab(bool bGrab);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
