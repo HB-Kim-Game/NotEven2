@@ -27,4 +27,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	void SetIconImage(class UTexture2D* Icon);
+
+protected:
+	void SetMaterial();
 };
