@@ -169,6 +169,7 @@ void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 
 void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
 {
+	
 }
 
 void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
