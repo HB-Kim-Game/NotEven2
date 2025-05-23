@@ -36,29 +36,43 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FVector Direction;
 
+	
 	UPROPERTY(EditAnywhere,Category=input)
 	class UInputMappingContext* IMC_Player;
-
+	
 	UPROPERTY(EditAnywhere,Category=input)
 	class UInputAction* IA_PlayerMove;
 
 	UPROPERTY(EditAnywhere,Category=input)
 	class UInputAction* IA_PlayerDash;
 
-	void OnActionMove(const FInputActionValue& value);
-	void OnActionDash(const FInputActionValue& value);
+	UPROPERTY(EditAnywhere,category=input)
+	class UInputAction* IA_PlayerGrab;
 
+	// 이동 입력
+	void OnActionMove(const FInputActionValue& value);
+	// 대쉬 입력
+	void OnActionDash(const FInputActionValue& value);
+	// 잡기 입력
+	void OnActionGrab(const FInputActionValue& value);
+
+	//대쉬 거리 변수
 	float DashDistance = 2000.f;
 
 	// 플레이어 캐릭터를 재시작할 게임 모드 클래스 호출
 	void CallRestartPlayer();
 
 	void CallRestartPlayerDelay();
-	
-	FTimerHandle DelayTimer;
 
+	// 리스폰 딜레이 타이머
+	FTimerHandle DelayTimer;
+	
 	UPROPERTY(EditAnywhere)
 	class UPhysicsHandleComponent* PhysicsHandleComp;
+
+	// 잡기 상태 변수
+	bool isGrad = false;
+	
 	// //플레이어 죽음처리
 	// void PlayerDie();
 	// //리스폰 시 초기화

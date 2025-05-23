@@ -116,6 +116,7 @@ void ANotEvenPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		input->BindAction(IA_PlayerMove,ETriggerEvent::Triggered,this,&ANotEvenPlayer::OnActionMove);
 		input->BindAction(IA_PlayerDash,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionDash);
+		input->BindAction(IA_PlayerGrab,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionGrab);
 	}
 }
 
@@ -131,6 +132,11 @@ void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 {
 	FVector forwordDir = this->GetActorRotation().Vector();
 	LaunchCharacter(forwordDir*DashDistance,true,true);
+}
+
+void ANotEvenPlayer::OnActionGrab(const FInputActionValue& value)
+{
+	
 }
 
 // void ANotEvenPlayer::PlayerDie()

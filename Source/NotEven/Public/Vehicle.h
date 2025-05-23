@@ -31,7 +31,7 @@ public:
 
 	FVector Direction;
 	
-	float Speed = 800.f;
+	float Speed = 1200.f;
 
 	UFUNCTION()
 	void OnBoxCompBeginOverlap(
