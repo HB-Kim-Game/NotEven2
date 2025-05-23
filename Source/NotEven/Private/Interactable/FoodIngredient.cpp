@@ -4,6 +4,7 @@
 #include "FoodIngredient.h"
 
 #include "IngredientActorIcon.h"
+#include "NotEvenPlayer.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -29,6 +30,9 @@ AFoodIngredient::AFoodIngredient()
 	IconWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidgetComp"));
 	IconWidgetComp->SetupAttachment(BoxComp);
 
+	ProgressWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ProgressWidgetComp"));
+	ProgressWidgetComp->SetupAttachment(BoxComp);
+
 	ConstructorHelpers::FClassFinder<UIngredientActorIcon> iconClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_IngredientActorIcon.WBP_IngredientActorIcon_C'"));
 
 	if (iconClass.Succeeded())
@@ -37,6 +41,13 @@ AFoodIngredient::AFoodIngredient()
 	}
 	
 	IconWidgetComp->SetWidgetClass(IconClass);
+	
+	ConstructorHelpers::FClassFinder<UIngredientActorIcon> progressClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_CookingProgress.WBP_CookingProgress_C'"));
+
+	if (progressClass.Succeeded())
+	{
+		
+	}
 }
 
 void AFoodIngredient::BeginPlay()
@@ -50,11 +61,6 @@ void AFoodIngredient::BeginPlay()
 	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	
 	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
-	
-	// if (IconWidget)
-	// {
-	// 	IconWidget->SetIconImage(nullptr);
-	// }
 }
 
 void AFoodIngredient::Tick(float DeltaSeconds)
@@ -76,12 +82,18 @@ void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlac
 	{
 		if (UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, *path.StaticMeshPath))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *path.StaticMeshPath);
 			IngredientMeshes.Add(path.State, mesh);	
 		}
 	}
 
-	SetState(EIngredientState::Sliced);
+	SetMaxCookingProgress(Data.MaxCookingProgress);
+
+	SetState(EIngredientState::None);
+
+	if (IconWidget)
+	{
+		IconWidget->SetIconImage(nullptr);
+	}
 }
 
 FIngredientData AFoodIngredient::GetIngredientData() const
@@ -104,9 +116,14 @@ void AFoodIngredient::AddCookingProgress(float addProgress)
 	CurrentCookingProgress += addProgress;
 }
 
-float AFoodIngredient::GetNormalizedCookingProgress() const
+float AFoodIngredient::GetCurrentCookingProgress() const
 {
-	return CurrentCookingProgress / MaxCookingProgress;
+	return CurrentCookingProgress;
+}
+
+float AFoodIngredient::GetMaxCookingProgress() const
+{
+	return MaxCookingProgress;
 }
 
 void AFoodIngredient::SetState(EIngredientState newState)
@@ -117,10 +134,11 @@ void AFoodIngredient::SetState(EIngredientState newState)
 	{
 		if (IconWidget)
 		{
-			// if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
-			// {
-				// IconWidget->SetIconImage(texture);
-			// }
+			UE_LOG(LogTemp,Warning, TEXT("Name : %s"), *Data.IconAssetPath);
+			if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
+			{
+				IconWidget->SetIconImage(texture);
+			}
 		}
 	}
 
@@ -138,6 +156,38 @@ void AFoodIngredient::SetState(EIngredientState newState)
 void AFoodIngredient::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
-	
+
+	switch (CurrentState)
+	{
+		case EIngredientState::None:
+			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("GrabPoint"));
+			break;
+		case EIngredientState::Sliced:
+			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("GrabPoint"));
+			break;
+		default:
+			break;
+	}
+}
+
+void AFoodIngredient::SetGrab(bool bGrab)
+{
+	// 잡았을 경우
+	if (bGrab)
+	{
+		BoxComp->SetSimulatePhysics(false);
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	// 놓았을 경우
+	else
+	{
+		BoxComp->SetSimulatePhysics(true);
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+	}
+}
+
+void AFoodIngredient::SetMaxCookingProgress(float progress)
+{
+	MaxCookingProgress = progress;
 }
 

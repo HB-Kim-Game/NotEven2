@@ -36,6 +36,9 @@ public:
 	float MaxCookingProgress;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EIngredientState> PossibleStates;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FIngredientMeshPath> MeshPaths;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -94,6 +97,9 @@ struct FRecipe : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxCookingTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Price;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FRecipeIngredientData> RequiredIngredients;

@@ -34,11 +34,17 @@ public:
 
 	void AddCookingProgress(float addProgress);
 
-	float GetNormalizedCookingProgress() const;
+	float GetCurrentCookingProgress() const;
+
+	float GetMaxCookingProgress() const;
 
 	void SetState(EIngredientState newState);
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
+
+	void SetGrab(bool bGrab);
+
+	void SetMaxCookingProgress(float progress);
 
 protected:
 	// ID, 이름, 상태에 따른 에셋 Path
@@ -70,7 +76,13 @@ protected:
 	class UWidgetComponent* IconWidgetComp;
 
 	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* ProgressWidgetComp;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UIngredientActorIcon> IconClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UCookingProgress> ProgressClass;
 	
 	UPROPERTY()
 	class UIngredientActorIcon* IconWidget;

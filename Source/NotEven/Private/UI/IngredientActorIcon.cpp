@@ -9,17 +9,25 @@ void UIngredientActorIcon::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	IconMatDynamic = UMaterialInstanceDynamic::Create(IconMaterialInstance, this);
-	IconImage->SetBrushFromMaterial(IconMatDynamic);
+	if (!IconMatDynamic) SetMaterial();
 }
 
-void UIngredientActorIcon::SetIconImage(class UTexture2D* Icon)
+void UIngredientActorIcon::SetIconImage(UTexture2D* Icon)
 {
 	if (nullptr == Icon)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Icon Texture is NULL"));
 		SetVisibility(ESlateVisibility::Collapsed);
 		return;
 	}
 	SetVisibility(ESlateVisibility::HitTestInvisible);
-	IconMatDynamic->SetTextureParameterValue("IconImage", Icon);
+
+	if (!IconMatDynamic) SetMaterial();
+	IconMatDynamic->SetTextureParameterValue(FName("IconImage"), Icon);	
+}
+
+void UIngredientActorIcon::SetMaterial()
+{
+	IconMatDynamic = UMaterialInstanceDynamic::Create(IconMaterialInstance, this);
+	IconImage->SetBrushFromMaterial(IconMatDynamic);	
 }
