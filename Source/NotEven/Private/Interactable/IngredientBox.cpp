@@ -32,7 +32,7 @@ AIngredientBox::AIngredientBox()
 	SetRootComponent(BoxComp);
 
 	BoxComp->SetBoxExtent(FVector(50.f, 50.f, 50.f));
-
+	BoxComp->SetCollisionProfileName(FName("UnGrabObj"));
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(BoxComp);
 
@@ -78,12 +78,12 @@ void AIngredientBox::BeginPlay()
 			PlaceData = *data;
 		}
 	}
-
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
-	{
-		this->Interact(Cast<ANotEvenPlayer>(this->GetWorld()->GetFirstPlayerController()->GetPawn()));
-	}, 5.0f, true);
+	//
+	// FTimerHandle TimerHandle;
+	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	// {
+	// 	this->Interact(Cast<ANotEvenPlayer>(this->GetWorld()->GetFirstPlayerController()->GetPawn()));
+	// }, 5.0f, true);
 }
 
 // Called every frame

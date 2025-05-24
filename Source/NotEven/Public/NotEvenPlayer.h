@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "MovableObject.h"
 #include "GameFramework/Character.h"
 #include "NotEvenPlayer.generated.h"
 
@@ -73,10 +74,10 @@ public:
 	bool isGrab = false;
 
 	UPROPERTY()
-	AActor* OwnedObj = nullptr;
+	AMovableObject* OwnedObj = nullptr;
 
 	UPROPERTY(EditAnywhere,Category=Food)
-	float ObjDistance = 200.f;
+	float ObjDistance = 300.f;
 
 	UPROPERTY()
 	TArray<AActor*> ObjActors;

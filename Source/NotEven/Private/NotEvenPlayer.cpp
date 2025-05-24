@@ -6,8 +6,10 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "ImmovableObject.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -134,34 +136,60 @@ void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 
 void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 {
+	TArray<FHitResult> hitResults;
+	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
+	boxExtent.Z = 300.f;
+	
 	if (isGrab)
 	{
+		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+	FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+		{
+			for (auto tempGrabObj : hitResults)
+			{
+				//만약에 팬 이나 도마 이면은 상호 작용하고 싶다
+
+				//return;
+			}
+		}
+		
+		DetachGrabObj(nullptr);
 		return;
 	}
-	for (auto tempGrabObj : ObjActors)
+	
+	
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
 	{
-		if (tempGrabObj && tempGrabObj->IsPendingKillPending() == false && IsValid(tempGrabObj) && tempGrabObj ->GetOwner() != nullptr)
+		for (auto tempGrabObj : hitResults)
 		{
-			continue;
-		}
-		float distance = FVector::Dist(GetActorLocation(),tempGrabObj->GetActorLocation());
-		if (distance > ObjDistance)
-		{
-			continue;
-		}
-		OwnedObj = tempGrabObj;
-		OwnedObj->SetOwner(this);
-		isGrab = true;
+			AttachGrabObj(tempGrabObj.GetActor());
 
-		AttachGrabObj(tempGrabObj);
-		break;
+			return;
+		}
 	}
+	
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+	{
+		for (auto tempGrabObj : hitResults)
+		{
+			if (auto* unGrabObj = Cast<AImmovableObject>(tempGrabObj.GetActor()))
+			{
+				unGrabObj->Interact(this);
+				return;
+			}
+		}
+	}
+
 }
 
 void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 {
-	auto* obj = Cast<AMovableObject>(ObjActor);
-	obj ->Interact(this);
+	OwnedObj = Cast<AMovableObject>(ObjActor);
+	OwnedObj->SetOwner(this);
+	OwnedObj->Interact(this);
+	isGrab = true;
 
 	UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::AttachGrabObj"));
 	
@@ -169,10 +197,15 @@ void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 
 void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
 {
+	
 }
 
 void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 {
-	
+	OwnedObj ->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	OwnedObj -> SetOwner(nullptr);
+	OwnedObj->SetGrab(false);
+	OwnedObj = nullptr;
+	isGrab = false;
 }
 

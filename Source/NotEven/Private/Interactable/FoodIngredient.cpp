@@ -19,8 +19,8 @@ AFoodIngredient::AFoodIngredient()
 
 	BoxComp->SetSimulatePhysics(true);
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-	BoxComp->SetCollisionProfileName(FName("BlockAllDynamic"));
-	BoxComp->SetBoxExtent(FVector(18.f, 30.f, 10.f));
+	BoxComp->SetCollisionProfileName(FName("GrabObj"));
+	BoxComp->SetBoxExtent(FVector(50.f, 40.f, 25.f));
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(BoxComp);
@@ -57,8 +57,7 @@ void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetActorScale3D(FVector(2.5f, 2.5f, 2.5f));
-	
+	BoxComp -> SetLinearDamping(2);
 	IconWidget = Cast<UIngredientActorIcon>(IconWidgetComp->GetWidget());
 	IconWidgetComp->SetDrawSize(FVector2D(20.f, 20.f));
 	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
