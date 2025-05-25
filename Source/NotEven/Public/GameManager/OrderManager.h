@@ -39,7 +39,12 @@ public:
 	UPROPERTY()
 	TArray<FName> RecipeNameList;
 
+	void AddScore(int32 addScore);
+
 	void AddOrder();
 
-	void RemoveOrder(class URecipeData* data);
+	void RemoveOrder(class URecipeData* data, bool isSuccess);
+
+protected:
+	int32 CurrentScore = 0;
 };

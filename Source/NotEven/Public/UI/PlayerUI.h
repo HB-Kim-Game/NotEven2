@@ -21,6 +21,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UOrderListViewer* OrderListViewer;
 
+	UPROPERTY(meta = (BindWidget))
+	class UPriceUI* PriceUI;
+
 protected:
 	virtual void NativeConstruct() override;
 };

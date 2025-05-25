@@ -20,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString DisplayName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Price;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxCookingTime;

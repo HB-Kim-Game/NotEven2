@@ -70,6 +70,11 @@ void UOrderManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
+void UOrderManager::AddScore(int32 addScore)
+{
+	CurrentScore = FMath::Max(CurrentScore + addScore, 0);
+}
+
 void UOrderManager::AddOrder()
 {
 	if (nullptr == OrderTable) return;
@@ -82,6 +87,7 @@ void UOrderManager::AddOrder()
 		auto* order = NewObject<URecipeData>();
 		order->RecipeID = data->RecipeID;
 		order->DisplayName = data->DisplayName;
+		order->Price = data->Price;
 		order->MaxCookingTime = data->MaxCookingTime;
 		order->CurrentCookingTime = data->MaxCookingTime;
 		order->RequiredIngredients = data->RequiredIngredients;
@@ -93,7 +99,7 @@ void UOrderManager::AddOrder()
 	PlayerUI->OrderListViewer->FetchDatas<URecipeData>(OrderList);
 }
 
-void UOrderManager::RemoveOrder(URecipeData* data)
+void UOrderManager::RemoveOrder(URecipeData* data, bool isSuccess)
 {
 	int32 index = OrderList.Find(data);
 	if (index != INDEX_NONE)

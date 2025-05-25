@@ -4,8 +4,11 @@
 #include "UI/OrderListViewer.h"
 
 #include "OrderItem.h"
+#include "PlayerUI.h"
+#include "PriceUI.h"
 #include "UIViewerItemBase.h"
 #include "Components/HorizontalBox.h"
+#include "Data/RecipeData.h"
 #include "GameManager/OrderManager.h"
 
 int32 UOrderListViewer::GetCursor() const
@@ -52,6 +55,10 @@ void UOrderListViewer::SetOrderManager(class UOrderManager* orderManager)
 	OrderManager = orderManager;
 }
 
+void UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData>)
+{
+}
+
 void UOrderListViewer::InitializeItem()
 {
 	Super::InitializeItem();
@@ -68,7 +75,17 @@ void UOrderListViewer::InitializeItem()
 
 			item->OnOrderFailed.Add(FOnOrderFailed::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
-				this->OrderManager->RemoveOrder(data);
+				this->CurrentComboCount = 0;
+				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(-data->Price);
+				this->OrderManager->AddScore(-data->Price);
+				this->OrderManager->RemoveOrder(data, false);
+			}));
+			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
+			{
+				this->CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 0, 4);
+				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(data->Price * CurrentComboCount);
+				this->OrderManager->AddScore(data->Price * CurrentComboCount);
+				this->OrderManager->RemoveOrder(data, true);
 			}));
 		}
 	}

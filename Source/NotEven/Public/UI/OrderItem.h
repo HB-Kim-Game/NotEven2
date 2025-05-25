@@ -7,6 +7,7 @@
 #include "OrderItem.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOrderFailed, class URecipeData*)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnOrderSuccess, class URecipeData*)
 /**
  * 
  */
@@ -37,6 +38,7 @@ public:
 	TArray<class UIngredientUI*> Ingredients;
 
 	FOnOrderFailed OnOrderFailed;
+	FOnOrderSuccess OnOrderSuccess;
 
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;

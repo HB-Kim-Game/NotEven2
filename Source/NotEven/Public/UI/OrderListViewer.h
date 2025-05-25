@@ -27,12 +27,16 @@ public:
 
 	void SetOrderManager(class UOrderManager* orderManager);
 
+	void CheckOrderSuccess(TArray<struct FRecipeIngredientData>);
+
 	int32 GetSpawnItemsCount() const;
 
 protected:
 	virtual void InitializeItem() override;
 
 	int32 CurrentOrderCount = 0;
+
+	int32 CurrentComboCount = 0;
 
 	UPROPERTY()
 	class UOrderManager* OrderManager;
