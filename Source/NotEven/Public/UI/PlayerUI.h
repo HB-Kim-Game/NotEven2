@@ -24,6 +24,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UPriceUI* PriceUI;
 
+	UPROPERTY()
+	class UResultUI* ResultUI;
+
 protected:
 	virtual void NativeConstruct() override;
 };

@@ -78,6 +78,7 @@ void UOrderListViewer::InitializeItem()
 				this->CurrentComboCount = 0;
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(-data->Price);
 				this->OrderManager->AddScore(-data->Price);
+				this->OrderManager->CurrentFailedOrder += 1;
 				this->OrderManager->RemoveOrder(data, false);
 			}));
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
@@ -85,6 +86,7 @@ void UOrderListViewer::InitializeItem()
 				this->CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 0, 4);
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(data->Price * CurrentComboCount);
 				this->OrderManager->AddScore(data->Price * CurrentComboCount);
+				this->OrderManager->CurrentSuccessOrder += 1;
 				this->OrderManager->RemoveOrder(data, true);
 			}));
 		}

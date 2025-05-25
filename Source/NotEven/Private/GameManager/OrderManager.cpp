@@ -6,7 +6,10 @@
 #include "IngredientStruct.h"
 #include "OrderListViewer.h"
 #include "PlayerUI.h"
+#include "PlayTimeUI.h"
+#include "ResultUI.h"
 #include "Data/RecipeData.h"
+#include "Data/ResultData.h"
 
 // Sets default values for this component's properties
 UOrderManager::UOrderManager()
@@ -49,11 +52,25 @@ void UOrderManager::BeginPlay()
 	{
 		PlayerUI->AddToViewport();
 		PlayerUI->OrderListViewer->SetOrderManager(this);
+		PlayerUI->PlayTime->OnGameEnd.Add(FSimpleDelegate::CreateLambda([this]()
+		{
+			this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
+
+			UResultData* data = NewObject<UResultData>();
+			data->ResultSuccessOrderCount = this->CurrentSuccessOrder;
+			data->ResultFailureOrderCount = this->CurrentFailedOrder;
+			data->ResultScore = this->CurrentScore;
+			
+			if (this->PlayerUI->ResultUI)
+			{
+				// Result UI에 정보보내기
+				this->PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
+			}
+		}));
 	}
 
 	AddOrder();
-
-	FTimerHandle TimerHandle;
+	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
 	{
 		if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;

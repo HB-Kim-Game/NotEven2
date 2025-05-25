@@ -10,6 +10,8 @@ void UPlayTimeUI::SetMaxTime(float maxTime)
 {
 	MaxTime = maxTime;
 	CurrentTime = MaxTime;
+
+	OnGameStart.Broadcast();
 }
 
 void UPlayTimeUI::SetIsPlaying(bool playing)
@@ -30,7 +32,12 @@ void UPlayTimeUI::ShowRemainTime(float deltaTime)
 {
 	CurrentTime -= deltaTime;
 	
-	if (CurrentTime <= 0.f) return;
+	if (CurrentTime <= 0.f)
+	{
+		OnGameEnd.Broadcast();
+		bIsPlaying = false;
+		return;	
+	}
 
 	FString text = FString::Printf(TEXT("%02d:%02d"), static_cast<int>(CurrentTime) / 60, static_cast<int>(CurrentTime) % 60);
 	TimeText->SetText(FText::FromString(text));

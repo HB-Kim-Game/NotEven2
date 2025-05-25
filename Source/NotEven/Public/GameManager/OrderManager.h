@@ -45,6 +45,10 @@ public:
 
 	void RemoveOrder(class URecipeData* data, bool isSuccess);
 
+	int32 CurrentSuccessOrder = 0;
+	int32 CurrentFailedOrder = 0;
+
 protected:
 	int32 CurrentScore = 0;
+	FTimerHandle TimerHandle;
 };

@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayTimeUI.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnGameStart);
+DECLARE_MULTICAST_DELEGATE(FOnGameEnd);
 /**
  * 
  */
@@ -20,6 +22,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* RemainProgress;
 
+	FOnGameStart OnGameStart;
+	FOnGameEnd OnGameEnd;
+	
 	void SetMaxTime(float maxTime);
 
 	void SetIsPlaying(bool playing);
