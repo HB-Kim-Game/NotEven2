@@ -40,5 +40,6 @@ public:
 	virtual void NativeConstruct() override;
 
 protected:
+	UPROPERTY()
 	class UDataTable* ScoreTable;
 };

@@ -4,7 +4,9 @@
 #include "UI/ResultUI.h"
 
 #include "Components/TextBlock.h"
+#include "Data/NotEvenSave.h"
 #include "Data/ResultData.h"
+#include "Kismet/GameplayStatics.h"
 
 UResultUI::UResultUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -29,6 +31,23 @@ void UResultUI::ShowResult(class UResultData* data)
 		StarTwoText->SetText(FText::FromString(FString::FromInt(find->RequireScores[1])));
 		StarThreeText->SetText(FText::FromString(FString::FromInt(find->RequireScores[2])));
 	}
+
+	auto Save = Cast<UNotEvenSave>(UGameplayStatics::LoadGameFromSlot(data->StageID, 0));
+
+	if (!Save)
+	{
+		auto newData = NewObject<UNotEvenSave>();
+		newData->StageID = data->StageID;
+		newData->HighScore = data->ResultScore;
+
+		UGameplayStatics::SaveGameToSlot(newData, data->StageID, 0);
+		return;
+	}
+
+	if (Save->HighScore > data->ResultScore) return;
+
+	Save->HighScore = data->ResultScore;
+	UGameplayStatics::SaveGameToSlot(Save, data->StageID, 0);
 }
 
 void UResultUI::NativeConstruct()
