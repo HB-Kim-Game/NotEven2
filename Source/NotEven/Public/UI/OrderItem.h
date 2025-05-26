@@ -26,10 +26,12 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* IconImage;
 
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UIngredientUI> IngredientUIClass;
 
 	virtual void FetchData(UObject* Data) override;
+	class URecipeData* GetRecipeData() const;
 
 	virtual void Selected() override;
 	virtual void Deselected() override;

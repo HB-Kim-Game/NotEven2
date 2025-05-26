@@ -56,6 +56,11 @@ void UOrderItem::FetchData(UObject* Data)
 	
 }
 
+class URecipeData* UOrderItem::GetRecipeData() const
+{
+	return RecipeData;
+}
+
 void UOrderItem::Selected()
 {
 	Super::Selected();
