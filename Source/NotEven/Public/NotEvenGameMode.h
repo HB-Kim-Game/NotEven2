@@ -17,10 +17,14 @@ class NOTEVEN_API ANotEvenGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	ANotEvenGameMode();
 	
 	virtual void BeginPlay() override;
 	
 	const FOnPlayerDiedSignature& GetOnPlayerDied() const {return OnPlayerDied;}
+
+	UPROPERTY()
+	class UOrderManager* orderManager;
 
 	// 플레이어의 폰을 스폰 시도
 	virtual void RestartPlayer(AController* NewPlayer) override;

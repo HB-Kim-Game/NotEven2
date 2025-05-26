@@ -16,17 +16,29 @@ class NOTEVEN_API UResultUI : public UUserWidget
 
 public:
 
-	UPROPERTY()
+	UResultUI(const FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StageText;
 	
-	UPROPERTY()
-	TArray<class UTextBlock*> StarTexts;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* StarOneText;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* StarTwoText;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* StarThreeText;
 
-	UPROPERTY()
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* SuccessOrderCountText;
-	UPROPERTY()
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* FailureOrderCountText;
-	UPROPERTY()
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ResultScoreText;
-	
+
+	void ShowResult(class UResultData* data);
+
+	virtual void NativeConstruct() override;
+
+protected:
+	class UDataTable* ScoreTable;
 };

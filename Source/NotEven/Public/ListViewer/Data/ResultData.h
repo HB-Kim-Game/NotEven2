@@ -7,8 +7,24 @@
 #include "ResultData.generated.h"
 
 /**
+ *
  * 
  */
+
+USTRUCT(Atomic, BlueprintType)
+struct FStageRequireScore : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	// ...
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString StageID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString DisplayName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int32> RequireScores;
+};
+
 UCLASS()
 class NOTEVEN_API UResultData : public UObject
 {
@@ -16,6 +32,7 @@ class NOTEVEN_API UResultData : public UObject
 
 public:
 	FString StageID;
+	FString DisplayName;
 	int32 ResultScore;
 	int32 ResultSuccessOrderCount;
 	int32 ResultFailureOrderCount;

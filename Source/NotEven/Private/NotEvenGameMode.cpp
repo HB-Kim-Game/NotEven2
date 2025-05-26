@@ -5,7 +5,15 @@
 
 #include "NotEvenPlayer.h"
 #include "GameFramework/PlayerStart.h"
+#include "GameManager/OrderManager.h"
 #include "Kismet/GameplayStatics.h"
+
+ANotEvenGameMode::ANotEvenGameMode()
+{
+	PrimaryActorTick.bCanEverTick = true;
+
+	orderManager = CreateDefaultSubobject<UOrderManager>(TEXT("OrderManager"));
+}
 
 void ANotEvenGameMode::BeginPlay()
 {

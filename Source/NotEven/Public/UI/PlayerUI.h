@@ -24,7 +24,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UPriceUI* PriceUI;
 
-	UPROPERTY()
+	UPROPERTY(meta = (BindWidget))
 	class UResultUI* ResultUI;
 
 protected:
