@@ -215,12 +215,16 @@ void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 // 다지기 및 던지기
 void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& value)
 {
+	//만약에 잡기를 하고 있으면
 	if (isGrab==true)
 	{
 		AMovableObject* throwobj = OwnedObj;
 		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
+		//OwnedObj를 떼어내고
 		DetachGrabObj(OwnedObj);
+		//힘을 가하고 싶다
 		throwobj->BoxComp->AddImpulse(impulse);
+		
 		return;
 	}
 
