@@ -47,4 +47,5 @@ public:
 
 	UFUNCTION()
 	void DestroyVehicle();
+	
 };

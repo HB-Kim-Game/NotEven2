@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ObjectInteractable.h"
+#include "Components/BoxComponent.h"
 #include "MovableObject.generated.h"
 
 UCLASS()
@@ -19,6 +20,12 @@ public:
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
 	virtual void SetGrab(bool bGrab);
+
+public:
+	UPROPERTY()
+	class UStaticMeshComponent* MeshComp;
+	UPROPERTY()
+	class UBoxComponent* BoxComp;
 
 protected:
 	// Called when the game starts or when spawned

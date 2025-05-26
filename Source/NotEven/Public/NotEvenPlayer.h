@@ -49,6 +49,9 @@ public:
 
 	UPROPERTY(EditAnywhere,category=input)
 	class UInputAction* IA_PlayerGrab;
+	
+	UPROPERTY(EditAnywhere,category=input)
+	class UInputAction* IA_PlayerChopAndThrow;
 
 	// 이동 입력
 	void OnActionMove(const FInputActionValue& value);
@@ -56,6 +59,8 @@ public:
 	void OnActionDash(const FInputActionValue& value);
 	// 잡기 입력
 	void OnActionObjGrab(const FInputActionValue& value);
+	// 던지기 입력
+	void OnActionObjChoppingAndThrowing(const FInputActionValue& value);
 
 	//대쉬 거리 변수
 	float DashDistance = 2000.f;
@@ -83,6 +88,13 @@ public:
 	TArray<AActor*> ObjActors;
 
 	void AttachGrabObj(AActor* ObjActor);
-	void ReleaseGradObj(AActor* ObjActor);
 	void DetachGrabObj(AActor* ObjActor);
+
+//-----------------------던지기-----------------------
+	UPROPERTY(EditAnywhere)
+	class AFoodIngredient* foodObj;
+	
+	bool isThrown = false;
+	// void ReleaseGradObj(AActor* ObjActor);
+	//AActor* ObjActor
 };

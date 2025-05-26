@@ -66,12 +66,6 @@ protected:
 	float CurrentCookingProgress = 0.f;
 	float MaxCookingProgress = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UStaticMeshComponent* MeshComp;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UBoxComponent* BoxComp;
-
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* IconWidgetComp;
 

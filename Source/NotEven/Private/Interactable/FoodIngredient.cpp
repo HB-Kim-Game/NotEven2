@@ -13,21 +13,7 @@
 AFoodIngredient::AFoodIngredient()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	SetRootComponent(BoxComp);
-
-	BoxComp->SetSimulatePhysics(true);
-	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-	BoxComp->SetCollisionProfileName(FName("GrabObj"));
-	BoxComp->SetBoxExtent(FVector(70.f, 40.f, 25.f));
-
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(BoxComp);
-	MeshComp->SetSimulatePhysics(false);
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-	MeshComp->SetCollisionProfileName(FName("OverlapAllDynamic"));
-
+	
 	IconWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidgetComp"));
 	IconWidgetComp->SetupAttachment(BoxComp);
 

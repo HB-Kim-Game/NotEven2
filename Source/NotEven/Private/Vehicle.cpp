@@ -47,6 +47,7 @@ void AVehicle::Tick(float DeltaTime)
 
 	FVector newLoc = GetActorLocation() + Direction * Speed * DeltaTime;
 	SetActorLocation(newLoc);
+	
 
 }
 
@@ -69,6 +70,7 @@ void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 		player->GetMesh()->SetSimulatePhysics(true);
 		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("root"),true,true);
 		player->CallRestartPlayerDelay();
+		player->DetachGrabObj(nullptr);
 	}
 }
 

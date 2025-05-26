@@ -6,13 +6,15 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FoodIngredient.h"
 #include "ImmovableObject.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
+
 
 // Sets default values
 ANotEvenPlayer::ANotEvenPlayer()
@@ -89,7 +91,7 @@ void ANotEvenPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FTransform t =  FTransform(GetControlRotation());
+	//FTransform t =  FTransform(GetControlRotation());
 	AddMovementInput(Direction);
 
 	Direction = FVector::ZeroVector;
@@ -117,6 +119,7 @@ void ANotEvenPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		input->BindAction(IA_PlayerMove,ETriggerEvent::Triggered,this,&ANotEvenPlayer::OnActionMove);
 		input->BindAction(IA_PlayerDash,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionDash);
 		input->BindAction(IA_PlayerGrab,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionObjGrab);
+		input ->BindAction(IA_PlayerChopAndThrow,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionObjChoppingAndThrowing);
 	}
 }
 
@@ -147,7 +150,7 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		{
 			for (auto tempGrabObj : hitResults)
 			{
-				//만약에 팬 이나 도마 이면은 상호 작용하고 싶다
+				//만약에 프라이팬이나 도마이면은 프라이팬,도마 위에 놓기를 적용하고 싶다
 
 				//return;
 			}
@@ -195,10 +198,10 @@ void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 	
 }
 
-void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
-{
-	
-}
+// void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
+// {
+// 	
+// }
 
 void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 {
@@ -209,3 +212,32 @@ void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 	isGrab = false;
 }
 
+// 다지기 및 던지기
+void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& value)
+{
+	if (isGrab==true)
+	{
+		AMovableObject* throwobj = OwnedObj;
+		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
+		DetachGrabObj(OwnedObj);
+		throwobj->BoxComp->AddImpulse(impulse);
+		return;
+	}
+
+	TArray<FHitResult> hitResults;
+	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
+	boxExtent.Z = 300.f;
+
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+	{
+		for (auto tempGrabObj : hitResults)
+		{
+			if (auto* unGrabObj = Cast<AImmovableObject>(tempGrabObj.GetActor()))
+			{
+				unGrabObj->Interact(this);
+				return;
+			}
+		}
+	}
+}
