@@ -24,14 +24,28 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StarOneText;
 	UPROPERTY(meta = (BindWidget))
+	class UImage* StarOneImage;
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StarTwoText;
 	UPROPERTY(meta = (BindWidget))
+	class UImage* StarTwoImage;
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* StarThreeText;
+	UPROPERTY(meta = (BindWidget))
+	class UImage* StarThreeImage;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* SuccessOrderCountText;
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SuccessScoreText;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TipScoreText;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* FailureOrderCountText;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* FailureScoreText;
+	
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ResultScoreText;
 

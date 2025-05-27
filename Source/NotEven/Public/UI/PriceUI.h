@@ -22,12 +22,12 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* TipText;
 
-	void ShowCurrentScore(int32 AddScore);
+	void ShowCurrentScore();
 
+	void SetOrderManager(class UOrderManager* orderManager);
 protected:
-	int32 CurrentComboCount = 0;
-	int32 MaxComboCount = 4;
 
-	int32 CurrentScore = 0;
-	
+	UPROPERTY()
+	class UOrderManager* OrderManager;
+	int32 MaxComboCount = 4;
 };

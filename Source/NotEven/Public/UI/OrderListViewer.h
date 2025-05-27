@@ -36,8 +36,6 @@ protected:
 
 	int32 CurrentOrderCount = 0;
 
-	int32 CurrentComboCount = 0;
-
 	UPROPERTY()
 	class UOrderManager* OrderManager;
 };

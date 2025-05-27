@@ -39,16 +39,26 @@ public:
 	UPROPERTY()
 	TArray<FName> RecipeNameList;
 
+	int32 GetCurrentScore() const;
+	int32 GetCurrentComboCount() const;
+
 	void AddScore(int32 addScore);
+
+	void AddSuccess(int32 price);
+	void AddFailure(int32 price);
 
 	void AddOrder();
 
 	void RemoveOrder(class URecipeData* data, bool isSuccess);
 
+protected:
 	int32 CurrentSuccessOrder = 0;
 	int32 CurrentFailedOrder = 0;
-
-protected:
 	int32 CurrentScore = 0;
+	int32 SuccessScore = 0;
+	int32 TipScore = 0;
+	int32 FailureScore = 0;
+	int32 CurrentComboCount = 0;
+	
 	FTimerHandle TimerHandle;
 };
