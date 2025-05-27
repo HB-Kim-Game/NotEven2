@@ -10,7 +10,7 @@ void UPlayTimeUI::SetMaxTime(float maxTime)
 {
 	MaxTime = maxTime;
 	CurrentTime = MaxTime;
-
+	SetIsPlaying(true);
 	OnGameStart.Broadcast();
 }
 

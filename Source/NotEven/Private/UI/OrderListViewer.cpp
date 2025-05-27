@@ -3,6 +3,7 @@
 
 #include "UI/OrderListViewer.h"
 
+#include "IngredientStruct.h"
 #include "OrderItem.h"
 #include "PlayerUI.h"
 #include "PriceUI.h"
@@ -55,14 +56,48 @@ void UOrderListViewer::SetOrderManager(class UOrderManager* orderManager)
 	OrderManager = orderManager;
 }
 
-void UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData>)
+bool UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData> data)
 {
+	for (auto* item : SpawnItems)
+	{
+		auto* cast = Cast<UOrderItem>(item);
+
+		if (nullptr == cast) continue;
+		if (nullptr == cast->GetRecipeData()) continue;
+
+		TArray<FRecipeIngredientData*> checkedData;
+
+		for (auto& d : data)
+		{
+			if (auto find = cast->GetRecipeData()->RequiredIngredients.FindByPredicate([checkedData, d](const FRecipeIngredientData& recipe)
+			{
+					return recipe.IngredientID == d.IngredientID && recipe.RequireState == d.RequireState;
+			}))
+			{
+				if (!checkedData.Contains(find))
+				{
+					checkedData.Add(find);
+				}
+				if (checkedData.Num() >= data.Num())
+				{
+					cast->OnOrderSuccess.Broadcast(cast->GetRecipeData());
+					UE_LOG(LogTemp, Warning, TEXT("Order Success"));
+					return true;
+				}
+				continue;
+			}
+			break;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("No Same Order"));
+	return false;
 }
 
 void UOrderListViewer::InitializeItem()
 {
 	Super::InitializeItem();
-
+	
 	SpawnItems.Empty();
 	UHorizontalBox* castPanel = Cast<UHorizontalBox>(Panel);
 	for (int32 i = 0; i < ItemPoolCount; i++)
@@ -83,9 +118,9 @@ void UOrderListViewer::InitializeItem()
 			}));
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
 			{
-				this->CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 0, 4);
-				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(data->Price * CurrentComboCount);
-				this->OrderManager->AddScore(data->Price * CurrentComboCount);
+				this->CurrentComboCount = FMath::Clamp(this->CurrentComboCount + 1, 0, 4);
+				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(data->Price * this->CurrentComboCount);
+				this->OrderManager->AddScore(data->Price * this->CurrentComboCount);
 				this->OrderManager->CurrentSuccessOrder += 1;
 				this->OrderManager->RemoveOrder(data, true);
 			}));

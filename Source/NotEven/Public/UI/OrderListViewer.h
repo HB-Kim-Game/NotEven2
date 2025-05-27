@@ -27,7 +27,7 @@ public:
 
 	void SetOrderManager(class UOrderManager* orderManager);
 
-	void CheckOrderSuccess(TArray<struct FRecipeIngredientData>);
+	bool CheckOrderSuccess(TArray<struct FRecipeIngredientData> data);
 
 	int32 GetSpawnItemsCount() const;
 

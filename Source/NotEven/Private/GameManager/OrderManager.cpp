@@ -7,6 +7,7 @@
 #include "OrderListViewer.h"
 #include "PlayerUI.h"
 #include "PlayTimeUI.h"
+#include "PriceUI.h"
 #include "ResultUI.h"
 #include "Data/RecipeData.h"
 #include "Data/ResultData.h"
@@ -52,6 +53,19 @@ void UOrderManager::BeginPlay()
 	{
 		PlayerUI->AddToViewport();
 		PlayerUI->OrderListViewer->SetOrderManager(this);
+		
+		PlayerUI->PlayTime->OnGameStart.Add(FSimpleDelegate::CreateLambda([this]()
+		{
+			UE_LOG(LogTemp,Warning,TEXT("PlayerUI OnGameStart"));
+			this->AddOrder();
+			
+			this->GetWorld()->GetTimerManager().SetTimer(this->TimerHandle, [this]()
+			{
+				if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
+				this->AddOrder();
+			}, FMath::RandRange(5.f, 7.f), true);
+		}));
+		
 		PlayerUI->PlayTime->OnGameEnd.Add(FSimpleDelegate::CreateLambda([this]()
 		{
 			this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
@@ -65,17 +79,15 @@ void UOrderManager::BeginPlay()
 			{
 				// Result UI에 정보보내기
 				this->PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
+				this->PlayerUI->ResultUI->ShowResult(data);
 			}
 		}));
+
+		// 임시
+		PlayerUI->PlayTime->SetMaxTime(180.f);
+		PlayerUI->PriceUI->ShowCurrentScore(0);
 	}
 
-	AddOrder();
-	
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
-	{
-		if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
-		this->AddOrder();
-	}, FMath::RandRange(5.f, 7.f), true);
 }
 
 

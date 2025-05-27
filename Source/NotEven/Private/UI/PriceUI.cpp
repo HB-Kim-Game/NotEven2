@@ -12,7 +12,7 @@ void UPriceUI::ShowCurrentScore(int32 AddScore)
 	CurrentScore = FMath::Max(CurrentScore + AddScore, 0);
 
 	FString tipText = FString::FromInt(CurrentComboCount);
-	FString scoreText = FString::FromInt(CurrentComboCount);
+	FString scoreText = FString::FromInt(CurrentScore);
 	
 	TipText->SetText(FText::FromString(tipText));
 	PriceText->SetText(FText::FromString(scoreText));
