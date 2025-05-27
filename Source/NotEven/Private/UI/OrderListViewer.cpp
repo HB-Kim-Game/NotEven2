@@ -71,13 +71,7 @@ bool UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData> data)
 		{
 			if (auto find = cast->GetRecipeData()->RequiredIngredients.FindByPredicate([checkedData, d](const FRecipeIngredientData& recipe)
 			{
-					bool condition = true;
-					for (auto s : recipe.RequireStates)
-					{
-						condition = d.RequireStates.Contains(s);
-					}
-			
-					return recipe.IngredientID == d.IngredientID && condition;
+					return recipe.IngredientID == d.IngredientID && recipe.RequireState == d.RequireState;
 			}))
 			{
 				if (!checkedData.Contains(find))

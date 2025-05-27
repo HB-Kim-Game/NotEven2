@@ -54,7 +54,7 @@ struct FRecipeIngredientData : public FTableRowBase
 	FString IngredientID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<EIngredientState> RequireStates;
+	EIngredientState RequireState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString IconImagePath;
