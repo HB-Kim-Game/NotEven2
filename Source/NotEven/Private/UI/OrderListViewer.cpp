@@ -110,18 +110,16 @@ void UOrderListViewer::InitializeItem()
 
 			item->OnOrderFailed.Add(FOnOrderFailed::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
-				this->CurrentComboCount = 0;
-				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(-data->Price);
+				this->OrderManager->AddFailure(data->Price);
 				this->OrderManager->AddScore(-data->Price);
-				this->OrderManager->CurrentFailedOrder += 1;
+				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, false);
 			}));
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
 			{
-				this->CurrentComboCount = FMath::Clamp(this->CurrentComboCount + 1, 0, 4);
-				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore(data->Price * this->CurrentComboCount);
-				this->OrderManager->AddScore(data->Price * this->CurrentComboCount);
-				this->OrderManager->CurrentSuccessOrder += 1;
+				this->OrderManager->AddSuccess(data->Price);
+				this->OrderManager->AddScore(data->Price * this->OrderManager->GetCurrentComboCount());
+				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, true);
 			}));
 		}

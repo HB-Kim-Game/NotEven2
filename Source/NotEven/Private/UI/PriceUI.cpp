@@ -5,17 +5,22 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "GameManager/OrderManager.h"
 
-void UPriceUI::ShowCurrentScore(int32 AddScore)
+void UPriceUI::ShowCurrentScore()
 {
-	CurrentComboCount = AddScore > 0 ? FMath::Clamp(CurrentComboCount + 1, 0, 4) : 0;
-	CurrentScore = FMath::Max(CurrentScore + AddScore, 0);
-
-	FString tipText = FString::FromInt(CurrentComboCount);
-	FString scoreText = FString::FromInt(CurrentScore);
+	if (!OrderManager) return;
+	
+	FString tipText = FString::FromInt(OrderManager->GetCurrentComboCount());
+	FString scoreText = FString::FromInt(OrderManager->GetCurrentScore());
 	
 	TipText->SetText(FText::FromString(tipText));
 	PriceText->SetText(FText::FromString(scoreText));
 
-	TipProgress->SetPercent(static_cast<float>(CurrentComboCount / MaxComboCount));
+	TipProgress->SetPercent(static_cast<float>(OrderManager->GetCurrentComboCount()) / MaxComboCount);
+}
+
+void UPriceUI::SetOrderManager(class UOrderManager* orderManager)
+{
+	OrderManager = orderManager;
 }

@@ -53,6 +53,7 @@ void UOrderManager::BeginPlay()
 	{
 		PlayerUI->AddToViewport();
 		PlayerUI->OrderListViewer->SetOrderManager(this);
+		PlayerUI->PriceUI->SetOrderManager(this);
 		
 		PlayerUI->PlayTime->OnGameStart.Add(FSimpleDelegate::CreateLambda([this]()
 		{
@@ -71,8 +72,13 @@ void UOrderManager::BeginPlay()
 			this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
 
 			UResultData* data = NewObject<UResultData>();
+			// 임시 스테이지ID
+			data->StageID = TEXT("Stage0");
 			data->ResultSuccessOrderCount = this->CurrentSuccessOrder;
+			data->SuccessScore = this->SuccessScore;
+			data->TipScore = this->TipScore;
 			data->ResultFailureOrderCount = this->CurrentFailedOrder;
+			data->FailureScore = this->FailureScore;
 			data->ResultScore = this->CurrentScore;
 			
 			if (this->PlayerUI->ResultUI)
@@ -84,8 +90,8 @@ void UOrderManager::BeginPlay()
 		}));
 
 		// 임시
-		PlayerUI->PlayTime->SetMaxTime(180.f);
-		PlayerUI->PriceUI->ShowCurrentScore(0);
+		PlayerUI->PlayTime->SetMaxTime(60.f);
+		PlayerUI->PriceUI->ShowCurrentScore();
 	}
 
 }
@@ -99,9 +105,34 @@ void UOrderManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
+int32 UOrderManager::GetCurrentScore() const
+{
+	return CurrentScore;
+}
+
+int32 UOrderManager::GetCurrentComboCount() const
+{
+	return CurrentComboCount;
+}
+
 void UOrderManager::AddScore(int32 addScore)
 {
 	CurrentScore = FMath::Max(CurrentScore + addScore, 0);
+}
+
+void UOrderManager::AddSuccess(int32 price)
+{
+	CurrentSuccessOrder += 1;
+	CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 0, 4);
+	SuccessScore += price;
+	TipScore += FMath::Max(price * (CurrentComboCount - 1), 0);
+}
+
+void UOrderManager::AddFailure(int32 price)
+{
+	CurrentFailedOrder += 1;
+	CurrentComboCount = 0;
+	FailureScore += CurrentScore > price ? price : CurrentScore;
 }
 
 void UOrderManager::AddOrder()

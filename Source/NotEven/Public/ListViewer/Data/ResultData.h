@@ -35,5 +35,8 @@ public:
 	FString DisplayName;
 	int32 ResultScore;
 	int32 ResultSuccessOrderCount;
+	int32 SuccessScore;
+	int32 TipScore;
 	int32 ResultFailureOrderCount;
+	int32 FailureScore;
 };
