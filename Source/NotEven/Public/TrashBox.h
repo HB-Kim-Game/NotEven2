@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IngredientStruct.h"
 #include "Interactable/ImmovableObject.h"
 #include "TrashBox.generated.h"
 
@@ -27,7 +28,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class AFoodIngredient* Food;
-
+	
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* MeshComp;
 

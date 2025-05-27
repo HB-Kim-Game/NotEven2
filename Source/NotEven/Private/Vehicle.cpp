@@ -70,7 +70,7 @@ void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 		player->GetMesh()->SetSimulatePhysics(true);
 		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("root"),true,true);
 		player->CallRestartPlayerDelay();
-		player->DetachGrabObj(nullptr);
+		player->DetachGrabObj();
 	}
 }
 
