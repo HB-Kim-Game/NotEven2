@@ -30,8 +30,16 @@ public:
 	bool CheckOrderSuccess(const TArray<struct FRecipeIngredientData>& data);
 
 	int32 GetSpawnItemsCount() const;
+	
+	FWidgetAnimationDynamicEvent OnAnimFinished;
 
 protected:
+
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void OnRefresh();
+	
 	virtual void InitializeItem() override;
 
 	int32 CurrentOrderCount = 0;
@@ -39,8 +47,3 @@ protected:
 	UPROPERTY()
 	class UOrderManager* OrderManager;
 };
-
-inline int32 UOrderListViewer::GetSpawnItemsCount() const
-{
-	return SpawnItems.Num();
-}

@@ -8,6 +8,7 @@
 #include "PlayerUI.h"
 #include "PriceUI.h"
 #include "UIViewerItemBase.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/HorizontalBox.h"
 #include "Data/RecipeData.h"
 #include "GameManager/OrderManager.h"
@@ -94,6 +95,19 @@ bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientDa
 	return false;
 }
 
+void UOrderListViewer::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	OnAnimFinished.BindDynamic(this, &UOrderListViewer::OnRefresh);
+}
+
+void UOrderListViewer::OnRefresh()
+{
+	if (OrderManager)
+	OrderManager->RefreshOrder();
+}
+
 void UOrderListViewer::InitializeItem()
 {
 	Super::InitializeItem();
@@ -115,12 +129,14 @@ void UOrderListViewer::InitializeItem()
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, false);
 			}));
-			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
+			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
 				this->OrderManager->AddSuccess(data->Price);
 				this->OrderManager->AddScore(data->Price * this->OrderManager->GetCurrentComboCount());
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, true);
+				
+				item->BindToAnimationFinished(item->Success, this->OnAnimFinished);
 			}));
 		}
 	}
@@ -132,4 +148,9 @@ void UOrderListViewer::InitializeItem()
 	}
 
 	CurrentOrderCount = FetchedDatas.Num();
+}
+
+int32 UOrderListViewer::GetSpawnItemsCount() const
+{
+	return SpawnItems.Num();
 }

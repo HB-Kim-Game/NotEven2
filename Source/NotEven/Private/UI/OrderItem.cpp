@@ -71,6 +71,17 @@ void UOrderItem::Deselected()
 	Super::Deselected();
 }
 
+void UOrderItem::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
+	{
+		this->StopAllAnimations();
+		this->PlayAnimation(Success);
+	}));
+}
+
 void UOrderItem::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);

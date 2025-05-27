@@ -35,16 +35,22 @@ public:
 
 	virtual void Selected() override;
 	virtual void Deselected() override;
-
+	
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Success;
+	
 	UPROPERTY()
 	TArray<class UIngredientUI*> Ingredients;
 
 	FOnOrderFailed OnOrderFailed;
 	FOnOrderSuccess OnOrderSuccess;
-
+	
 protected:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual void NativeConstruct() override;
+	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	
 	UPROPERTY()
 	class URecipeData* RecipeData;
 
