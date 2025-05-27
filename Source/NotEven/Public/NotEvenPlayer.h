@@ -78,17 +78,17 @@ public:
 	// 잡기 상태 변수
 	bool isGrab = false;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	AMovableObject* OwnedObj = nullptr;
 
 	UPROPERTY(EditAnywhere,Category=Food)
 	float ObjDistance = 300.f;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	TArray<AActor*> ObjActors;
 
 	void AttachGrabObj(AActor* ObjActor);
-	void DetachGrabObj(AActor* ObjActor);
+	void DetachGrabObj();
 
 //-----------------------던지기-----------------------
 	UPROPERTY(EditAnywhere)

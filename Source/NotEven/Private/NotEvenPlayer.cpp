@@ -10,6 +10,7 @@
 #include "ImmovableObject.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
+#include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -142,25 +143,31 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 	TArray<FHitResult> hitResults;
 	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
 	boxExtent.Z = 300.f;
-	
+
 	if (isGrab)
 	{
+		// 잡을 수 없는 Obj Collision이면
 		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 	FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
 		{
 			for (auto tempGrabObj : hitResults)
 			{
-				//만약에 프라이팬이나 도마이면은 프라이팬,도마 위에 놓기를 적용하고 싶다
-
-				//return;
+				// 1. 만약에 프라이팬이나 도마이면은
+				// -> 프라이팬,도마 위에 놓기를 적용하고 싶다
+				
+				if (auto trashBox = Cast<ATrashBox>(tempGrabObj.GetActor()))
+				{
+					trashBox -> Interact(this);
+				}
+				
+				return;
 			}
 		}
-		
-		DetachGrabObj(nullptr);
+		DetachGrabObj();
 		return;
 	}
 	
-	
+	//잡을 수 있는 Obj Collision이면
 	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
 	{
@@ -203,8 +210,10 @@ void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 // 	
 // }
 
-void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
+void ANotEvenPlayer::DetachGrabObj()
 {
+	if (!OwnedObj)
+		return;
 	OwnedObj ->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	OwnedObj -> SetOwner(nullptr);
 	OwnedObj->SetGrab(false);
@@ -215,12 +224,18 @@ void ANotEvenPlayer::DetachGrabObj(AActor* ObjActor)
 // 다지기 및 던지기
 void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& value)
 {
+	//만약에 잡기를 하고 있으면
 	if (isGrab==true)
 	{
 		AMovableObject* throwobj = OwnedObj;
 		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
-		DetachGrabObj(OwnedObj);
+		
+		//OwnedObj를 떼어내고
+		DetachGrabObj();
+		
+		//힘을 가하고 싶다
 		throwobj->BoxComp->AddImpulse(impulse);
+		
 		return;
 	}
 
