@@ -12,7 +12,7 @@ ANotEvenGameMode::ANotEvenGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	orderManager = CreateDefaultSubobject<UOrderManager>(TEXT("OrderManager"));
+	OrderManager = CreateDefaultSubobject<UOrderManager>(TEXT("OrderManager"));
 }
 
 void ANotEvenGameMode::BeginPlay()
