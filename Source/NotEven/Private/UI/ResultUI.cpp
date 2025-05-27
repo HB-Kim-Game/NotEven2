@@ -3,6 +3,7 @@
 
 #include "UI/ResultUI.h"
 
+#include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Data/NotEvenSave.h"
@@ -21,7 +22,6 @@ UResultUI::UResultUI(const FObjectInitializer& ObjectInitializer) : Super(Object
 
 void UResultUI::ShowResult(class UResultData* data)
 {
-	//StageText->SetText(FText::FromString(data->DisplayName));
 	SuccessOrderCountText->SetText(FText::FromString(FString::FromInt(data->ResultSuccessOrderCount)));
 	SuccessScoreText->SetText(FText::FromString(FString::FromInt(data->SuccessScore)));
 	TipScoreText->SetText(FText::FromString(FString::FromInt(data->TipScore)));
@@ -33,6 +33,8 @@ void UResultUI::ShowResult(class UResultData* data)
 
 	if (FStageRequireScore* find = ScoreTable->FindRow<FStageRequireScore>(FName(data->StageID), FString("")))
 	{
+		StageText->SetText(FText::FromString(find->DisplayName));
+		
 		StarOneText->SetText(FText::FromString(FString::FromInt(find->RequireScores[0])));
 		if (data->ResultScore >= find->RequireScores[0]) StarOneImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		
@@ -68,4 +70,20 @@ void UResultUI::NativeConstruct()
 	StarOneImage->SetVisibility(ESlateVisibility::Collapsed);
 	StarTwoImage->SetVisibility(ESlateVisibility::Collapsed);
 	StarThreeImage->SetVisibility(ESlateVisibility::Collapsed);
+
+	RestartButton->OnClicked.AddDynamic(this, &UResultUI::OnClickedRestartButton);
+	QuitButton->OnClicked.AddDynamic(this, &UResultUI::OnClickedQuitButton);
+}
+
+void UResultUI::OnClickedRestartButton()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName(GetWorld()->GetCurrentLevel()->GetName()));
+
+	this->GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
+	this->GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+}
+
+void UResultUI::OnClickedQuitButton()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);;
 }

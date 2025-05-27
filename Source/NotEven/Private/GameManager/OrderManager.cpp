@@ -86,6 +86,8 @@ void UOrderManager::BeginPlay()
 				// Result UI에 정보보내기
 				this->PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
 				this->PlayerUI->ResultUI->ShowResult(data);
+				this->GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
+				this->GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 			}
 		}));
 

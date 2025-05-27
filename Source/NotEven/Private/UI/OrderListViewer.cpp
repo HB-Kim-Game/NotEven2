@@ -56,7 +56,7 @@ void UOrderListViewer::SetOrderManager(class UOrderManager* orderManager)
 	OrderManager = orderManager;
 }
 
-bool UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData> data)
+bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientData>& data)
 {
 	for (auto* item : SpawnItems)
 	{
