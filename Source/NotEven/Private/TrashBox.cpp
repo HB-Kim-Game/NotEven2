@@ -33,14 +33,18 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 	// 만약에 플레이어가 isGrab 상태이면
 	if (player && player -> isGrab)
 	{
-		AActor* foodObj = player->OwnedObj;
-		// 음식을 Grad 하고 있으면
-		if (foodObj)
+		AMovableObject* moveObject = player->OwnedObj;
+		// moveObject을 Grad 하고 있으면
+		if (moveObject)
 		{
-			// 음식만 파괴하고싶다
-			player -> OwnedObj = nullptr;
-			foodObj-> Destroy();
-			player->isGrab = false; // 들고 있는 상태 초기화
+			//moveObject가 음식이면
+			if (AFoodIngredient* food = Cast<AFoodIngredient>(moveObject))
+			{
+				// 음식을 파괴하고싶다
+				player -> OwnedObj = nullptr;
+				food-> Destroy(); 
+				player->isGrab = false; // 들고 있는 상태 초기화
+			}
 		}
 	}
 	

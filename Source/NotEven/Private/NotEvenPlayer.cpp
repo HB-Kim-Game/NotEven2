@@ -10,6 +10,7 @@
 #include "ImmovableObject.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
+#include "Plate.h"
 #include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -159,6 +160,11 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 				{
 					trashBox -> Interact(this);
 				}
+				
+				// else if (auto tempPlate = Cast<APlate>(tempGrabObj.GetActor()))
+				// {
+				// 	tempPlate-> Interact(this);
+				// }
 				
 				return;
 			}

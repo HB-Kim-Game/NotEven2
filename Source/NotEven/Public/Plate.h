@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FoodIngredient.h"
 #include "IngredientStruct.h"
 #include "Interactable/MovableObject.h"
 #include "Plate.generated.h"
@@ -23,11 +24,11 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-	FIngredientData GetIngredientData() const;
+	virtual void Interact(class ANotEvenPlayer* player) override;
 
-	EIngredientState GetIngredientState() const;
+	virtual void SetGrab(bool bGrab) override;
 
-	void SetState(EIngredientState newState);
+	void OnPlate(AFoodIngredient* foodObj);
 	
 	
 };
