@@ -4,6 +4,7 @@
 #include "UI/OrderItem.h"
 #include "IngredientStruct.h"
 #include "IngredientUI.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
@@ -80,6 +81,17 @@ void UOrderItem::NativeConstruct()
 		this->StopAllAnimations();
 		this->PlayAnimation(Success);
 	}));
+
+	OnOrderFailed.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
+	{
+		this->StopAllAnimations();
+		this->PlayAnimation(Failed);
+	}));
+
+	OnAnimationFinished.BindDynamic(this, &UOrderItem::AnimationFinished);
+
+	BindToAnimationFinished(Success, OnAnimationFinished);
+	BindToAnimationFinished(Failed, OnAnimationFinished);
 }
 
 void UOrderItem::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -101,4 +113,9 @@ void UOrderItem::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	RemainProgress->SetPercent(percent);
 	FLinearColor color = FMath::Lerp(FLinearColor::Red, FLinearColor::Green, percent);
 	RemainProgress->SetFillColorAndOpacity(color);
+}
+
+void UOrderItem::AnimationFinished()
+{
+	bIsChecked = false;
 }

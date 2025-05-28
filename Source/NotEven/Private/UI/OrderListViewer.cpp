@@ -65,6 +65,7 @@ bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientDa
 
 		if (nullptr == cast) continue;
 		if (nullptr == cast->GetRecipeData()) continue;
+		if (cast->bIsChecked) continue;
 
 		TArray<FRecipeIngredientData*> checkedData;
 
@@ -128,6 +129,9 @@ void UOrderListViewer::InitializeItem()
 				this->OrderManager->AddScore(-data->Price);
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, false);
+				item->bIsChecked = true;
+
+				item->BindToAnimationFinished(item->Failed, this->OnAnimFinished);
 			}));
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
@@ -135,6 +139,7 @@ void UOrderListViewer::InitializeItem()
 				this->OrderManager->AddScore(data->Price * this->OrderManager->GetCurrentComboCount());
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, true);
+				item->bIsChecked = true;
 				
 				item->BindToAnimationFinished(item->Success, this->OnAnimFinished);
 			}));

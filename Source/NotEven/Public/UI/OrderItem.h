@@ -38,12 +38,18 @@ public:
 	
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Success;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Failed;
 	
 	UPROPERTY()
 	TArray<class UIngredientUI*> Ingredients;
 
 	FOnOrderFailed OnOrderFailed;
 	FOnOrderSuccess OnOrderSuccess;
+
+	FWidgetAnimationDynamicEvent OnAnimationFinished;
+	
+	bool bIsChecked = false;
 	
 protected:
 
@@ -57,4 +63,7 @@ protected:
 	float CurrentCookingTime;
 
 	bool bIsReceiveOrder = false;
+
+	UFUNCTION()
+	void AnimationFinished();
 };

@@ -21,6 +21,8 @@ public:
 	class UTextBlock* TimeText;
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* RemainProgress;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Countdown;
 
 	FOnGameStart OnGameStart;
 	FOnGameEnd OnGameEnd;

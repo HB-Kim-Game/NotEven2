@@ -53,6 +53,8 @@ public:
 	class UButton* RestartButton;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitButton;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Appear;
 
 	void ShowResult(class UResultData* data);
 

@@ -22,6 +22,7 @@ UResultUI::UResultUI(const FObjectInitializer& ObjectInitializer) : Super(Object
 
 void UResultUI::ShowResult(class UResultData* data)
 {
+	PlayAnimation(Appear);
 	SuccessOrderCountText->SetText(FText::FromString(FString::FromInt(data->ResultSuccessOrderCount)));
 	SuccessScoreText->SetText(FText::FromString(FString::FromInt(data->SuccessScore)));
 	TipScoreText->SetText(FText::FromString(FString::FromInt(data->TipScore)));
