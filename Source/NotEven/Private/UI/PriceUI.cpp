@@ -3,6 +3,7 @@
 
 #include "UI/PriceUI.h"
 
+#include "Components/CanvasPanel.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "GameManager/OrderManager.h"
@@ -13,10 +14,38 @@ void UPriceUI::ShowCurrentScore()
 	
 	FString tipText = FString::FromInt(OrderManager->GetCurrentComboCount());
 	FString scoreText = FString::FromInt(OrderManager->GetCurrentScore());
+
+	int32 distance = OrderManager->GetCurrentScore() - PrevScore;
+
+	FString prevSign = distance > 0 ? TEXT("+") : TEXT("-");
+	prevSign.Append(FString::FromInt(distance));
 	
 	TipText->SetText(FText::FromString(tipText));
 	PriceText->SetText(FText::FromString(scoreText));
+	PriceTopText->SetText(FText::FromString(prevSign));
+	
+	if (OrderManager->GetCurrentComboCount() == MaxComboCount)
+	{
+		FeverPanel->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		FeverPanel->SetVisibility(ESlateVisibility::Hidden);
+	}
 
+	if (distance > 0)
+	{
+		StopAllAnimations();
+		PlayAnimation(CoinAnimation);
+		PlayAnimation(Success);
+	}
+	else if (distance < 0)
+	{
+		StopAllAnimations();
+		PlayAnimation(Failed);
+	}
+
+	PrevScore = OrderManager->GetCurrentScore();
 	TipProgress->SetPercent(static_cast<float>(OrderManager->GetCurrentComboCount()) / MaxComboCount);
 }
 

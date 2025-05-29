@@ -35,20 +35,35 @@ public:
 
 	virtual void Selected() override;
 	virtual void Deselected() override;
-
+	
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Success;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Failed;
+	
 	UPROPERTY()
 	TArray<class UIngredientUI*> Ingredients;
 
 	FOnOrderFailed OnOrderFailed;
 	FOnOrderSuccess OnOrderSuccess;
 
+	FWidgetAnimationDynamicEvent OnAnimationFinished;
+	
+	bool bIsChecked = false;
+	
 protected:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual void NativeConstruct() override;
+	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	
 	UPROPERTY()
 	class URecipeData* RecipeData;
 
 	float CurrentCookingTime;
 
 	bool bIsReceiveOrder = false;
+
+	UFUNCTION()
+	void AnimationFinished();
 };

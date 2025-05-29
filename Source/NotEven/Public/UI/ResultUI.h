@@ -49,10 +49,22 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ResultScoreText;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* RestartButton;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* QuitButton;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Appear;
+
 	void ShowResult(class UResultData* data);
 
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
+	void OnClickedRestartButton();
+	UFUNCTION()
+	void OnClickedQuitButton();
+	
 protected:
 	UPROPERTY()
 	class UDataTable* ScoreTable;

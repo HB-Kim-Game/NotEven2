@@ -49,7 +49,9 @@ public:
 
 	void AddOrder();
 
-	void RemoveOrder(class URecipeData* data, bool isSuccess);
+	void RefreshOrder();
+
+	TArray<class URecipeData*> RemoveOrder(class URecipeData* data, bool isSuccess);
 
 protected:
 	int32 CurrentSuccessOrder = 0;

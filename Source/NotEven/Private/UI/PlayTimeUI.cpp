@@ -39,6 +39,12 @@ void UPlayTimeUI::ShowRemainTime(float deltaTime)
 		return;	
 	}
 
+	if (CurrentTime <= 10.f)
+	{
+		if (!IsPlayingAnimation())
+		PlayAnimation(Countdown, 0, 0);
+	}
+
 	FString text = FString::Printf(TEXT("%02d:%02d"), static_cast<int>(CurrentTime) / 60, static_cast<int>(CurrentTime) % 60);
 	TimeText->SetText(FText::FromString(text));
 

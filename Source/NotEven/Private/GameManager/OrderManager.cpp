@@ -86,6 +86,8 @@ void UOrderManager::BeginPlay()
 				// Result UI에 정보보내기
 				this->PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
 				this->PlayerUI->ResultUI->ShowResult(data);
+				this->GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
+				this->GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
 			}
 		}));
 
@@ -159,14 +161,19 @@ void UOrderManager::AddOrder()
 	PlayerUI->OrderListViewer->FetchDatas<URecipeData>(OrderList);
 }
 
-void UOrderManager::RemoveOrder(URecipeData* data, bool isSuccess)
+void UOrderManager::RefreshOrder()
+{
+	PlayerUI->OrderListViewer->FetchDatas<URecipeData>(OrderList);
+}
+
+TArray<class URecipeData*> UOrderManager::RemoveOrder(URecipeData* data, bool isSuccess)
 {
 	int32 index = OrderList.Find(data);
 	if (index != INDEX_NONE)
 	{
 		OrderList.RemoveAt(index);
 	}
-
-	PlayerUI->OrderListViewer->FetchDatas(OrderList);
+	
+	return OrderList;
 }
 

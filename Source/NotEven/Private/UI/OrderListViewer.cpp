@@ -8,6 +8,7 @@
 #include "PlayerUI.h"
 #include "PriceUI.h"
 #include "UIViewerItemBase.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/HorizontalBox.h"
 #include "Data/RecipeData.h"
 #include "GameManager/OrderManager.h"
@@ -56,7 +57,7 @@ void UOrderListViewer::SetOrderManager(class UOrderManager* orderManager)
 	OrderManager = orderManager;
 }
 
-bool UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData> data)
+bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientData>& data)
 {
 	for (auto* item : SpawnItems)
 	{
@@ -64,6 +65,7 @@ bool UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData> data)
 
 		if (nullptr == cast) continue;
 		if (nullptr == cast->GetRecipeData()) continue;
+		if (cast->bIsChecked) continue;
 
 		TArray<FRecipeIngredientData*> checkedData;
 
@@ -94,6 +96,19 @@ bool UOrderListViewer::CheckOrderSuccess(TArray<FRecipeIngredientData> data)
 	return false;
 }
 
+void UOrderListViewer::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	OnAnimFinished.BindDynamic(this, &UOrderListViewer::OnRefresh);
+}
+
+void UOrderListViewer::OnRefresh()
+{
+	if (OrderManager)
+	OrderManager->RefreshOrder();
+}
+
 void UOrderListViewer::InitializeItem()
 {
 	Super::InitializeItem();
@@ -114,13 +129,19 @@ void UOrderListViewer::InitializeItem()
 				this->OrderManager->AddScore(-data->Price);
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, false);
+				item->bIsChecked = true;
+
+				item->BindToAnimationFinished(item->Failed, this->OnAnimFinished);
 			}));
-			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([this](URecipeData* data)
+			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
 				this->OrderManager->AddSuccess(data->Price);
 				this->OrderManager->AddScore(data->Price * this->OrderManager->GetCurrentComboCount());
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, true);
+				item->bIsChecked = true;
+				
+				item->BindToAnimationFinished(item->Success, this->OnAnimFinished);
 			}));
 		}
 	}
@@ -132,4 +153,9 @@ void UOrderListViewer::InitializeItem()
 	}
 
 	CurrentOrderCount = FetchedDatas.Num();
+}
+
+int32 UOrderListViewer::GetSpawnItemsCount() const
+{
+	return SpawnItems.Num();
 }
