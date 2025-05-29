@@ -20,6 +20,7 @@ AFoodIngredient::AFoodIngredient()
 	ProgressWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ProgressWidgetComp"));
 	ProgressWidgetComp->SetupAttachment(BoxComp);
 
+	BoxComp->SetCollisionProfileName(FName("Food"));
 	ConstructorHelpers::FClassFinder<UIngredientActorIcon> iconClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_IngredientActorIcon.WBP_IngredientActorIcon_C'"));
 
 	if (iconClass.Succeeded())

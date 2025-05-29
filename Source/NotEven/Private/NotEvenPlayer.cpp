@@ -15,6 +15,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/Core/Analytics/NetStatsUtils.h"
 #include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
 
 
@@ -233,16 +234,25 @@ void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& val
 	//만약에 잡기를 하고 있으면
 	if (isGrab==true)
 	{
-		AMovableObject* throwobj = OwnedObj;
+		auto plateobj = Cast<APlate>(OwnedObj);
+		auto foodobj = Cast<AFoodIngredient>(OwnedObj) ;
 		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
-		
-		//OwnedObj를 떼어내고
-		DetachGrabObj();
-		
-		//힘을 가하고 싶다
-		throwobj->BoxComp->AddImpulse(impulse);
-		
-		return;
+
+		// 만약 접시이면
+		if (plateobj)
+		{
+			return;
+		}
+		// 만약 음식이면
+		if (foodobj)
+		{
+			//OwnedObj를 떼어내고
+			DetachGrabObj();
+
+			//힘을 가하고 싶다
+			foodobj->BoxComp->AddImpulse(impulse);
+		}
+	
 	}
 
 	TArray<FHitResult> hitResults;

@@ -11,15 +11,7 @@ ATrashBox::ATrashBox()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	BoxComp->SetupAttachment(RootComponent);
-	BoxComp->SetBoxExtent(FVector(50, 50, 50));
-	BoxComp-> SetCollisionProfileName(TEXT("UnGrabObj"));
-	
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp -> SetupAttachment(BoxComp);
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LGJ/Assets/CookingAssets/fbx/crate.crate'"));
 	if (tempMesh.Succeeded())
 	{
 		MeshComp-> SetStaticMesh(tempMesh.Object); 

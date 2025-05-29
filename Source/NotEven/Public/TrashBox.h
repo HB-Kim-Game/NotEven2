@@ -28,10 +28,4 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class AFoodIngredient* Food;
-	
-	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* MeshComp;
-
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* BoxComp;
 };
