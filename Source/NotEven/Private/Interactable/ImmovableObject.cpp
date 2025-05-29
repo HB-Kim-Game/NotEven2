@@ -13,11 +13,12 @@ AImmovableObject::AImmovableObject()
 	
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	BoxComp->SetupAttachment(RootComponent);
-	BoxComp->SetBoxExtent(FVector(50, 50, 50));
+	BoxComp->SetBoxExtent(FVector(100, 100, 50));
 	BoxComp-> SetCollisionProfileName(TEXT("UnGrabObj"));
 	
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp -> SetupAttachment(BoxComp);
+	MeshComp->SetRelativeLocation(FVector(0,0,-50));
 	
 }
 

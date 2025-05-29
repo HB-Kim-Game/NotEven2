@@ -33,7 +33,7 @@ void APlate::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
-	if (player && player->isGrab && player-> OwnedObj)
+	if (player && player -> isGrab && player -> OwnedObj)
 	{
 		if (AFoodIngredient* food = Cast<AFoodIngredient>(player->OwnedObj))
 		{
