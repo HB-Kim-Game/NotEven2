@@ -50,11 +50,22 @@ public:
 	class UTextBlock* ResultScoreText;
 
 	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* DancerOnePanel;
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* DancerTwoPanel;
+
+	UPROPERTY(meta = (BindWidget))
+	class UHorizontalBox* RenderPanel;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UButton* RestartButton;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitButton;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Appear;
+
+	UPROPERTY()
+	TSubclassOf<class URenderTargetUI> RenderTargetUIClass;
 
 	void ShowResult(class UResultData* data);
 

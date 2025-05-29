@@ -23,6 +23,8 @@ public:
 	class UProgressBar* RemainProgress;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Countdown;
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* TimeOver;
 
 	FOnGameStart OnGameStart;
 	FOnGameEnd OnGameEnd;
@@ -32,6 +34,7 @@ public:
 	void SetIsPlaying(bool playing);
 
 protected:
+	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 	float CurrentTime = 0.f;
@@ -40,4 +43,9 @@ protected:
 	bool bIsPlaying = false;
 
 	void ShowRemainTime(float deltaTime);
+
+	FWidgetAnimationDynamicEvent OnFinishedTimeAnim;
+
+	UFUNCTION()
+	void FinishedTimeAnim();
 };

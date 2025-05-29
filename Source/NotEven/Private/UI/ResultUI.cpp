@@ -3,8 +3,11 @@
 
 #include "UI/ResultUI.h"
 
+#include "RenderTargetUI.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
 #include "Components/Image.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "Components/TextBlock.h"
 #include "Data/NotEvenSave.h"
 #include "Data/ResultData.h"
@@ -18,10 +21,24 @@ UResultUI::UResultUI(const FObjectInitializer& ObjectInitializer) : Super(Object
 	{
 		ScoreTable = tempTable.Object;
 	}
+
+	ConstructorHelpers::FClassFinder<URenderTargetUI> tempRenderUI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_ResultDancer.WBP_ResultDancer_C'"));
+
+	if (tempRenderUI.Succeeded())
+	{
+		RenderTargetUIClass = tempRenderUI.Class;
+	}
 }
 
 void UResultUI::ShowResult(class UResultData* data)
 {
+	auto* dancerOne = Cast<URenderTargetUI>(CreateWidget(this, RenderTargetUIClass));
+	DancerOnePanel->AddChild(dancerOne);
+	dancerOne->SetTarget(GetWorld()->GetFirstPlayerController()->GetPawn());
+	auto* dancerTwo = Cast<URenderTargetUI>(CreateWidget(this, RenderTargetUIClass));
+	DancerTwoPanel->AddChild(dancerTwo);
+	dancerTwo->SetTarget(GetWorld()->GetFirstPlayerController()->GetPawn());
+	
 	PlayAnimation(Appear);
 	SuccessOrderCountText->SetText(FText::FromString(FString::FromInt(data->ResultSuccessOrderCount)));
 	SuccessScoreText->SetText(FText::FromString(FString::FromInt(data->SuccessScore)));
@@ -74,6 +91,7 @@ void UResultUI::NativeConstruct()
 
 	RestartButton->OnClicked.AddDynamic(this, &UResultUI::OnClickedRestartButton);
 	QuitButton->OnClicked.AddDynamic(this, &UResultUI::OnClickedQuitButton);
+	
 }
 
 void UResultUI::OnClickedRestartButton()

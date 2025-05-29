@@ -150,7 +150,8 @@ void AFoodIngredient::SetState(EIngredientState newState)
 	{
 		if (*mesh)
 		{
-			MeshComp->SetStaticMesh(*mesh);	
+			MeshComp->SetStaticMesh(*mesh);
+			BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
 		}
 	}
 	

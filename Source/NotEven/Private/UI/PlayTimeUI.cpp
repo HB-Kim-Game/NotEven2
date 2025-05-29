@@ -19,6 +19,14 @@ void UPlayTimeUI::SetIsPlaying(bool playing)
 	bIsPlaying = playing;
 }
 
+void UPlayTimeUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	OnFinishedTimeAnim.BindDynamic(this, &UPlayTimeUI::FinishedTimeAnim);
+	BindToAnimationFinished(TimeOver, OnFinishedTimeAnim);
+}
+
 void UPlayTimeUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
@@ -34,12 +42,12 @@ void UPlayTimeUI::ShowRemainTime(float deltaTime)
 	
 	if (CurrentTime <= 0.f)
 	{
-		OnGameEnd.Broadcast();
+		PlayAnimation(TimeOver);
 		bIsPlaying = false;
 		return;	
 	}
 
-	if (CurrentTime <= 10.f)
+	if (CurrentTime <= 30.f)
 	{
 		if (!IsPlayingAnimation())
 		PlayAnimation(Countdown, 0, 0);
@@ -53,3 +61,9 @@ void UPlayTimeUI::ShowRemainTime(float deltaTime)
 	FLinearColor color = FMath::Lerp(FLinearColor::Red, FLinearColor::Green, percent);
 	RemainProgress->SetFillColorAndOpacity(color);
 }
+
+void UPlayTimeUI::FinishedTimeAnim()
+{
+	OnGameEnd.Broadcast();
+}
+
