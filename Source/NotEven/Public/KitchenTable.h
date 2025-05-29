@@ -18,6 +18,8 @@ public:
 
 	AKitchenTable();
 
+	virtual void Interact(class ANotEvenPlayer* player) override;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -26,6 +28,9 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* attachBox;
 
-	
+	UPROPERTY()
+	class AMovableObject* moveObject;
 };

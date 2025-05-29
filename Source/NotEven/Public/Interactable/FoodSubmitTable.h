@@ -23,10 +23,6 @@ public:
 
 	void SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients);
 
-	UPROPERTY()
-	class UStaticMeshComponent* MeshComp;
-	UPROPERTY()
-	class UBoxComponent* BoxComp;
 	
 protected:
 	UPROPERTY()

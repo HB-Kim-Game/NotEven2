@@ -14,21 +14,14 @@ AFoodSubmitTable::AFoodSubmitTable()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	SetRootComponent(BoxComp);
-
-	BoxComp->SetBoxExtent(FVector(50.f, 50.f, 50.f));
-	BoxComp->SetCollisionProfileName(FName("UnGrabObj"));
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(BoxComp);
-
+	
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/KHB/Models/kitchentable_B.kitchentable_B'"));
 
 	if (tempMesh.Succeeded())
 	{
 		MeshComp->SetStaticMesh(tempMesh.Object);
 	}
+	
 }
 
 void AFoodSubmitTable::BeginPlay()

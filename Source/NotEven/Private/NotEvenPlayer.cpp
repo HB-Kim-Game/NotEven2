@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "FoodIngredient.h"
 #include "ImmovableObject.h"
+#include "KitchenTable.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
@@ -154,20 +155,26 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		{
 			for (auto tempGrabObj : hitResults)
 			{
-				// 1. 만약에 프라이팬이나 도마이면은
-				// -> 프라이팬,도마 위에 놓기를 적용하고 싶다
+				// 1. 만약에 테이블이면은
+				if (auto table = Cast<AKitchenTable>(tempGrabObj.GetActor()))
+				{
+					// -> 테이블 위에 상호작용 하고싶다
+					table ->Interact(this);
+					return;
+				}
+		
 				
+				// 2. 만약에 프라이팬이나 도마이면은
+				// -> 프라이팬,도마 위에 놓기를 하고 싶다
+
+				// 3. 만약에 쓰레기통이면
+	
 				if (auto trashBox = Cast<ATrashBox>(tempGrabObj.GetActor()))
 				{
+					// 쓰레기통이랑 상호작용 하고싶다
 					trashBox -> Interact(this);
+					return;
 				}
-				
-				// else if (auto tempPlate = Cast<APlate>(tempGrabObj.GetActor()))
-				// {
-				// 	tempPlate-> Interact(this);
-				// }
-				
-				return;
 			}
 		}
 		DetachGrabObj();
@@ -198,7 +205,6 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 			}
 		}
 	}
-
 }
 
 void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
