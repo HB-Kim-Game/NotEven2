@@ -11,15 +11,7 @@ ATrashBox::ATrashBox()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	BoxComp->SetupAttachment(RootComponent);
-	BoxComp->SetBoxExtent(FVector(50, 50, 50));
-	BoxComp-> SetCollisionProfileName(TEXT("UnGrabObj"));
-	
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp -> SetupAttachment(BoxComp);
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LGJ/Assets/CookingAssets/fbx/crate.crate'"));
 	if (tempMesh.Succeeded())
 	{
 		MeshComp-> SetStaticMesh(tempMesh.Object); 
@@ -33,14 +25,18 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 	// 만약에 플레이어가 isGrab 상태이면
 	if (player && player -> isGrab)
 	{
-		AActor* foodObj = player->OwnedObj;
-		// 음식을 Grad 하고 있으면
-		if (foodObj)
+		AMovableObject* moveObject = player->OwnedObj;
+		// moveObject을 Grad 하고 있으면
+		if (moveObject)
 		{
-			// 음식만 파괴하고싶다
-			player -> OwnedObj = nullptr;
-			foodObj-> Destroy();
-			player->isGrab = false; // 들고 있는 상태 초기화
+			//moveObject가 음식이면
+			if (AFoodIngredient* food = Cast<AFoodIngredient>(moveObject))
+			{
+				// 음식을 파괴하고싶다
+				player -> OwnedObj = nullptr;
+				food-> Destroy(); 
+				player->isGrab = false; // 들고 있는 상태 초기화
+			}
 		}
 	}
 	

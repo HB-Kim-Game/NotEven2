@@ -41,10 +41,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	FIngredientPlaceData PlaceData;
-
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* BoxComp;
-
-	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* MeshComp;
 };

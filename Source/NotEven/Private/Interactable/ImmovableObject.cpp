@@ -3,12 +3,22 @@
 
 #include "ImmovableObject.h"
 
+#include "Components/BoxComponent.h"
+
 // Sets default values
 AImmovableObject::AImmovableObject()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	BoxComp->SetupAttachment(RootComponent);
+	BoxComp->SetBoxExtent(FVector(50, 50, 50));
+	BoxComp-> SetCollisionProfileName(TEXT("UnGrabObj"));
+	
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp -> SetupAttachment(BoxComp);
+	
 }
 
 void AImmovableObject::Interact(class ANotEvenPlayer* player)

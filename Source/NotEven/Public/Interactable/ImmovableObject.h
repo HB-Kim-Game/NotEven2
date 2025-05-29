@@ -18,6 +18,7 @@ public:
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,5 +26,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* MeshComp;
 
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* BoxComp;
 };

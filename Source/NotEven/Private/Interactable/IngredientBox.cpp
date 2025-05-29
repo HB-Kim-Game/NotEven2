@@ -28,14 +28,6 @@ AIngredientBox::AIngredientBox()
 		PlaceTable = tempPlaceTable.Object;
 	}
 
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	SetRootComponent(BoxComp);
-
-	BoxComp->SetBoxExtent(FVector(50.f, 50.f, 50.f));
-	BoxComp->SetCollisionProfileName(FName("UnGrabObj"));
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(BoxComp);
-
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
 
 	if (tempMesh.Succeeded())
