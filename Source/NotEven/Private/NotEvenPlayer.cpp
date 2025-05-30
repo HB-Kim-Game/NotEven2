@@ -9,11 +9,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FoodIngredient.h"
+#include "FoodSubmitTable.h"
 #include "ImmovableObject.h"
 #include "KitchenTable.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
+#include "SubmitFood.h"
 #include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -160,8 +162,18 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 				// 1. 만약에 테이블이면은
 				if (auto table = Cast<AKitchenTable>(tempGrabObj.GetActor()))
 				{
+					
 					// -> 테이블 위에 상호작용 하고싶다
 					table ->Interact(this);
+					UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact Table"));
+					return;
+				}
+
+				if (auto subtable = Cast<AFoodSubmitTable>(tempGrabObj.GetActor()))
+				{
+					// -> 테이블 위에 상호작용 하고싶다
+					subtable ->Interact(this);
+					UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact SubmitTable"));
 					return;
 				}
 		
@@ -173,6 +185,7 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 					if (Cast<AFoodIngredient>(OwnedObj))
 					{
 						cuttingBoard ->Interact(this);
+						UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact CuttingBoard"));
 						return;
 					}
 				}
@@ -190,19 +203,8 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		DetachGrabObj();
 		return;
 	}
-	
-	//잡을 수 있는 Obj Collision이면
-	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
-		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
-	{
-		for (auto tempGrabObj : hitResults)
-		{
-			AttachGrabObj(tempGrabObj.GetActor());
 
-			return;
-		}
-	}
-	
+	hitResults.Empty();
 	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
 	{
@@ -215,6 +217,20 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 			}
 		}
 	}
+	
+	hitResults.Empty();
+	//잡을 수 있는 Obj Collision이면
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
+	{
+		for (auto tempGrabObj : hitResults)
+		{
+			AttachGrabObj(tempGrabObj.GetActor());
+
+			return;
+		}
+	}
+	
 }
 
 void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)

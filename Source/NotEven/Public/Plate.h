@@ -30,5 +30,10 @@ public:
 
 	void OnPlate(AFoodIngredient* foodObj);
 	
+	UPROPERTY(EditAnywhere)
+	class ASubmitFood* submitFood;
 	
+	
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* attachPoint ;
 };

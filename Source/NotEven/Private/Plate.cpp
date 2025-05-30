@@ -3,8 +3,8 @@
 
 #include "Plate.h"
 
-#include "DDSFile.h"
 #include "NotEvenPlayer.h"
+#include "SubmitFood.h"
 
 APlate::APlate()
 {
@@ -16,6 +16,12 @@ APlate::APlate()
 		MeshComp -> SetStaticMesh(tempMesh.Object);
 	}
 	MeshComp->SetRelativeLocation(FVector(0, 0, -12.5));
+
+	BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
+	attachPoint=CreateDefaultSubobject<UBoxComponent>(TEXT("attachPoint"));
+	attachPoint-> SetupAttachment(BoxComp);
+	attachPoint->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	//attachPoint->SetRelativeRotation(FRotator(90, 0, 0));
 }
 
 void APlate::BeginPlay()
@@ -37,8 +43,10 @@ void APlate::Interact(class ANotEvenPlayer* player)
 	{
 		if (AFoodIngredient* food = Cast<AFoodIngredient>(player->OwnedObj))
 		{
-			player->DetachGrabObj();
 			OnPlate(food);
+			player->DetachGrabObj();
+			food ->Destroy();
+			
 		}
 	}
 	else
@@ -81,5 +89,17 @@ void APlate::SetGrab(bool bGrab)
 
 void APlate::OnPlate(AFoodIngredient* foodObj)
 {
-	
+	if (foodObj)
+	{
+		if (submitFood == nullptr)
+		{
+			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(GetActorLocation(), FRotator(0, 0, 0));
+			sbfood->AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
+			sbfood ->AttachToComponent(attachPoint,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			sbfood ->BoxComp->SetSimulatePhysics(false);
+			submitFood = sbfood;
+			 return;
+		}
+		submitFood -> AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
+	}
 }

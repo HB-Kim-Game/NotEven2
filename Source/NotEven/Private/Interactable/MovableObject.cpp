@@ -12,7 +12,7 @@ AMovableObject::AMovableObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	SetRootComponent(BoxComp);
+	BoxComp->SetupAttachment(RootComponent);
 
 	BoxComp->SetSimulatePhysics(true);
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);

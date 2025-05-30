@@ -42,9 +42,9 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 
 	if (auto plate = Cast<APlate>(player->OwnedObj))
 	{
-		if (plate->SubmitFood)
+		if (plate->submitFood)
 		{
-			SubmitFood(plate->SubmitFood->GetIngredients(), plate);
+			SubmitFood(plate->submitFood->GetIngredients(), plate);
 		}
 	}
 		
@@ -53,7 +53,7 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, APlate* plate)
 {
 	OrderManager->CheckOrder(ingredients);
-	//auto food = plate->SubmitFood;
-	//plate->SubmitFood = nullptr;
-	//food->Destroy();
+	auto food = plate->submitFood;
+	plate->submitFood = nullptr;
+	food->Destroy();
 }
