@@ -6,7 +6,7 @@
 #include "NotEvenPlayer.h"
 #include "SubmitFood.h"
 
-APlate::APlate()
+APlate::APlate() : Super()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -18,8 +18,9 @@ APlate::APlate()
 	MeshComp->SetRelativeLocation(FVector(0, 0, -12.5));
 
 	BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
-	attachPoint=CreateDefaultSubobject<UBoxComponent>(TEXT("attachPoint"));
-	attachPoint-> SetupAttachment(BoxComp);
+	
+	attachPoint = CreateDefaultSubobject<UBoxComponent>(TEXT("attachPoint"));
+	attachPoint->SetupAttachment(BoxComp);
 	attachPoint->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	//attachPoint->SetRelativeRotation(FRotator(90, 0, 0));
 }
@@ -93,7 +94,7 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 	{
 		if (submitFood == nullptr)
 		{
-			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(GetActorLocation(), FRotator(0, 0, 0));
+			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(FVector::ZeroVector, FRotator(0, 0, 0));
 			sbfood->AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
 			sbfood ->AttachToComponent(attachPoint,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			sbfood ->BoxComp->SetSimulatePhysics(false);

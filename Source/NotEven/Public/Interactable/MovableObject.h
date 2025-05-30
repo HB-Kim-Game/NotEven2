@@ -22,9 +22,9 @@ public:
 	virtual void SetGrab(bool bGrab);
 
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* MeshComp;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComp;
 
 protected:
