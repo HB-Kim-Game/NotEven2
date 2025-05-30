@@ -81,11 +81,5 @@ void APlate::SetGrab(bool bGrab)
 
 void APlate::OnPlate(AFoodIngredient* foodObj)
 {
-	if (!foodObj)
-	{
-		foodObj->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetIncludingScale,TEXT("AttachPoint"));
-
-		foodObj->SetGrab(false);
-	}
 	
 }

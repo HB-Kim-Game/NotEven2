@@ -36,19 +36,19 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 	// 만약에 플레이어가 isGrab 상태이면
 	if (player -> isGrab == true)
 	{
-		if (moveObject!=nullptr)
-		{
-			if(auto onplateObj = Cast<APlate>(moveObject))
-			{
-				//onplate 에 음식이 들어간다
-				return;
-			}
-			else
-			{
-				return;
-			}
-			
-		}
+		// if (moveObject!=nullptr)
+		// {
+		// 	if(auto onplateObj = Cast<APlate>(moveObject))
+		// 	{
+		// 		//onplate 에 음식이 들어간다
+		// 		return;
+		// 	}
+		// 	else
+		// 	{
+		// 		return;
+		// 	}
+		// 	
+		// }
 		// moveObject을 Grad 하고 있으면
 		moveObject = player->OwnedObj;
 		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);

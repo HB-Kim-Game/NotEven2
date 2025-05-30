@@ -2,6 +2,8 @@
 
 
 #include "NotEvenPlayer.h"
+
+#include "CuttingBoard.h"
 #include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
@@ -166,6 +168,14 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 				
 				// 2. 만약에 프라이팬이나 도마이면은
 				// -> 프라이팬,도마 위에 놓기를 하고 싶다
+				if (auto cuttingBoard = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
+				{
+					if (Cast<AFoodIngredient>(OwnedObj))
+					{
+						cuttingBoard ->Interact(this);
+						return;
+					}
+				}
 
 				// 3. 만약에 쓰레기통이면
 	
@@ -258,23 +268,27 @@ void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& val
 			//힘을 가하고 싶다
 			foodobj->BoxComp->AddImpulse(impulse);
 		}
-	
 	}
-
+	
 	TArray<FHitResult> hitResults;
 	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
 	boxExtent.Z = 300.f;
-
-	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
-		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+	
+	if (isGrab==false)
 	{
-		for (auto tempGrabObj : hitResults)
+		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
 		{
-			if (auto* unGrabObj = Cast<AImmovableObject>(tempGrabObj.GetActor()))
+			for (auto tempGrabObj : hitResults)
 			{
-				unGrabObj->Interact(this);
-				return;
+				if (auto* unGrabObj = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
+				{
+					unGrabObj->Cutting(this);
+					return;
+				}
 			}
 		}
 	}
+		
+	
 }
