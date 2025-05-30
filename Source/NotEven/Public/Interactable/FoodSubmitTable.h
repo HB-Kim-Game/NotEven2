@@ -21,7 +21,7 @@ public:
 	
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
-	void SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients);
+	void SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, class APlate* plate);
 
 	
 protected:

@@ -46,21 +46,6 @@ public:
 };
 
 USTRUCT(Atomic, BlueprintType)
-struct FRecipeIngredientData : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString IngredientID;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EIngredientState RequireState;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString IconImagePath;
-};
-
-USTRUCT(Atomic, BlueprintType)
 struct FIngredientPlaceRule : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
@@ -82,6 +67,22 @@ struct FIngredientPlaceData : public FTableRowBase
 	FString IngredientID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FIngredientPlaceRule> PlacementRules;
+};
+
+
+USTRUCT(Atomic, BlueprintType)
+struct FRecipeIngredientData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString IngredientID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EIngredientState RequireState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString IconImagePath;
 };
 
 USTRUCT(Atomic, BlueprintType)
@@ -109,4 +110,26 @@ struct FRecipe : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString IconImagePath;
+};
+
+USTRUCT(Atomic, BlueprintType)
+struct FSubmitFoodIngredientData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRecipeIngredientData IngredientData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FIngredientPlaceData PlacementData;
+};
+
+USTRUCT(Atomic, BlueprintType)
+struct FSubmitFoodMeshData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FRecipeIngredientData> Ingredients; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString MeshAssetPath;
 };

@@ -7,7 +7,6 @@
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
-#include "Components/SceneCaptureComponent2D.h"
 #include "Components/TextBlock.h"
 #include "Data/NotEvenSave.h"
 #include "Data/ResultData.h"

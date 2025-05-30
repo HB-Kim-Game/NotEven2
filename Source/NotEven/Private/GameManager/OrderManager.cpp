@@ -166,6 +166,11 @@ void UOrderManager::RefreshOrder()
 	PlayerUI->OrderListViewer->FetchDatas<URecipeData>(OrderList);
 }
 
+bool UOrderManager::CheckOrder(const TArray<struct FRecipeIngredientData>& ingredients)
+{
+	return PlayerUI->OrderListViewer->CheckOrderSuccess(ingredients);
+}
+
 TArray<class URecipeData*> UOrderManager::RemoveOrder(URecipeData* data, bool isSuccess)
 {
 	int32 index = OrderList.Find(data);

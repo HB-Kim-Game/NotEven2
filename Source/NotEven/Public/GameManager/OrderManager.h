@@ -51,6 +51,8 @@ public:
 
 	void RefreshOrder();
 
+	bool CheckOrder(const TArray<struct FRecipeIngredientData>& ingredients);
+
 	TArray<class URecipeData*> RemoveOrder(class URecipeData* data, bool isSuccess);
 
 protected:

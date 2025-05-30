@@ -30,7 +30,7 @@ public:
 
 	EIngredientState GetIngredientState() const;
 
-	TArray<FIngredientPlaceRule> GetIngredientPlaceRules() const;
+	FIngredientPlaceData GetIngredientPlaceData() const;
 
 	void AddCookingProgress(float addProgress);
 

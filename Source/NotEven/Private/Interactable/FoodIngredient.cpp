@@ -90,7 +90,7 @@ void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlac
 
 	SetMaxCookingProgress(Data.MaxCookingProgress);
 
-	SetState(EIngredientState::None);
+	SetState(EIngredientState::Sliced);
 
 	if (IconWidget)
 	{
@@ -108,9 +108,9 @@ EIngredientState AFoodIngredient::GetIngredientState() const
 	return CurrentState;
 }
 
-TArray<FIngredientPlaceRule> AFoodIngredient::GetIngredientPlaceRules() const
+FIngredientPlaceData AFoodIngredient::GetIngredientPlaceData() const
 {
-	return PlaceData.PlacementRules;
+	return PlaceData;
 }
 
 void AFoodIngredient::AddCookingProgress(float addProgress)
