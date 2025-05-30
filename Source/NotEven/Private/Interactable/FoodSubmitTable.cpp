@@ -7,7 +7,9 @@
 #include "IngredientStruct.h"
 #include "NotEvenGameMode.h"
 #include "OrderListViewer.h"
+#include "Plate.h"
 #include "PlayerUI.h"
+#include "SubmitFood.h"
 #include "GameManager/OrderManager.h"
 
 AFoodSubmitTable::AFoodSubmitTable()
@@ -38,17 +40,20 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
-	// 임시
-	TArray<FRecipeIngredientData> array;
-	FRecipeIngredientData d1;
-	d1.IngredientID = TEXT("Fish");
-	d1.RequireState = EIngredientState::Sliced;
-	array.Add(d1);
+	if (auto plate = Cast<APlate>(player->OwnedObj))
+	{
+		if (plate->SubmitFood)
+		{
+			SubmitFood(plate->SubmitFood->GetIngredients(), plate);
+		}
+	}
 		
-	this->SubmitFood(array);
 }
 
-void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients)
+void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, APlate* plate)
 {
-	OrderManager->PlayerUI->OrderListViewer->CheckOrderSuccess(ingredients);
+	OrderManager->CheckOrder(ingredients);
+	//auto food = plate->SubmitFood;
+	//plate->SubmitFood = nullptr;
+	//food->Destroy();
 }
