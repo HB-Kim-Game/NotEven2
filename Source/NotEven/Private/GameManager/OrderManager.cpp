@@ -92,7 +92,7 @@ void UOrderManager::BeginPlay()
 		}));
 
 		// 임시
-		PlayerUI->PlayTime->SetMaxTime(10.f);
+		PlayerUI->PlayTime->SetMaxTime(180.f);
 		PlayerUI->PriceUI->ShowCurrentScore();
 	}
 
