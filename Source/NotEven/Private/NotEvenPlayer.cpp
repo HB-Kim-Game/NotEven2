@@ -305,6 +305,4 @@ void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& val
 			}
 		}
 	}
-		
-	
 }

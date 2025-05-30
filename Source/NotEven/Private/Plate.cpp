@@ -21,7 +21,9 @@ APlate::APlate() : Super()
 	
 	attachPoint = CreateDefaultSubobject<UBoxComponent>(TEXT("attachPoint"));
 	attachPoint->SetupAttachment(BoxComp);
-	attachPoint->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	attachPoint->SetBoxExtent(FVector(35, 35, 10));
+	attachPoint->SetRelativeLocation(FVector(0, 0, 20));
+	//attachPoint->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	//attachPoint->SetRelativeRotation(FRotator(90, 0, 0));
 }
 
@@ -94,7 +96,11 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 	{
 		if (submitFood == nullptr)
 		{
-			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(FVector::ZeroVector, FRotator(0, 0, 0));
+
+			FVector attachLocation = attachPoint->GetComponentLocation();
+			FRotator attachRotation = attachPoint->GetComponentRotation();
+			
+			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(attachLocation,attachRotation);
 			sbfood->AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
 			sbfood ->AttachToComponent(attachPoint,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			sbfood ->BoxComp->SetSimulatePhysics(false);
