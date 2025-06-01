@@ -25,6 +25,10 @@ public:
 	TArray<FRecipeIngredientData> GetIngredients() const;
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
+
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 	
 protected:
 	float MaxCookingProgress = 0.f;
@@ -37,4 +41,15 @@ protected:
 	class UDataTable* MeshTable;
 
 	void FindMesh();
+
+	UPROPERTY()
+	class UWidgetComponent* IconWidgetComp;
+	UPROPERTY()
+	TSubclassOf<class USubmitFoodUI> IconClass;
+	UPROPERTY()
+	class USubmitFoodUI* IconWidget;
+
+	UPROPERTY()
+	class APlayerCameraManager* PlayerCameraManager;
+	
 };

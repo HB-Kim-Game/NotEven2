@@ -2,6 +2,9 @@
 
 
 #include "Interactable/SubmitFood.h"
+#include "Components/WidgetComponent.h"
+#include "SubmitFoodUI.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ASubmitFood::ASubmitFood()
 {
@@ -15,6 +18,19 @@ ASubmitFood::ASubmitFood()
 	{
 		MeshTable = tempTable.Object;
 	}
+
+	IconWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidgetComp"));
+	IconWidgetComp->SetupAttachment(BoxComp);
+
+	BoxComp->SetCollisionProfileName(FName("Food"));
+	ConstructorHelpers::FClassFinder<USubmitFoodUI> iconClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_SubmitFoodUI.WBP_SubmitFoodUI_C'"));
+
+	if (iconClass.Succeeded())
+	{
+		IconClass = iconClass.Class;
+	}
+	
+	IconWidgetComp->SetWidgetClass(IconClass);
 
 }
 
@@ -40,6 +56,13 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 	Ingredients.Add(add);
 
 	FindMesh();
+
+	if (!IconWidget)
+	{
+		IconWidget = Cast<USubmitFoodUI>(IconWidgetComp->GetWidget());
+	}
+
+	IconWidget->ShowIconImage(GetIngredients());
 }
 
 TArray<FRecipeIngredientData> ASubmitFood::GetIngredients() const
@@ -56,6 +79,25 @@ TArray<FRecipeIngredientData> ASubmitFood::GetIngredients() const
 void ASubmitFood::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+}
+
+void ASubmitFood::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	IconWidgetComp->SetDrawAtDesiredSize(true);
+	IconWidgetComp->SetDrawSize(FVector2D(150.f, 150.f));
+	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+	
+	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+}
+
+void ASubmitFood::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 200.f));
+	IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 }
 
 void ASubmitFood::FindMesh()

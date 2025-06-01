@@ -44,13 +44,12 @@ void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BoxComp -> SetLinearDamping(2);
 	IconWidget = Cast<UIngredientActorIcon>(IconWidgetComp->GetWidget());
-	IconWidgetComp->SetDrawSize(FVector2D(20.f, 20.f));
+	IconWidgetComp->SetDrawSize(FVector2D(45.f, 45.f));
 	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	ProgressWidget = Cast<UCookingProgress>(ProgressWidgetComp->GetWidget());
 	
-	ProgressWidgetComp->SetDrawSize(FVector2D(55.f, 10.f));
+	ProgressWidgetComp->SetDrawSize(FVector2D(75.f, 30.f));
 	ProgressWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	
 	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
@@ -62,13 +61,13 @@ void AFoodIngredient::Tick(float DeltaSeconds)
 
 	if (CurrentState != EIngredientState::None)
 	{
-		IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 300.f));
+		IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 250.f));
 		IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 	}
 	
 	if (ProgressWidget->GetVisibility() != ESlateVisibility::Hidden)
 	{
-		ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, CurrentState != EIngredientState::None ? GetActorLocation().Z + 400.f : GetActorLocation().Z + 300.f));
+		ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, CurrentState != EIngredientState::None ? GetActorLocation().Z + 350.f : GetActorLocation().Z + 250.f));
 		ProgressWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(ProgressWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));	
 	}
 }
@@ -90,12 +89,15 @@ void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlac
 
 	SetMaxCookingProgress(Data.MaxCookingProgress);
 
-	SetState(EIngredientState::Sliced);
+	SetState(EIngredientState::None);
 
 	if (IconWidget)
 	{
 		IconWidget->SetIconImage(nullptr);
 	}
+
+	BoxComp->SetMassScale(NAME_None, 15.f);
+	BoxComp -> SetLinearDamping(2.f);
 }
 
 FIngredientData AFoodIngredient::GetIngredientData() const
@@ -139,7 +141,6 @@ void AFoodIngredient::SetState(EIngredientState newState)
 	{
 		if (IconWidget)
 		{
-			UE_LOG(LogTemp,Warning, TEXT("Name : %s"), *Data.IconAssetPath);
 			if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
 			{
 				IconWidget->SetIconImage(texture);
