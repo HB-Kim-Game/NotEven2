@@ -24,11 +24,17 @@ void AVehicleManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	float minTime = 5.f;
-	float maxTime = 10.f;
-	float Timer = FMath::RandRange(minTime, maxTime);
+	// 시작 시 랜덤한 시간(5-10초)마다 장애물이 생성되게
+	float minTime = 5.f; // 최소시간
+	float maxTime = 10.f; // 최대시간
+	float Timer = FMath::RandRange(minTime, maxTime); 
 	GetWorld()->GetTimerManager().SetTimer(MakeVehicleTimer,this,&AVehicleManager::MakeVehicle,Timer,true);
 	
+}
+// 장애물 만드는 함수
+void AVehicleManager::MakeVehicle()
+{
+	GetWorld()->SpawnActor<AVehicle>(VehicleFactory,SpawnPoint->GetComponentTransform());
 }
 
 // Called every frame
@@ -37,9 +43,3 @@ void AVehicleManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-void AVehicleManager::MakeVehicle()
-{
-	GetWorld()->SpawnActor<AVehicle>(VehicleFactory,SpawnPoint->GetComponentTransform());
-}
-

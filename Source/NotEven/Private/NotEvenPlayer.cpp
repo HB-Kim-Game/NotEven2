@@ -71,37 +71,13 @@ void ANotEvenPlayer::BeginPlay()
 	
 }
 
-
-void ANotEvenPlayer::CallRestartPlayer()
-{
-	// 폰 컨트롤러에 대한 래퍼런스 구하기
-	APlayerController* controllerRef = GetWorld()->GetFirstPlayerController();
-	
-	//월드와 월드의 게임 모드가 RestartPlayer 함수를 호출하도록 함
-	if (UWorld* World = GetWorld())
-	{
-		if (ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
-		{
-			gm-> RestartPlayer(controllerRef);
-		}
-	}
-}
-
-void ANotEvenPlayer::CallRestartPlayerDelay()
-{
-	GetWorld()->GetTimerManager().SetTimer(DelayTimer,this,&ANotEvenPlayer::CallRestartPlayer,5.f,false);
-}
-
-
-
 // Called every frame
 void ANotEvenPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//FTransform t =  FTransform(GetControlRotation());
+	
 	AddMovementInput(Direction);
-
+	
 	Direction = FVector::ZeroVector;
 
 //--------------------------------------------------------------------------------------//
@@ -124,27 +100,33 @@ void ANotEvenPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	if (auto* input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		// 이동
 		input->BindAction(IA_PlayerMove,ETriggerEvent::Triggered,this,&ANotEvenPlayer::OnActionMove);
+		// 대쉬
 		input->BindAction(IA_PlayerDash,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionDash);
+		// 잡기/놓기
 		input->BindAction(IA_PlayerGrab,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionObjGrab);
+		//던지기/ 다지기
 		input ->BindAction(IA_PlayerChopAndThrow,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionObjChoppingAndThrowing);
 	}
 }
 
+// 캐릭터 이동
 void ANotEvenPlayer::OnActionMove(const FInputActionValue& value)
 {
 	FVector2D v = value.Get<FVector2D>();
 	Direction.X = v.X;
 	Direction.Y = v.Y;
-	
 }
 
+// 캐릭터 대쉬
 void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 {
 	FVector forwordDir = this->GetActorRotation().Vector();
 	LaunchCharacter(forwordDir*DashDistance,true,true);
 }
 
+// 캐릭터 잡기 입력
 void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 {
 	TArray<FHitResult> hitResults;
@@ -159,28 +141,27 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		{
 			for (auto tempGrabObj : hitResults)
 			{
-				// 1. 만약에 테이블이면은
+				// 만약에 테이블이면은
 				if (auto table = Cast<AKitchenTable>(tempGrabObj.GetActor()))
 				{
 					// -> 테이블 위에 상호작용 하고싶다
 					table ->Interact(this);
-					UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact Table"));
 					return;
 				}
 
+				// 만약에 음식 제출테이블이면
 				if (auto subtable = Cast<AFoodSubmitTable>(tempGrabObj.GetActor()))
 				{
-					// -> 테이블 위에 상호작용 하고싶다
+					// -> 제출테이블에 상호작용 하고싶다
 					subtable ->Interact(this);
-					UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact SubmitTable"));
 					return;
 				}
-		
 				
-				// 2. 만약에 프라이팬이나 도마이면은
-				// -> 프라이팬,도마 위에 놓기를 하고 싶다
+				// 만약에 도마이면
+				// -> 도마 위에 놓기를 하고 싶다
 				if (auto cuttingBoard = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
 				{
+					// 프라이팬, 도마 위에 이미 음식이 놓여져 있으면
 					if (auto food = Cast<AFoodIngredient>(OwnedObj))
 					{
 						if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
@@ -191,16 +172,15 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 							return;
 						}
 					}
+					
 					if (Cast<AFoodIngredient>(OwnedObj))
 					{
 						cuttingBoard ->Interact(this);
-						UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact CuttingBoard"));
 						return;
 					}
 				}
 
 				// 3. 만약에 쓰레기통이면
-	
 				if (auto trashBox = Cast<ATrashBox>(tempGrabObj.GetActor()))
 				{
 					// 쓰레기통이랑 상호작용 하고싶다
@@ -212,8 +192,9 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		DetachGrabObj();
 		return;
 	}
-
+	
 	hitResults.Empty();
+	
 	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
 	{
@@ -228,6 +209,7 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 	}
 	
 	hitResults.Empty();
+	
 	//잡을 수 있는 Obj Collision이면
 	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
 		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
@@ -239,25 +221,18 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 			return;
 		}
 	}
-	
 }
 
+// 오브젝트 붙이기
 void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
 {
 	OwnedObj = Cast<AMovableObject>(ObjActor);
 	OwnedObj->SetOwner(this);
 	OwnedObj->Interact(this);
 	isGrab = true;
-
-	UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::AttachGrabObj"));
-	
 }
 
-// void ANotEvenPlayer::ReleaseGradObj(AActor* ObjActor)
-// {
-// 	
-// }
-
+// 오브젝트 떼기
 void ANotEvenPlayer::DetachGrabObj()
 {
 	if (!OwnedObj)
@@ -282,6 +257,7 @@ void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& val
 		// 만약 접시이면
 		if (plateobj)
 		{
+			//던지지 않는다
 			return;
 		}
 		// 만약 음식이면
@@ -298,7 +274,8 @@ void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& val
 	TArray<FHitResult> hitResults;
 	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
 	boxExtent.Z = 300.f;
-	
+
+	// 만약에 잡기를 안하고 있으면
 	if (isGrab==false)
 	{
 		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
@@ -314,4 +291,24 @@ void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& val
 			}
 		}
 	}
+}
+
+void ANotEvenPlayer::CallRestartPlayer()
+{
+	// 폰 컨트롤러에 대한 래퍼런스 구하기
+	APlayerController* controllerRef = GetWorld()->GetFirstPlayerController();
+	
+	//월드와 월드의 게임 모드가 RestartPlayer 함수를 호출하도록 함
+	if (UWorld* World = GetWorld())
+	{
+		if (ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
+		{
+			gm-> RestartPlayer(controllerRef);
+		}
+	}
+}
+
+void ANotEvenPlayer::CallRestartPlayerDelay()
+{
+	GetWorld()->GetTimerManager().SetTimer(DelayTimer,this,&ANotEvenPlayer::CallRestartPlayer,5.f,false);
 }

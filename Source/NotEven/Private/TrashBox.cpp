@@ -31,7 +31,7 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 		// moveObject을 Grad 하고 있으면
 		if (moveObject)
 		{
-			//moveObject가 음식이면
+			//음식이면
 			if (AFoodIngredient* food = Cast<AFoodIngredient>(moveObject))
 			{
 				// 음식을 파괴하고싶다
@@ -40,11 +40,17 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 				player->isGrab = false; // 들고 있는 상태 초기화
 			}
 
+			// 접시이면
 			if (APlate* plate = Cast<APlate>(moveObject))
 			{
+				//접시의 제출음식을 파괴
 				auto food = plate->submitFood;
 				plate->submitFood = nullptr;
-				food->Destroy();
+				
+				if (food)
+				{
+					food->Destroy();
+				}
 			}
 		}
 	}

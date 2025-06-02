@@ -47,7 +47,6 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 			}
 			else
 			{
-
 				return;
 			}
 			
