@@ -102,10 +102,10 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 			
 			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(attachLocation,attachRotation);
 			sbfood->AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
-			sbfood ->AttachToComponent(attachPoint,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			sbfood ->BoxComp->SetSimulatePhysics(false);
+			sbfood ->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName("AttachPoint"));
 			submitFood = sbfood;
-			 return;
+			return;
 		}
 		submitFood -> AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
 	}
