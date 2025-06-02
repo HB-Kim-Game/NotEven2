@@ -41,4 +41,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	FIngredientPlaceData PlaceData;
+
+	UPROPERTY(editAnywhere)
+	class UStaticMeshComponent* IconMesh;
+
+	UPROPERTY(editAnywhere)
+	class UMaterialInterface* IconMaterial;
+
+	UPROPERTY()
+	class UMaterialInstanceDynamic* IconDynamic;
 };

@@ -36,7 +36,6 @@ AFoodSubmitTable::AFoodSubmitTable()
 	}
 	
 	TextWidgetComp->SetWidgetClass(TextClass);
-	
 }
 
 void AFoodSubmitTable::BeginPlay()
@@ -52,6 +51,8 @@ void AFoodSubmitTable::BeginPlay()
 	{
 		TextWidget = Cast<USubmitTableUI>(TextWidgetComp->GetWidget());
 	}
+
+	TextWidgetComp->SetWorldLocation(FVector(TextWidgetComp->GetComponentLocation().X - 125.f, TextWidgetComp->GetComponentLocation().Y, TextWidgetComp->GetComponentLocation().Z + 125.f));
 }
 
 void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)

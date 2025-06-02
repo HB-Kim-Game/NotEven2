@@ -28,11 +28,32 @@ AIngredientBox::AIngredientBox()
 		PlaceTable = tempPlaceTable.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/LGJ/Assets/CookingAssets/fbx/fridge_A_decorated.fridge_A_decorated'"));
 
 	if (tempMesh.Succeeded())
 	{
 		MeshComp->SetStaticMesh(tempMesh.Object);
+	}
+	MeshComp->SetRelativeScale3D(FVector(0.8f, 0.8f, 0.8f));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> iconMesh(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Plane.Plane'"));
+
+	IconMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("IconMesh"));
+
+	IconMesh->SetupAttachment(BoxComp);
+
+	if (iconMesh.Succeeded())
+	{
+		IconMesh->SetStaticMesh(iconMesh.Object);
+	}
+
+	IconMesh->SetRelativeLocationAndRotation(FVector(0.f, -20.f, 150.f),FRotator(0.f, 0.f, 0.f));
+	IconMesh->SetRelativeScale3D(FVector(0.75f));
+
+	ConstructorHelpers::FObjectFinder<UMaterialInterface> iconMat(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/KHB/UI/M_CircleMaskNotUI_Inst.M_CircleMaskNotUI_Inst'"));
+	if (iconMat.Succeeded())
+	{
+		IconMaterial = iconMat.Object;
 	}
 }
 
@@ -70,12 +91,12 @@ void AIngredientBox::BeginPlay()
 			PlaceData = *data;
 		}
 	}
-	//
-	// FTimerHandle TimerHandle;
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
-	// {
-	// 	this->Interact(Cast<ANotEvenPlayer>(this->GetWorld()->GetFirstPlayerController()->GetPawn()));
-	// }, 5.0f, true);
+
+	IconDynamic = UMaterialInstanceDynamic::Create(IconMaterial, this);
+	UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath);
+	IconDynamic->SetTextureParameterValue(FName("IconImage"), texture);
+	IconMesh->SetMaterial(0, IconDynamic);
+
 }
 
 // Called every frame
