@@ -17,12 +17,15 @@ void UPriceUI::ShowCurrentScore()
 
 	int32 distance = OrderManager->GetCurrentScore() - PrevScore;
 
-	FString prevSign = distance > 0 ? TEXT("+") : TEXT("-");
-	prevSign.Append(FString::FromInt(distance));
+	FString distanceText = FString::FromInt(distance);
+	if (distance > 0)
+	{
+		distanceText.InsertAt(0, TEXT("+"));
+	}
 	
 	TipText->SetText(FText::FromString(tipText));
 	PriceText->SetText(FText::FromString(scoreText));
-	PriceTopText->SetText(FText::FromString(prevSign));
+	PriceTopText->SetText(FText::FromString(distanceText));
 	
 	if (OrderManager->GetCurrentComboCount() == MaxComboCount)
 	{
