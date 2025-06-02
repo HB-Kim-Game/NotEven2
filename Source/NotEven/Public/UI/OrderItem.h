@@ -40,6 +40,9 @@ public:
 	class UWidgetAnimation* Success;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Failed;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Appear;
 	
 	UPROPERTY()
 	TArray<class UIngredientUI*> Ingredients;

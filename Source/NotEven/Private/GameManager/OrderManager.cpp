@@ -127,7 +127,7 @@ void UOrderManager::AddSuccess(int32 price)
 	CurrentSuccessOrder += 1;
 	CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 0, 4);
 	SuccessScore += price;
-	TipScore += FMath::Max(price * (CurrentComboCount - 1), 0);
+	TipScore += FMath::Max(8.f * CurrentComboCount, 0);
 }
 
 void UOrderManager::AddFailure(int32 price)

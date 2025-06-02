@@ -50,6 +50,11 @@ void UOrderListViewer::RefreshOnDataFetched()
 		SpawnItems[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
 
+	if (FetchedDatas.Num() > CurrentOrderCount)
+	{
+		SpawnItems[FetchedDatas.Num() - 1]->Selected();
+	}
+
 	CurrentOrderCount = FetchedDatas.Num();
 }
 
@@ -134,8 +139,8 @@ void UOrderListViewer::InitializeItem()
 
 			item->OnOrderFailed.Add(FOnOrderFailed::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
-				this->OrderManager->AddFailure(data->Price);
-				this->OrderManager->AddScore(-data->Price);
+				this->OrderManager->AddFailure(data->Price / 2);
+				this->OrderManager->AddScore(-data->Price / 2);
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, false);
 				item->bIsChecked = true;
@@ -145,7 +150,7 @@ void UOrderListViewer::InitializeItem()
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
 				this->OrderManager->AddSuccess(data->Price);
-				this->OrderManager->AddScore(data->Price * this->OrderManager->GetCurrentComboCount());
+				this->OrderManager->AddScore(data->Price + 8.f * this->OrderManager->GetCurrentComboCount());
 				this->OrderManager->PlayerUI->PriceUI->ShowCurrentScore();
 				this->OrderManager->RemoveOrder(data, true);
 				item->bIsChecked = true;

@@ -65,6 +65,9 @@ class URecipeData* UOrderItem::GetRecipeData() const
 void UOrderItem::Selected()
 {
 	Super::Selected();
+
+	StopAllAnimations();
+	PlayAnimation(Appear);
 }
 
 void UOrderItem::Deselected()
