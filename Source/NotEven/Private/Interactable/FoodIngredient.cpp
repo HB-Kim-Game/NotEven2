@@ -96,7 +96,7 @@ void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlac
 		IconWidget->SetIconImage(nullptr);
 	}
 
-	BoxComp->SetMassScale(NAME_None, 15.f);
+	BoxComp->SetMassOverrideInKg(NAME_None, 150.f);
 	BoxComp -> SetLinearDamping(2.f);
 }
 
