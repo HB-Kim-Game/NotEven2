@@ -6,11 +6,12 @@
 #include "IngredientEnums.h"
 #include "IngredientStruct.h"
 #include "NotEvenGameMode.h"
-#include "OrderListViewer.h"
 #include "Plate.h"
-#include "PlayerUI.h"
 #include "SubmitFood.h"
+#include "SubmitTableUI.h"
+#include "Components/WidgetComponent.h"
 #include "GameManager/OrderManager.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AFoodSubmitTable::AFoodSubmitTable()
 {
@@ -23,6 +24,18 @@ AFoodSubmitTable::AFoodSubmitTable()
 	{
 		MeshComp->SetStaticMesh(tempMesh.Object);
 	}
+
+	TextWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("TextWidgetComp"));
+	TextWidgetComp->SetupAttachment(BoxComp);
+	
+	ConstructorHelpers::FClassFinder<USubmitTableUI> textClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_SubmitTable.WBP_SubmitTable_C'"));
+
+	if (textClass.Succeeded())
+	{
+		TextClass = textClass.Class;
+	}
+	
+	TextWidgetComp->SetWidgetClass(TextClass);
 	
 }
 
@@ -34,11 +47,19 @@ void AFoodSubmitTable::BeginPlay()
 	{
 		OrderManager = gm->OrderManager;
 	}
+
+	if (!TextWidget)
+	{
+		TextWidget = Cast<USubmitTableUI>(TextWidgetComp->GetWidget());
+	}
 }
 
 void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+
+	auto PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	TextWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(TextWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 
 	if (auto plate = Cast<APlate>(player->OwnedObj))
 	{
@@ -46,6 +67,16 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 		{
 			SubmitFood(plate->submitFood->GetIngredients(), plate);
 		}
+		else
+		{
+			TextWidget->StopAllAnimations();
+			TextWidget->PlayAnimation(TextWidget->Appear);
+		}
+	}
+	else if (TextWidget)
+	{
+		TextWidget->StopAllAnimations();
+		TextWidget->PlayAnimation(TextWidget->Appear);
 	}
 		
 }

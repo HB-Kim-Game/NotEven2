@@ -40,6 +40,7 @@ void UOrderListViewer::RefreshOnDataFetched()
 	for (int j = 0; j < SpawnItems.Num(); j++)
 	{
 		SpawnItems[j]->FetchData(nullptr);
+		SpawnItems[j]->StopAllAnimations();
 		SpawnItems[j]->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
@@ -92,6 +93,13 @@ bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientDa
 		}
 	}
 
+	for (auto* item : SpawnItems)
+	{
+		auto* cast = Cast<UOrderItem>(item);
+		cast->StopAllAnimations();
+		cast->PlayAnimation(cast->Failed);
+	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("No Same Order"));
 	return false;
 }

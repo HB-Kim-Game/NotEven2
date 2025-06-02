@@ -27,4 +27,11 @@ public:
 protected:
 	UPROPERTY()
 	class UOrderManager* OrderManager;
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* TextWidgetComp;
+	UPROPERTY()
+	TSubclassOf<class USubmitTableUI> TextClass;
+	UPROPERTY()
+	class USubmitTableUI* TextWidget;
 };
