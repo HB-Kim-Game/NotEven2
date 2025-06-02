@@ -68,11 +68,12 @@ bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientDa
 		if (nullptr == cast->GetRecipeData()) continue;
 		if (cast->bIsChecked) continue;
 
-		TArray<FRecipeIngredientData*> checkedData;
 
+		TArray<FRecipeIngredientData*> checkedData;
+		
 		for (auto& d : data)
 		{
-			if (auto find = cast->GetRecipeData()->RequiredIngredients.FindByPredicate([checkedData, d](const FRecipeIngredientData& recipe)
+			if (auto find = cast->GetRecipeData()->RequiredIngredients.FindByPredicate([d](const FRecipeIngredientData& recipe)
 			{
 					return recipe.IngredientID == d.IngredientID && recipe.RequireState == d.RequireState;
 			}))

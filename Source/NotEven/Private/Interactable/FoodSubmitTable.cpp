@@ -66,19 +66,12 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 		if (plate->submitFood)
 		{
 			SubmitFood(plate->submitFood->GetIngredients(), plate);
-		}
-		else
-		{
-			TextWidget->StopAllAnimations();
-			TextWidget->PlayAnimation(TextWidget->Appear);
+			return;
 		}
 	}
-	else if (TextWidget)
-	{
-		TextWidget->StopAllAnimations();
-		TextWidget->PlayAnimation(TextWidget->Appear);
-	}
-		
+
+	TextWidget->StopAllAnimations();
+	TextWidget->PlayAnimation(TextWidget->Appear);
 }
 
 void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, APlate* plate)
