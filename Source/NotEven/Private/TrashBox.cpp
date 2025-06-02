@@ -5,6 +5,8 @@
 
 #include "FoodIngredient.h"
 #include "NotEvenPlayer.h"
+#include "Plate.h"
+#include "SubmitFood.h"
 #include "Components/BoxComponent.h"
 
 ATrashBox::ATrashBox()
@@ -36,6 +38,13 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 				player -> OwnedObj = nullptr;
 				food-> Destroy(); 
 				player->isGrab = false; // 들고 있는 상태 초기화
+			}
+
+			if (APlate* plate = Cast<APlate>(moveObject))
+			{
+				auto food = plate->submitFood;
+				plate->submitFood = nullptr;
+				food->Destroy();
 			}
 		}
 	}

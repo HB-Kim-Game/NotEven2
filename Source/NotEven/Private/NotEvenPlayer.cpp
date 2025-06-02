@@ -162,7 +162,6 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 				// 1. 만약에 테이블이면은
 				if (auto table = Cast<AKitchenTable>(tempGrabObj.GetActor()))
 				{
-					
 					// -> 테이블 위에 상호작용 하고싶다
 					table ->Interact(this);
 					UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::Interact Table"));
@@ -182,6 +181,16 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 				// -> 프라이팬,도마 위에 놓기를 하고 싶다
 				if (auto cuttingBoard = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
 				{
+					if (auto food = Cast<AFoodIngredient>(OwnedObj))
+					{
+						if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
+						{
+							return rule.State == food->GetIngredientState() && rule.Requirement.Contains(EPlacementRequirement::CuttingBoard);
+						}))
+						{
+							return;
+						}
+					}
 					if (Cast<AFoodIngredient>(OwnedObj))
 					{
 						cuttingBoard ->Interact(this);

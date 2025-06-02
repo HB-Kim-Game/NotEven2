@@ -46,6 +46,14 @@ void APlate::Interact(class ANotEvenPlayer* player)
 	{
 		if (AFoodIngredient* food = Cast<AFoodIngredient>(player->OwnedObj))
 		{
+			if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
+			{
+				return rule.State == food->GetIngredientState() && rule.Requirement.Contains(EPlacementRequirement::Plate);
+			}))
+			{
+				return;
+			}
+			
 			OnPlate(food);
 			player->DetachGrabObj();
 			food ->Destroy();
