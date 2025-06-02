@@ -18,6 +18,8 @@ enum class EIngredientState : uint8
 	Boiled UMETA(DisplayName = "Boiled"),
 	// 튀김
 	Fried	UMETA(DisplayName = "Fried"),
+	// 탔다
+	Burned	UMETA(DisplayName = "Burned"),
 };
 
 UENUM(BlueprintType)
