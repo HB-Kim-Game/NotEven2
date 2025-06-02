@@ -50,7 +50,6 @@ void ACuttingBoard::Interact(class ANotEvenPlayer* player)
 			return;
 		
 		isOnCuttingBoard = false;
-		UE_LOG(LogTemp,Log,TEXT("ANotEvenPlayer::???"));
 		moveObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		player->AttachGrabObj(moveObject);
 	}
@@ -68,8 +67,8 @@ void ACuttingBoard::Cutting(class ANotEvenPlayer* player)
 		if (moveObject->GetCurrentCookingProgress() >= moveObject->GetMaxCookingProgress())
 		{
 			// 음식을 손질을 완료하고 싶다
-			// -> 기존에 있던 음식(None)을
-			// -> 음식(Slice)로 상태를 변환하고 싶다
+			// -> 기존에 있던 음식(None)의 상태를
+			// -> 음식(Slice) 상태를 변환하고 싶다
 			moveObject->SetState(EIngredientState::Sliced);
 		}
 	}

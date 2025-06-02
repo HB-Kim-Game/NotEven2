@@ -60,7 +60,6 @@ void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 
 	//힘의 세기
 	float ImpulseStrength = 1500.f;
-
 	FVector impulseResult = impulseDir * ImpulseStrength;
 	
 	ANotEvenPlayer* player = Cast<ANotEvenPlayer>(OtherActor);

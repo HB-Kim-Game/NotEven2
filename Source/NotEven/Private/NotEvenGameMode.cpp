@@ -19,12 +19,12 @@ void ANotEvenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// PlayerDied 델리게이트를 게임 모드의 PlayerDied 함수에 바인딩
-	if (!OnPlayerDied.IsBound())
-	{
-		OnPlayerDied.AddDynamic(this, &ANotEvenGameMode::PlayerDied);
-	}
-		
+	// // PlayerDied 델리게이트를 게임 모드의 PlayerDied 함수에 바인딩
+	// if (!OnPlayerDied.IsBound())
+	// {
+	// 	OnPlayerDied.AddDynamic(this, &ANotEvenGameMode::PlayerDied);
+	// }
+	// 	
 }
 
 void ANotEvenGameMode::RestartPlayer(AController* NewPlayer)

@@ -42,6 +42,7 @@ void APlate::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
+	// 플레이어가 isGrab 이고, 플레이어한테 OwnedObj가 있으면
 	if (player && player -> isGrab && player -> OwnedObj)
 	{
 		if (AFoodIngredient* food = Cast<AFoodIngredient>(player->OwnedObj))
@@ -53,8 +54,9 @@ void APlate::Interact(class ANotEvenPlayer* player)
 			{
 				return;
 			}
-			
+			// food 를 OnPlate
 			OnPlate(food);
+			// 플레이어가 들고 있는 오브젝트를 Detach
 			player->DetachGrabObj();
 			food ->Destroy();
 			
@@ -66,7 +68,6 @@ void APlate::Interact(class ANotEvenPlayer* player)
 		// 플레이어의 SkeletalMesh 내에 있는 Socket에 붙이기
 		AttachToComponent(player->GetMesh(),FAttachmentTransformRules::SnapToTargetIncludingScale,TEXT("GrabPoint"));
 	}
-
 }
 
 void APlate::SetGrab(bool bGrab)
@@ -104,7 +105,6 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 	{
 		if (submitFood == nullptr)
 		{
-
 			FVector attachLocation = attachPoint->GetComponentLocation();
 			FRotator attachRotation = attachPoint->GetComponentRotation();
 			
