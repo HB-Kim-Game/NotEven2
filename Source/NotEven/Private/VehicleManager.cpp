@@ -24,9 +24,9 @@ void AVehicleManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 시작 시 랜덤한 시간(5-10초)마다 장애물이 생성되게
-	float minTime = 5.f; // 최소시간
-	float maxTime = 10.f; // 최대시간
+	// 시작 시 랜덤한 시간(10-20초)마다 장애물이 생성되게
+	float minTime = 10.f; // 최소시간
+	float maxTime = 20.f; // 최대시간
 	float Timer = FMath::RandRange(minTime, maxTime); 
 	GetWorld()->GetTimerManager().SetTimer(MakeVehicleTimer,this,&AVehicleManager::MakeVehicle,Timer,true);
 	

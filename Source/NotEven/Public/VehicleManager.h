@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class USceneComponent* RootComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<class ATrafficLights*> TrafficLights;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class UArrowComponent* SpawnPoint;
 
