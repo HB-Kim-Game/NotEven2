@@ -2,14 +2,11 @@
 
 
 #include "VehicleManager.h"
-
-#include "NotEvenGameMode.h"
-#include "PlayerUI.h"
-#include "PlayTimeUI.h"
 #include "TrafficLights.h"
 #include "Vehicle.h"
 #include "Components/ArrowComponent.h"
 #include "GameManager/OrderManager.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AVehicleManager::AVehicleManager()
@@ -29,21 +26,24 @@ void AVehicleManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// if (auto gm = Cast<ANotEvenGameMode>(GetWorld()->GetAuthGameMode()))
-	// {
-	// 	gm->OrderManager->OnGameStart.Add(FSimpleDelegate::CreateLambda([&]()
-	// 	{
-	// 		StartMakeVehicle();
-	// 	}));
-	// }
+	if (HasAuthority())
+	{
+		if (auto orderManager = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOrderManager::StaticClass())))
+		{
+			orderManager->OnGameStart.Add(FSimpleDelegate::CreateLambda([&]()
+			{
+				StartMakeVehicle();
+			}));
+		}
+	}
+	SetRedLight();
 }
 
 void AVehicleManager::StartMakeVehicle()
 {
 	float late = FMath::RandRange(MinTime, MaxTime);
 	// 시작 시 랜덤한 시간(7.5-12.5초)마다 장애물이 생성되게
-
-	SetRedLight();
+	
 	GetWorld()->GetTimerManager().SetTimer(YellowTimer, this, &AVehicleManager::SetYellowLight, FMath::Max(late - 1.f, 0.f), false);
 	GetWorld()->GetTimerManager().SetTimer(MakeVehicleTimer,this,&AVehicleManager::MakeVehicle,late, false);
 }
@@ -51,11 +51,11 @@ void AVehicleManager::StartMakeVehicle()
 // 장애물 만드는 함수
 void AVehicleManager::MakeVehicle()
 {
-	SetGreenLight();
-
 	float late = FMath::RandRange(MinTime, MaxTime);
 	
 	GetWorld()->SpawnActor<AVehicle>(VehicleFactory,SpawnPoint->GetComponentTransform());
+	
+	SetGreenLight();
 	GetWorld()->GetTimerManager().SetTimer(RedTimer, this, &AVehicleManager::SetRedLight, 3.f, false);
 	GetWorld()->GetTimerManager().SetTimer(YellowTimer, this, &AVehicleManager::SetYellowLight, FMath::Max(late - 1.f, 0.f), false);
 	GetWorld()->GetTimerManager().SetTimer(MakeVehicleTimer,this,&AVehicleManager::MakeVehicle,late, false);

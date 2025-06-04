@@ -34,9 +34,9 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class UArrowComponent* SpawnPoint;
-
-	void StartMakeVehicle();
 	
+	void StartMakeVehicle();
+
 	UFUNCTION()
 	void MakeVehicle();
 

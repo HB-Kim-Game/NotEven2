@@ -188,6 +188,7 @@ void AOrderManager::InitWidget()
 		PlayerUI->PlayTime->SetMaxTime(this);
 		IsPlaying = true;
 		PlayerUI->PriceUI->ShowCurrentScore();
+		OnGameStart.Broadcast();
 	}
 }
 

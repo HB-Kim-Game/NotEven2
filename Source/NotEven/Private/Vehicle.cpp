@@ -21,7 +21,9 @@ AVehicle::AVehicle()
 	meshComp -> SetupAttachment(boxComp);
 	meshComp -> SetRelativeScale3D(FVector(5.f,3.f,2.5f));
 	meshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	
+
+	bReplicates = true;
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -47,8 +49,6 @@ void AVehicle::Tick(float DeltaTime)
 
 	FVector newLoc = GetActorLocation() + Direction * Speed * DeltaTime;
 	SetActorLocation(newLoc);
-	
-
 }
 
 void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
