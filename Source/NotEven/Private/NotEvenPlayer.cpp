@@ -57,10 +57,10 @@ void ANotEvenPlayer::NotifyControllerChanged()
 
 	if (auto* pc = Cast<APlayerController>(Controller))
 	{
-		auto* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
-
-		subsystem->RemoveMappingContext(IMC_Player);
-		subsystem->AddMappingContext(IMC_Player,0);
+		if ( auto* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer()))
+		{
+			subsystem->AddMappingContext(IMC_Player,0);
+		}
 	}
 }
 
