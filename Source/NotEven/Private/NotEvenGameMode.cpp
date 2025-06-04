@@ -11,8 +11,6 @@
 ANotEvenGameMode::ANotEvenGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	OrderManager = CreateDefaultSubobject<UOrderManager>(TEXT("OrderManager"));
 }
 
 void ANotEvenGameMode::BeginPlay()
@@ -24,7 +22,7 @@ void ANotEvenGameMode::BeginPlay()
 	// {
 	// 	OnPlayerDied.AddDynamic(this, &ANotEvenGameMode::PlayerDied);
 	// }
-	// 	
+	//
 }
 
 void ANotEvenGameMode::RestartPlayer(AController* NewPlayer)

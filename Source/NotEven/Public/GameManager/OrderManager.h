@@ -3,18 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Animation/WidgetAnimationEvents.h"
+#include "GameFramework/Actor.h"
 #include "OrderManager.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnGameStart);
+DECLARE_MULTICAST_DELEGATE(FOnGameEnd);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class NOTEVEN_API UOrderManager : public UActorComponent
+UCLASS()
+class NOTEVEN_API AOrderManager : public AActor
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UOrderManager();
+	AOrderManager();
 
 protected:
 	// Called when the game starts
@@ -22,7 +25,7 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY()
 	TSubclassOf<class UPlayerUI> PlayerUIClass;
@@ -55,6 +58,15 @@ public:
 
 	TArray<class URecipeData*> RemoveOrder(class URecipeData* data, bool isSuccess);
 
+	float GetMaxTime() const;
+	
+	FOnGameStart OnGameStart;
+	FOnGameEnd OnGameEnd;
+
+	FWidgetAnimationDynamicEvent OnFinishedTimeOverAnim;
+
+	void InitWidget();
+
 protected:
 	int32 CurrentSuccessOrder = 0;
 	int32 CurrentFailedOrder = 0;
@@ -63,6 +75,24 @@ protected:
 	int32 TipScore = 0;
 	int32 FailureScore = 0;
 	int32 CurrentComboCount = 0;
+
+	float MaxTime = 180.f;
+	
+	UPROPERTY(Replicated)
+	float CurrentTime = MaxTime;
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetCurrentTime(float DeltaTime);
+	UFUNCTION(NetMulticast, Reliable)
+	void NetRPC_ShowCurrentTime(float curTime);
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	FTimerHandle TimerHandle;
+
+	UPROPERTY(Replicated)
+	bool IsPlaying = false;
+
+	UFUNCTION()
+	void GameEnd();
 };

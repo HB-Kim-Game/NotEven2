@@ -2,8 +2,6 @@
 
 
 #include "Interactable/FoodSubmitTable.h"
-
-#include "IngredientEnums.h"
 #include "IngredientStruct.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
@@ -11,6 +9,7 @@
 #include "SubmitTableUI.h"
 #include "Components/WidgetComponent.h"
 #include "GameManager/OrderManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AFoodSubmitTable::AFoodSubmitTable()
@@ -42,17 +41,14 @@ void AFoodSubmitTable::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (auto gm = Cast<ANotEvenGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		OrderManager = gm->OrderManager;
-	}
-
 	if (!TextWidget)
 	{
 		TextWidget = Cast<USubmitTableUI>(TextWidgetComp->GetWidget());
 	}
 
 	TextWidgetComp->SetWorldLocation(FVector(TextWidgetComp->GetComponentLocation().X - 125.f, TextWidgetComp->GetComponentLocation().Y, TextWidgetComp->GetComponentLocation().Z + 125.f));
+
+	OrderManager = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOrderManager::StaticClass()));
 }
 
 void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)

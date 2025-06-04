@@ -25,7 +25,7 @@ public:
 
 	virtual void RefreshOnDataFetched() override;
 
-	void SetOrderManager(class UOrderManager* orderManager);
+	void SetOrderManager(class AOrderManager* orderManager);
 
 	bool CheckOrderSuccess(const TArray<struct FRecipeIngredientData>& data);
 
@@ -45,5 +45,5 @@ protected:
 	int32 CurrentOrderCount = 0;
 
 	UPROPERTY()
-	class UOrderManager* OrderManager;
+	class AOrderManager* OrderManager;
 };
