@@ -36,3 +36,12 @@ enum class EPlacementRequirement : uint8
 	// 도마에 둘 수 있음
 	CuttingBoard 
 };
+
+UENUM(BlueprintType)
+enum class EPlatestate : uint8
+{
+	// 꺠끗한 상태
+	Clean,
+	// 더러워진 상태
+	Dirty
+};

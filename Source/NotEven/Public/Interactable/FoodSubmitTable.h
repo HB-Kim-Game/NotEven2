@@ -23,11 +23,15 @@ public:
 
 	void SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, class APlate* plate);
 
+	FTimerHandle PlateSpawnTimer;
 	
 protected:
 	UPROPERTY()
 	class AOrderManager* OrderManager;
 
+	UPROPERTY()
+	class APlateTable* plateTable;
+	
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* TextWidgetComp;
 	UPROPERTY()

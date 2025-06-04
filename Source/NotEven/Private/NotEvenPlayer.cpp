@@ -20,6 +20,7 @@
 #include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameManager/OrderManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/Core/Analytics/NetStatsUtils.h"
 #include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
@@ -69,7 +70,15 @@ void ANotEvenPlayer::NotifyControllerChanged()
 void ANotEvenPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (auto pc = GetWorld()->GetFirstPlayerController())
+	{
+		if (!pc->IsLocalController()) return;
+		
+		if (auto ui = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(),AOrderManager::StaticClass())))
+		{
+			ui -> InitWidget();
+		}	
+	}
 }
 
 // Called every frame

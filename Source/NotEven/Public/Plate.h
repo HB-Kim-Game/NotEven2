@@ -32,7 +32,16 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	class ASubmitFood* submitFood;
+
+	UPROPERTY(EditAnywhere)
+	TMap<EPlatestate, UStaticMesh*> StateMeshMap;
+
+	UPROPERTY()
+	EPlatestate Platestate;
 	
+	UFUNCTION()
+	void SetState(EPlatestate nextState);
+
 	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* attachPoint ;
