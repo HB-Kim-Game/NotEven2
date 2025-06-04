@@ -35,8 +35,22 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class UArrowComponent* SpawnPoint;
 
+	void StartMakeVehicle();
+	
 	UFUNCTION()
 	void MakeVehicle();
 
+	FTimerHandle RedTimer;
+	FTimerHandle YellowTimer;
 	FTimerHandle MakeVehicleTimer;
+	
+private:
+	float MinTime = 7.5f;
+	float MaxTime = 12.5f;
+
+	void SetYellowLight();
+
+	void SetGreenLight();
+
+	void SetRedLight();
 };

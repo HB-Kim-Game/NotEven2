@@ -26,7 +26,7 @@ public:
 	
 protected:
 	UPROPERTY()
-	class UOrderManager* OrderManager;
+	class AOrderManager* OrderManager;
 
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* TextWidgetComp;

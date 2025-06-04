@@ -58,7 +58,7 @@ void UOrderListViewer::RefreshOnDataFetched()
 	CurrentOrderCount = FetchedDatas.Num();
 }
 
-void UOrderListViewer::SetOrderManager(class UOrderManager* orderManager)
+void UOrderListViewer::SetOrderManager(class AOrderManager* orderManager)
 {
 	OrderManager = orderManager;
 }

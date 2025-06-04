@@ -23,9 +23,6 @@ public:
 	
 	const FOnPlayerDiedSignature& GetOnPlayerDied() const {return OnPlayerDied;}
 
-	UPROPERTY()
-	class UOrderManager* OrderManager;
-
 	// 플레이어의 폰을 스폰 시도
 	virtual void RestartPlayer(AController* NewPlayer) override;
 

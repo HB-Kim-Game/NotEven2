@@ -28,11 +28,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(EditAnywhere)
-	class USpotLightComponent* RedLight;
-	UPROPERTY(EditAnywhere)
-	class USpotLightComponent* GreenLight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPointLightComponent* RedLight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPointLightComponent* GreenLight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UPointLightComponent* YellowLight;
 
 	void SetGreen();
 	void SetRed();
+	void SetYellow();
 };

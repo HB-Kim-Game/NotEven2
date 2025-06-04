@@ -6,8 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayTimeUI.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnGameStart);
-DECLARE_MULTICAST_DELEGATE(FOnGameEnd);
 /**
  * 
  */
@@ -25,27 +23,15 @@ public:
 	class UWidgetAnimation* Countdown;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* TimeOver;
-
-	FOnGameStart OnGameStart;
-	FOnGameEnd OnGameEnd;
 	
-	void SetMaxTime(float maxTime);
+	void SetMaxTime(class AOrderManager* orderManager);
 
-	void SetIsPlaying(bool playing);
-
+	void ShowRemainTime(float currentTime);
+	
 protected:
-	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
-	float CurrentTime = 0.f;
-	float MaxTime = 0.f;
+	float MaxTime = 0.0f;
 
-	bool bIsPlaying = false;
-
-	void ShowRemainTime(float deltaTime);
-
-	FWidgetAnimationDynamicEvent OnFinishedTimeAnim;
-
-	UFUNCTION()
-	void FinishedTimeAnim();
+	UPROPERTY()
+	class AOrderManager* OrderManager;
 };
