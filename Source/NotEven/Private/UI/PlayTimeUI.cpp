@@ -5,65 +5,34 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "GameManager/OrderManager.h"
 
-void UPlayTimeUI::SetMaxTime(float maxTime)
+void UPlayTimeUI::SetMaxTime(AOrderManager* orderManager)
 {
-	MaxTime = maxTime;
-	CurrentTime = MaxTime;
-	SetIsPlaying(true);
-	OnGameStart.Broadcast();
+	OrderManager = orderManager;
+	MaxTime = orderManager->GetMaxTime();
 }
 
-void UPlayTimeUI::SetIsPlaying(bool playing)
+void UPlayTimeUI::ShowRemainTime(float currentTime)
 {
-	bIsPlaying = playing;
-}
-
-void UPlayTimeUI::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	OnFinishedTimeAnim.BindDynamic(this, &UPlayTimeUI::FinishedTimeAnim);
-	BindToAnimationFinished(TimeOver, OnFinishedTimeAnim);
-}
-
-void UPlayTimeUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if (!bIsPlaying) return;
-	
-	ShowRemainTime(InDeltaTime);
-}
-
-void UPlayTimeUI::ShowRemainTime(float deltaTime)
-{
-	CurrentTime -= deltaTime;
-	
-	if (CurrentTime <= 0.f)
+	if (currentTime <= 0.f)
 	{
 		PlayAnimation(TimeOver);
-		bIsPlaying = false;
 		return;	
 	}
 
-	if (CurrentTime <= 30.f)
+	if (currentTime <= 30.f)
 	{
 		if (!IsPlayingAnimation())
 		PlayAnimation(Countdown, 0, 0);
 	}
 
-	FString text = FString::Printf(TEXT("%02d:%02d"), static_cast<int>(CurrentTime) / 60, static_cast<int>(CurrentTime) % 60);
+	FString text = FString::Printf(TEXT("%02d:%02d"), static_cast<int>(currentTime) / 60, static_cast<int>(currentTime) % 60);
 	TimeText->SetText(FText::FromString(text));
 
-	float percent = CurrentTime / MaxTime;
+	float percent = currentTime / MaxTime;
 	RemainProgress->SetPercent(percent);
 	FLinearColor color = FMath::Lerp(FLinearColor::Red, FLinearColor::Green, percent);
 	RemainProgress->SetFillColorAndOpacity(color);
-}
-
-void UPlayTimeUI::FinishedTimeAnim()
-{
-	OnGameEnd.Broadcast();
 }
 

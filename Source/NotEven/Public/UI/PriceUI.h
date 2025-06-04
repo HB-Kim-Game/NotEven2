@@ -35,12 +35,12 @@ public:
 	
 	void ShowCurrentScore();
 
-	void SetOrderManager(class UOrderManager* orderManager);
+	void SetOrderManager(class AOrderManager* orderManager);
 
 protected:
 
 	UPROPERTY()
-	class UOrderManager* OrderManager;
+	class AOrderManager* OrderManager;
 	int32 MaxComboCount = 4;
 	
 	int32 PrevScore = 0;

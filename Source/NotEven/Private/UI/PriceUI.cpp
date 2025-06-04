@@ -52,7 +52,7 @@ void UPriceUI::ShowCurrentScore()
 	TipProgress->SetPercent(static_cast<float>(OrderManager->GetCurrentComboCount()) / MaxComboCount);
 }
 
-void UPriceUI::SetOrderManager(class UOrderManager* orderManager)
+void UPriceUI::SetOrderManager(class AOrderManager* orderManager)
 {
 	OrderManager = orderManager;
 }
