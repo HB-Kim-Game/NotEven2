@@ -89,6 +89,7 @@ void AOrderManager::BeginPlay()
 	}));
 
 	OnFinishedTimeOverAnim.BindDynamic(this, &AOrderManager::GameEnd);
+	OnFinishedStartAnim.BindDynamic(this, &AOrderManager::GameStart);
 }
 
 
@@ -176,6 +177,8 @@ float AOrderManager::GetMaxTime() const
 
 void AOrderManager::InitWidget()
 {
+	if (PlayerUI) return;
+	
 	PlayerUI = Cast<UPlayerUI>(CreateWidget(GetWorld(), PlayerUIClass));
 	if (PlayerUI)
 	{
@@ -186,9 +189,9 @@ void AOrderManager::InitWidget()
 		
 		// 임시
 		PlayerUI->PlayTime->SetMaxTime(this);
-		IsPlaying = true;
 		PlayerUI->PriceUI->ShowCurrentScore();
-		OnGameStart.Broadcast();
+		PlayerUI->BindToAnimationFinished(PlayerUI->Start, OnFinishedStartAnim);
+		PlayerUI->PlayAnimation(PlayerUI->Start);
 	}
 }
 
@@ -225,6 +228,12 @@ void AOrderManager::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 void AOrderManager::GameEnd()
 {
 	OnGameEnd.Broadcast();
+}
+
+void AOrderManager::GameStart()
+{
+	IsPlaying = true;
+	OnGameStart.Broadcast();
 }
 
 TArray<class URecipeData*> AOrderManager::RemoveOrder(URecipeData* data, bool isSuccess)

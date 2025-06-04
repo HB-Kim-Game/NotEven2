@@ -5,7 +5,6 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/SpotLightComponent.h"
-#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ATrafficLights::ATrafficLights()

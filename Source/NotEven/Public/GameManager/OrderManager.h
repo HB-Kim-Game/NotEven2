@@ -64,7 +64,8 @@ public:
 	FOnGameEnd OnGameEnd;
 
 	FWidgetAnimationDynamicEvent OnFinishedTimeOverAnim;
-
+	FWidgetAnimationDynamicEvent OnFinishedStartAnim;
+	
 	void InitWidget();
 
 protected:
@@ -95,4 +96,7 @@ protected:
 
 	UFUNCTION()
 	void GameEnd();
+
+	UFUNCTION()
+	void GameStart();
 };
