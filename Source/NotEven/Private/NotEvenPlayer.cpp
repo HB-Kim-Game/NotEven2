@@ -15,6 +15,7 @@
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
+#include "PlateTable.h"
 #include "SubmitFood.h"
 #include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
@@ -147,6 +148,11 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 					// -> 테이블 위에 상호작용 하고싶다
 					table ->Interact(this);
 					return;
+				}
+
+				if (auto plateTable = Cast<APlateTable>(tempGrabObj.GetActor()))
+				{
+					plateTable ->Interact(this);
 				}
 
 				// 만약에 음식 제출테이블이면
