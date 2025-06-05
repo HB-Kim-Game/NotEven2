@@ -73,7 +73,10 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 
 void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, APlate* plate)
 {
-	OrderManager->CheckOrder(ingredients);
+	if (HasAuthority())
+	{
+		OrderManager->CheckOrder(ingredients);	
+	}
 	auto food = plate->submitFood;
 	plate->submitFood = nullptr;
 	food->Destroy();

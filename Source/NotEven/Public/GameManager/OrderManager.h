@@ -45,18 +45,38 @@ public:
 	int32 GetCurrentScore() const;
 	int32 GetCurrentComboCount() const;
 
+	UFUNCTION(Server, Reliable)
 	void AddScore(int32 addScore);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void ShowCurrentScore(int32 currentScore, int32 currentComboCount);
+
+	UFUNCTION(Server, Reliable)
 	void AddSuccess(int32 price);
+	UFUNCTION(Server, Reliable)
 	void AddFailure(int32 price);
 
+	UFUNCTION(Server, Reliable)
 	void AddOrder();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void CreateOrderObject(const struct FRecipe& order);
 
 	void RefreshOrder();
 
-	bool CheckOrder(const TArray<struct FRecipeIngredientData>& ingredients);
+	UFUNCTION(Server, Reliable)
+	void CheckOrder(const TArray<struct FRecipeIngredientData>& ingredients);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetRPC_CheckOrder(const TArray<struct FRecipeIngredientData>& ingredients);
 
 	TArray<class URecipeData*> RemoveOrder(class URecipeData* data, bool isSuccess);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetRPC_RemoveOrder(int32 index);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetRPC_ShowResult(int32 successOrder, int32 failedOrder, int32 currentScore, int32 successScore, int32 tipScore, int32 failureScore);
 
 	float GetMaxTime() const;
 	

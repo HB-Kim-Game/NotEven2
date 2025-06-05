@@ -2,7 +2,6 @@
 
 
 #include "GameManager/OrderManager.h"
-
 #include "IngredientStruct.h"
 #include "OrderListViewer.h"
 #include "PlayerUI.h"
@@ -51,45 +50,31 @@ void AOrderManager::BeginPlay()
 	{
 		RecipeNameList = OrderTable->GetRowNames();
 	}
-	
-	OnGameStart.Add(FSimpleDelegate::CreateLambda([this]()
-{
-	UE_LOG(LogTemp,Warning,TEXT("PlayerUI OnGameStart"));
-	this->AddOrder();
-			
-	this->GetWorld()->GetTimerManager().SetTimer(this->TimerHandle, [this]()
-	{
-		if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
-		this->AddOrder();
-	}, FMath::RandRange(5.f, 7.f), true);
-}));
-		
-	OnGameEnd.Add(FSimpleDelegate::CreateLambda([this]()
-	{
-		this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
 
-		UResultData* data = NewObject<UResultData>();
-		// 임시 스테이지ID
-		data->StageID = TEXT("Stage0");
-		data->ResultSuccessOrderCount = this->CurrentSuccessOrder;
-		data->SuccessScore = this->SuccessScore;
-		data->TipScore = this->TipScore;
-		data->ResultFailureOrderCount = this->CurrentFailedOrder;
-		data->FailureScore = this->FailureScore;
-		data->ResultScore = this->CurrentScore;
-			
-		if (this->PlayerUI->ResultUI)
+	if (HasAuthority())
+	{
+		OnGameStart.Add(FSimpleDelegate::CreateLambda([this]()
 		{
-			// Result UI에 정보보내기
-			this->PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
-			this->PlayerUI->ResultUI->ShowResult(data);
-			this->GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
-			this->GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
-		}
-	}));
+			UE_LOG(LogTemp,Warning,TEXT("PlayerUI OnGameStart"));
+			this->AddOrder();
+	
+			
+			this->GetWorld()->GetTimerManager().SetTimer(this->TimerHandle, [this]()
+			{
+				if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
+				this->AddOrder();
+			}, FMath::RandRange(5.f, 7.f), true);
+		}));
+		
+		OnGameEnd.Add(FSimpleDelegate::CreateLambda([&]()
+		{
+			this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
+			NetRPC_ShowResult(CurrentSuccessOrder, CurrentFailedOrder, CurrentScore, SuccessScore, TipScore, FailureScore);
+		}));
 
-	OnFinishedTimeOverAnim.BindDynamic(this, &AOrderManager::GameEnd);
-	OnFinishedStartAnim.BindDynamic(this, &AOrderManager::GameStart);
+		OnFinishedTimeOverAnim.BindDynamic(this, &AOrderManager::GameEnd);
+		OnFinishedStartAnim.BindDynamic(this, &AOrderManager::GameStart);	
+	}
 }
 
 
@@ -116,27 +101,33 @@ int32 AOrderManager::GetCurrentComboCount() const
 	return CurrentComboCount;
 }
 
-void AOrderManager::AddScore(int32 addScore)
-{
-	CurrentScore = FMath::Max(CurrentScore + addScore, 0);
-}
-
-void AOrderManager::AddSuccess(int32 price)
+void AOrderManager::AddSuccess_Implementation(int32 price)
 {
 	CurrentSuccessOrder += 1;
-	CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 0, 4);
 	SuccessScore += price;
-	TipScore += FMath::Max(8.f * CurrentComboCount, 0);
 }
 
-void AOrderManager::AddFailure(int32 price)
+void AOrderManager::AddScore_Implementation(int32 addScore)
 {
-	CurrentFailedOrder += 1;
-	CurrentComboCount = 0;
-	FailureScore += CurrentScore > price ? price : CurrentScore;
+	CurrentScore = FMath::Max(CurrentScore + addScore, 0);
+	CurrentComboCount = addScore > 0 ? FMath::Clamp(CurrentComboCount + 1, 0, 4) : 0;
+	TipScore += FMath::Max(8.f * CurrentComboCount, 0);
+
+	ShowCurrentScore(CurrentScore, CurrentComboCount);
 }
 
-void AOrderManager::AddOrder()
+void AOrderManager::ShowCurrentScore_Implementation(int32 currentScore, int32 currentComboCount)
+{
+	CurrentScore = currentScore;
+	CurrentComboCount = currentComboCount;
+	
+	if (PlayerUI)
+	{
+		PlayerUI->PriceUI->ShowCurrentScore();
+	}
+}
+
+void AOrderManager::AddOrder_Implementation()
 {
 	if (nullptr == OrderTable) return;
 	if (RecipeNameList.Num() <= 0) return;
@@ -145,19 +136,30 @@ void AOrderManager::AddOrder()
 	
 	if (FRecipe* data = OrderTable->FindRow<FRecipe>(randomName, FString("")))
 	{
-		auto* order = NewObject<URecipeData>();
-		order->RecipeID = data->RecipeID;
-		order->DisplayName = data->DisplayName;
-		order->Price = data->Price;
-		order->MaxCookingTime = data->MaxCookingTime;
-		order->CurrentCookingTime = data->MaxCookingTime;
-		order->RequiredIngredients = data->RequiredIngredients;
-		order->IconImagePath = data->IconImagePath;
-
-		OrderList.Add(order);
+		CreateOrderObject(*data);
 	}
+}
+
+void AOrderManager::CreateOrderObject_Implementation(const FRecipe& order)
+{
+	auto* recipeData = NewObject<URecipeData>();
+	recipeData->RecipeID = order.RecipeID;
+	recipeData->DisplayName = order.DisplayName;
+	recipeData->Price = order.Price;
+	recipeData->MaxCookingTime = order.MaxCookingTime;
+	recipeData->CurrentCookingTime = order.MaxCookingTime;
+	recipeData->RequiredIngredients = order.RequiredIngredients;
+	recipeData->IconImagePath = order.IconImagePath;
+
+	OrderList.Add(recipeData);
 
 	PlayerUI->OrderListViewer->FetchDatas<URecipeData>(OrderList);
+}
+
+void AOrderManager::AddFailure_Implementation(int32 price)
+{
+	CurrentFailedOrder += 1;
+	FailureScore += CurrentScore > price ? price : CurrentScore;
 }
 
 void AOrderManager::RefreshOrder()
@@ -165,9 +167,45 @@ void AOrderManager::RefreshOrder()
 	PlayerUI->OrderListViewer->FetchDatas<URecipeData>(OrderList);
 }
 
-bool AOrderManager::CheckOrder(const TArray<struct FRecipeIngredientData>& ingredients)
+void AOrderManager::CheckOrder_Implementation(const TArray<struct FRecipeIngredientData>& ingredients)
 {
-	return PlayerUI->OrderListViewer->CheckOrderSuccess(ingredients);
+	NetRPC_CheckOrder(ingredients);
+}
+
+void AOrderManager::NetRPC_CheckOrder_Implementation(const TArray<struct FRecipeIngredientData>& ingredients)
+{
+	PlayerUI->OrderListViewer->CheckOrderSuccess(ingredients);
+}
+
+void AOrderManager::NetRPC_RemoveOrder_Implementation(int32 index)
+{
+	if (index != INDEX_NONE && index < OrderList.Num())
+	{
+		OrderList.RemoveAt(index);
+	}
+}
+
+void AOrderManager::NetRPC_ShowResult_Implementation(int32 successOrder, int32 failedOrder, int32 currentScore,
+	int32 successScore, int32 tipScore, int32 failureScore)
+{
+	UResultData* data = NewObject<UResultData>();
+	// 임시 스테이지ID
+	data->StageID = TEXT("Stage0");
+	data->ResultSuccessOrderCount = successOrder;
+	data->SuccessScore = successScore;
+	data->TipScore = tipScore;
+	data->ResultFailureOrderCount = failedOrder;
+	data->FailureScore = failureScore;
+	data->ResultScore = currentScore;
+			
+	if (PlayerUI->ResultUI)
+	{
+		// Result UI에 정보보내기
+		PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
+		PlayerUI->ResultUI->ShowResult(data);
+		GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
+		GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+	}
 }
 
 float AOrderManager::GetMaxTime() const
@@ -239,10 +277,8 @@ void AOrderManager::GameStart()
 TArray<class URecipeData*> AOrderManager::RemoveOrder(URecipeData* data, bool isSuccess)
 {
 	int32 index = OrderList.Find(data);
-	if (index != INDEX_NONE)
-	{
-		OrderList.RemoveAt(index);
-	}
+
+	NetRPC_RemoveOrder(index);
 	
 	return OrderList;
 }
