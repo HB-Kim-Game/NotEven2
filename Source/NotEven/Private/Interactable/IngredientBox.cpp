@@ -63,8 +63,12 @@ void AIngredientBox::Interact(class ANotEvenPlayer* player)
 	
 	auto* ingredient = GetWorld()->SpawnActor<AFoodIngredient>(AFoodIngredient::StaticClass(),
 		FVector(player->GetActorLocation().X, player->GetActorLocation().Y, player->GetActorLocation().Z + 200.f), FRotator::ZeroRotator);
+
+	if (HasAuthority())
+	{
+		ingredient->InitializeIngredient(Data, PlaceData);
+	}
 	
-	ingredient->InitializeIngredient(Data, PlaceData);
 	player->OwnedObj = ingredient;
 	player->isGrab = true;
 	ingredient->SetOwner(player);

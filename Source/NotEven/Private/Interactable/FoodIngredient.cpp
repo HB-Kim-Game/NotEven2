@@ -9,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 AFoodIngredient::AFoodIngredient()
 {
@@ -38,6 +39,8 @@ AFoodIngredient::AFoodIngredient()
 	}
 
 	ProgressWidgetComp->SetWidgetClass(ProgressClass);
+	
+	bReplicates = true;
 }
 
 void AFoodIngredient::BeginPlay()
@@ -65,18 +68,26 @@ void AFoodIngredient::Tick(float DeltaSeconds)
 		IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 	}
 	
-	if (ProgressWidget->GetVisibility() != ESlateVisibility::Hidden)
+	if (ProgressWidgetComp->GetVisibleFlag())
 	{
 		ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, CurrentState != EIngredientState::None ? GetActorLocation().Z + 350.f : GetActorLocation().Z + 250.f));
 		ProgressWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(ProgressWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));	
 	}
 }
 
-void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlaceData place)
+void AFoodIngredient::InitializeIngredient_Implementation(FIngredientData data, FIngredientPlaceData place)
 {
 	Data = data;
 	PlaceData = place;
+	
+	NetMulticast_InitializeIngredient(Data, PlaceData);
+}
 
+void AFoodIngredient::NetMulticast_InitializeIngredient_Implementation(FIngredientData data, FIngredientPlaceData place)
+{
+	Data = data;
+	PlaceData = place;
+	
 	if (Data.MeshPaths.Num() <= 0) return;
 	
 	for (auto path : Data.MeshPaths)
@@ -93,11 +104,14 @@ void AFoodIngredient::InitializeIngredient(FIngredientData data, FIngredientPlac
 
 	if (IconWidget)
 	{
-		IconWidget->SetIconImage(nullptr);
+		if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
+		{
+			IconWidget->SetIconImage(texture);
+		}
 	}
 
 	BoxComp->SetMassOverrideInKg(NAME_None, 150.f);
-	BoxComp -> SetLinearDamping(2.f);
+	BoxComp->SetLinearDamping(2.f);
 }
 
 FIngredientData AFoodIngredient::GetIngredientData() const
@@ -118,9 +132,10 @@ FIngredientPlaceData AFoodIngredient::GetIngredientPlaceData() const
 void AFoodIngredient::AddCookingProgress(float addProgress)
 {
 	CurrentCookingProgress += addProgress;
-
-	ProgressWidget->SetVisibility(ESlateVisibility::Visible);
-	ProgressWidget->Progress = CurrentCookingProgress / MaxCookingProgress;
+	if (HasAuthority())
+	{
+		Rep_CurrentCookingProgress();	
+	}
 }
 
 float AFoodIngredient::GetCurrentCookingProgress() const
@@ -137,28 +152,7 @@ void AFoodIngredient::SetState(EIngredientState newState)
 {
 	CurrentState = newState;
 
-	if (CurrentState != EIngredientState::None)
-	{
-		if (IconWidget)
-		{
-			if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
-			{
-				IconWidget->SetIconImage(texture);
-			}
-		}
-	}
-
-	if (auto mesh = IngredientMeshes.Find(newState))
-	{
-		if (*mesh)
-		{
-			MeshComp->SetStaticMesh(*mesh);
-			BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
-		}
-	}
-	
-	CurrentCookingProgress = 0.0f;
-	ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
+	NetMulticast_SetCurrentState(CurrentState);
 }
 
 void AFoodIngredient::Interact(class ANotEvenPlayer* player)
@@ -201,5 +195,46 @@ void AFoodIngredient::SetGrab(bool bGrab)
 void AFoodIngredient::SetMaxCookingProgress(float progress)
 {
 	MaxCookingProgress = progress;
+}
+
+void AFoodIngredient::Rep_CurrentCookingProgress()
+{
+	if (CurrentCookingProgress <= 0.01f)
+	{
+		ProgressWidgetComp->SetVisibility(false);
+		return;
+	}
+
+	ProgressWidgetComp->SetVisibility(true);
+	ProgressWidget->Progress = CurrentCookingProgress / MaxCookingProgress;
+	
+}
+
+void AFoodIngredient::NetMulticast_SetCurrentState_Implementation(EIngredientState next)
+{
+	CurrentState = next;
+
+	UE_LOG(LogTemp, Warning, TEXT("Visible : %d"), IconWidgetComp->GetVisibleFlag());
+	IconWidgetComp->SetVisibility(CurrentState != EIngredientState::None);
+	
+	if (auto mesh = IngredientMeshes.Find(CurrentState))
+	{
+		if (*mesh)
+		{
+			MeshComp->SetStaticMesh(*mesh);
+			BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
+		}
+	}
+	
+	CurrentCookingProgress = 0.0f;
+	ProgressWidgetComp->SetVisibility(false);
+}
+
+void AFoodIngredient::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFoodIngredient, CurrentCookingProgress);
+	DOREPLIFETIME(AFoodIngredient, CurrentState);
 }
 

@@ -14,13 +14,6 @@ void UIngredientActorIcon::NativeConstruct()
 
 void UIngredientActorIcon::SetIconImage(UTexture2D* Icon)
 {
-	if (nullptr == Icon)
-	{
-		SetVisibility(ESlateVisibility::Collapsed);
-		return;
-	}
-	SetVisibility(ESlateVisibility::HitTestInvisible);
-
 	if (!IconMatDynamic) SetMaterial();
 	IconMatDynamic->SetTextureParameterValue(FName("IconImage"), Icon);	
 }

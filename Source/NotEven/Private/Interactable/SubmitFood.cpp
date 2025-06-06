@@ -32,6 +32,7 @@ ASubmitFood::ASubmitFood()
 	
 	IconWidgetComp->SetWidgetClass(IconClass);
 
+	bReplicates = true;
 }
 
 void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, float CookingProgress, FIngredientPlaceData placeData)
@@ -49,11 +50,20 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 
 	add.IngredientData = temp;
 	add.PlacementData = placeData;
-
+	
 	CurrentCookingProgress += CookingProgress;
 	MaxCookingProgress += data.MaxCookingProgress;
 	
-	Ingredients.Add(add);
+	NetMulticast_AddIngredient(add, CurrentCookingProgress, MaxCookingProgress);
+}
+
+void ASubmitFood::NetMulticast_AddIngredient_Implementation(FSubmitFoodIngredientData data,
+	float currentCookingProgress, float maxCookingProgress)
+{
+	Ingredients.Add(data);
+
+	CurrentCookingProgress = currentCookingProgress;
+	MaxCookingProgress = maxCookingProgress;
 
 	FindMesh();
 
