@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class NOTEVEN_API APlateTable : public AImmovableObject
 {
@@ -37,4 +38,6 @@ public:
 
 	UFUNCTION()
 	void MakePlate();
+
+	
 };

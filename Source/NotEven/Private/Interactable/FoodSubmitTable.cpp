@@ -5,6 +5,7 @@
 #include "IngredientStruct.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
+#include "PlateTable.h"
 #include "SubmitFood.h"
 #include "SubmitTableUI.h"
 #include "Components/WidgetComponent.h"
@@ -49,6 +50,8 @@ void AFoodSubmitTable::BeginPlay()
 	TextWidgetComp->SetWorldLocation(FVector(TextWidgetComp->GetComponentLocation().X - 125.f, TextWidgetComp->GetComponentLocation().Y, TextWidgetComp->GetComponentLocation().Z + 125.f));
 
 	OrderManager = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOrderManager::StaticClass()));
+
+	plateTable = Cast<APlateTable>(UGameplayStatics::GetActorOfClass(GetWorld(), APlateTable::StaticClass()));
 }
 
 void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
@@ -73,11 +76,14 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 
 void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, APlate* plate)
 {
-	if (HasAuthority())
+	OrderManager->CheckOrder(ingredients);
+	plate->submitFood->Destroy();
+	plate->Destroy();
+	
+	
+	GetWorld()->GetTimerManager().SetTimer(PlateSpawnTimer,FTimerDelegate::CreateLambda([&,plate]()
 	{
-		OrderManager->CheckOrder(ingredients);	
-	}
-	auto food = plate->submitFood;
-	plate->submitFood = nullptr;
-	food->Destroy();
+		plateTable->MakePlate();
+	}),5,false);
+	
 }

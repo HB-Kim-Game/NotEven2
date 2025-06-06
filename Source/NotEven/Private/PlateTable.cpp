@@ -67,15 +67,15 @@ void APlateTable::Interact(class ANotEvenPlayer* player)
 void APlateTable::BeginPlay()
 {
 	Super::BeginPlay();
+	
 
-	FTimerHandle handle;
-	GetWorld()->GetTimerManager().SetTimer(handle,this, &APlateTable::MakePlate,10,true);
-	UE_LOG(LogTemp,Warning,TEXT("plate"));
 }
 
 void APlateTable::RespawnPlate()
 {
-	
+	// FTimerHandle handle;
+	// GetWorld()->GetTimerManager().SetTimer(handle,this, &APlateTable::MakePlate,10,true);
+	//UE_LOG(LogTemp,Warning,TEXT("plate"));
 }
 
 void APlateTable::MakePlate()
@@ -85,6 +85,7 @@ void APlateTable::MakePlate()
 	
 	auto* newplate = GetWorld()->SpawnActor<APlate>(plateFactory,loc,rot);
 	newplate ->AttachToComponent(attachPoint,FAttachmentTransformRules::KeepWorldTransform);
+	newplate -> SetState(EPlatestate::Dirty);
 	moveObject = newplate;
 	
 }

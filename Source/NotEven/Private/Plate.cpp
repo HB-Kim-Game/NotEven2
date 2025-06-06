@@ -15,7 +15,7 @@ APlate::APlate() : Super()
 	{
 		MeshComp -> SetStaticMesh(tempMesh.Object);
 	}
-	MeshComp->SetRelativeLocation(FVector(0, 0, -12.5));
+	MeshComp->SetRelativeLocation(FVector(0, 0, -7));
 
 	BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
 	
@@ -30,6 +30,8 @@ APlate::APlate() : Super()
 void APlate::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetState(EPlatestate::Clean);
 }
 
 void APlate::Tick(float DeltaTime)
@@ -45,6 +47,8 @@ void APlate::Interact(class ANotEvenPlayer* player)
 	// 플레이어가 isGrab 이고, 플레이어한테 OwnedObj가 있으면
 	if (player && player -> isGrab && player -> OwnedObj)
 	{
+		if (EPlatestate::Dirty == Platestate)
+			return;
 		if (AFoodIngredient* food = Cast<AFoodIngredient>(player->OwnedObj))
 		{
 			if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
@@ -116,5 +120,17 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 			return;
 		}
 		submitFood -> AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
+	}
+}
+
+void APlate::SetState(EPlatestate nextState)
+{
+	Platestate=nextState;
+	if(auto mesh =  StateMeshMap.Find(Platestate))
+	{
+		if (*mesh)
+		{
+			MeshComp->SetStaticMesh(*mesh);
+		}
 	}
 }

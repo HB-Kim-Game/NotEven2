@@ -3,7 +3,6 @@
 
 #include "NotEvenPlayer.h"
 
-#include "Camera.h"
 #include "CuttingBoard.h"
 #include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
@@ -16,12 +15,15 @@
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
+#include "PlateTable.h"
 #include "SubmitFood.h"
 #include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameManager/OrderManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/Core/Analytics/NetStatsUtils.h"
+#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
 
 
 // Sets default values
@@ -47,8 +49,7 @@ ANotEvenPlayer::ANotEvenPlayer()
 	}
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	bReplicates = true;
+	
 }
 
 void ANotEvenPlayer::NotifyControllerChanged()
@@ -57,27 +58,27 @@ void ANotEvenPlayer::NotifyControllerChanged()
 
 	if (auto* pc = Cast<APlayerController>(Controller))
 	{
-		if (auto* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer()))
+		if ( auto* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer()))
 		{
-			subsystem->AddMappingContext(IMC_Player,0);	
+			subsystem->AddMappingContext(IMC_Player,0);
 		}
 	}
 }
+
 
 // Called when the game starts or when spawned
 void ANotEvenPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (auto orderManager = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AOrderManager::StaticClass())))
+	if (auto pc = GetWorld()->GetFirstPlayerController())
 	{
-		if (auto pc = GetWorld()->GetFirstPlayerController())
+		if (!pc->IsLocalController()) return;
+		
+		if (auto ui = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(),AOrderManager::StaticClass())))
 		{
-			if (!pc->IsLocalController()) return;
-			orderManager->InitWidget();
-		}
+			ui -> InitWidget();
+		}	
 	}
-	
 }
 
 // Called every frame
@@ -156,6 +157,11 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 					// -> 테이블 위에 상호작용 하고싶다
 					table ->Interact(this);
 					return;
+				}
+
+				if (auto plateTable = Cast<APlateTable>(tempGrabObj.GetActor()))
+				{
+					plateTable ->Interact(this);
 				}
 
 				// 만약에 음식 제출테이블이면
