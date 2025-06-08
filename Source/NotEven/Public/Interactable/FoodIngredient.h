@@ -99,4 +99,7 @@ protected:
 
 	UPROPERTY()
 	class APlayerCameraManager* PlayerCameraManager;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void NetRPC_Interact(class ANotEvenPlayer* player);
 };

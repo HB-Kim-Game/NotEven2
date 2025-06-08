@@ -158,20 +158,7 @@ void AFoodIngredient::SetState(EIngredientState newState)
 void AFoodIngredient::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
-
-	switch (CurrentState)
-	{
-		case EIngredientState::None:
-			SetGrab(true);
-			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
-			break;
-		case EIngredientState::Sliced:
-			SetGrab(true);
-			AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
-			break;
-		default:
-			break;
-	}
+	NetRPC_Interact(player);
 }
 
 void AFoodIngredient::SetGrab(bool bGrab)
@@ -238,3 +225,19 @@ void AFoodIngredient::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	DOREPLIFETIME(AFoodIngredient, CurrentState);
 }
 
+void AFoodIngredient::NetRPC_Interact_Implementation(class ANotEvenPlayer* player)
+{
+	switch (CurrentState)
+	{
+	case EIngredientState::None:
+		SetGrab(true);
+		AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
+		break;
+	case EIngredientState::Sliced:
+		SetGrab(true);
+		AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
+		break;
+	default:
+		break;
+	}
+}

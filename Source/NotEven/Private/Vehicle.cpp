@@ -20,7 +20,7 @@ AVehicle::AVehicle()
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
 	meshComp -> SetupAttachment(boxComp);
 	meshComp -> SetRelativeScale3D(FVector(5.f));
-	meshComp -> SetRelativeLocationAndRotation(FVector(0, 0, -100.f), FRotator(0.f,90.f,0.f));
+	meshComp -> SetRelativeLocationAndRotation(FVector(0, 0, -100.f), FRotator(0.f,-90.f,0.f));
 	meshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/KHB/Models/car_stationwagon.car_stationwagon'"));
