@@ -18,6 +18,12 @@ ATrashBox::ATrashBox()
 	{
 		MeshComp-> SetStaticMesh(tempMesh.Object); 
 	}
+	
+	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
+	OverlapBox->SetRelativeLocation(FVector(0, 0, 60.f));
+
+	OverlapBox->SetBoxExtent(FVector(10.f, 10.f, 10.f));
+	OverlapBox->SetupAttachment(BoxComp);
 }
 
 void ATrashBox::Interact(class ANotEvenPlayer* player)
@@ -68,6 +74,21 @@ void ATrashBox::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	
+	DestroyOverlapObjects();
+}
+
+void ATrashBox::DestroyOverlapObjects()
+{
+	TArray<AActor*> OverlappingActors;
+	OverlapBox->GetOverlappingActors(OverlappingActors, AMovableObject::StaticClass());
+
+	for (auto actor : OverlappingActors)
+	{
+		if (auto cast = Cast<AMovableObject>(actor))
+		{
+			if (cast->BoxComp->GetCollisionEnabled() == ECollisionEnabled::NoCollision) continue;
+			actor->Destroy();
+		}
+	}
 }
 

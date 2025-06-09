@@ -22,9 +22,6 @@ public:
 	
 	void AddIngredient(FIngredientData data, EIngredientState state, float CookingProgress, FIngredientPlaceData placeData);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_AddIngredient(FSubmitFoodIngredientData data, float currentCookingProgress, float maxCookingProgress);
-
 	TArray<FRecipeIngredientData> GetIngredients() const;
 
 	virtual void Interact(class ANotEvenPlayer* player) override;

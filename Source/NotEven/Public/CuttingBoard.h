@@ -19,8 +19,14 @@ public:
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Interact(class ANotEvenPlayer* player);
+	
 	virtual void Cutting(class ANotEvenPlayer* player);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Cutting(class ANotEvenPlayer* player);
+	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* attachBox;
 
@@ -32,5 +38,6 @@ public:
 	float currentCount=0;
 	float maxCount=10;
 
-	
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* CuttingEffect;
 };

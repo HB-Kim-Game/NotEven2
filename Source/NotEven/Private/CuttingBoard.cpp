@@ -3,6 +3,7 @@
 
 #include "CuttingBoard.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "NotEvenPlayer.h"
 #include "Plate.h"
 #include "Components/BoxComponent.h"
@@ -24,12 +25,23 @@ ACuttingBoard::ACuttingBoard()
 	attachBox->SetBoxExtent(FVector(75, 75, 32));
 	attachBox ->SetRelativeLocation(FVector(0, 0, 75));
 	attachBox ->SetRelativeScale3D(FVector(1,1,0.25));
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> tempDashEffect(TEXT("/Script/Niagara.NiagaraSystem'/Game/KHB/Models/NS_Dust.NS_Dust'"));
+	if (tempDashEffect.Succeeded())
+	{
+		CuttingEffect = tempDashEffect.Object;
+	}
 }
 
 void ACuttingBoard::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 	
+	NetMulticast_Interact(player);
+}
+
+void ACuttingBoard::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
+{
 	// 만약에 플레이어가 isGrab 상태이면
 	if (player -> isGrab == true)
 	{
@@ -55,7 +67,7 @@ void ACuttingBoard::Interact(class ANotEvenPlayer* player)
 	}
 }
 
-void ACuttingBoard::Cutting(class ANotEvenPlayer* player)
+void ACuttingBoard::NetMulticast_Cutting_Implementation(class ANotEvenPlayer* player)
 {
 	// 만약 도마 위에 음식이 존재하면
 	if (isOnCuttingBoard == true)
@@ -71,6 +83,11 @@ void ACuttingBoard::Cutting(class ANotEvenPlayer* player)
 			// -> 음식(Slice) 상태를 변환하고 싶다
 			moveObject->SetState(EIngredientState::Sliced);
 		}
+		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), CuttingEffect, FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 60.f));
 	}
+}
 
+void ACuttingBoard::Cutting(class ANotEvenPlayer* player)
+{
+	NetMulticast_Cutting(player);
 }

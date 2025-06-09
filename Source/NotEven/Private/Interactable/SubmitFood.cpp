@@ -54,16 +54,7 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 	CurrentCookingProgress += CookingProgress;
 	MaxCookingProgress += data.MaxCookingProgress;
 	
-	NetMulticast_AddIngredient(add, CurrentCookingProgress, MaxCookingProgress);
-}
-
-void ASubmitFood::NetMulticast_AddIngredient_Implementation(FSubmitFoodIngredientData data,
-	float currentCookingProgress, float maxCookingProgress)
-{
-	Ingredients.Add(data);
-
-	CurrentCookingProgress = currentCookingProgress;
-	MaxCookingProgress = maxCookingProgress;
+	Ingredients.Add(add);
 
 	FindMesh();
 

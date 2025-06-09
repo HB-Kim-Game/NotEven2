@@ -19,7 +19,16 @@ public:
 	AKitchenTable();
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Interact(class ANotEvenPlayer* player);
 
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnObject();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void SpawnObject();
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -33,4 +42,10 @@ public:
 
 	UPROPERTY()
 	class AMovableObject* moveObject;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AMovableObject> SpawnObjectClass;
+	
+	UPROPERTY(EditAnywhere)
+	bool bIsSpawnObject = false;
 };

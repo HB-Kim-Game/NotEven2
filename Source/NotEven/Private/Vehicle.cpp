@@ -30,7 +30,6 @@ AVehicle::AVehicle()
 	}
 
 	bReplicates = true;
-	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -72,7 +71,7 @@ void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 	ANotEvenPlayer* player = Cast<ANotEvenPlayer>(OtherActor);
 	if (player)
 	{
-		player->UnPossessed();
+		player->DisableInput(Cast<APlayerController>(player->GetController()));
 		player->GetMesh()->SetSimulatePhysics(true);
 		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("root"),true,true);
 		player->CallRestartPlayerDelay();

@@ -18,8 +18,11 @@ AConveyorBelt::AConveyorBelt()
 
 	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
 	OverlapBox->SetupAttachment(BoxComp);
-
 	OverlapBox->SetGenerateOverlapEvents(true);
+    OverlapBox->SetRelativeLocation(FVector(0, 0, 70.f));
+
+	MeshComp->SetRelativeLocation(FVector(0, 0, 55.f));
+    MeshComp->SetRelativeScale3D(FVector(0.49f, 0.8f, 17.f));
 
 	bReplicates = true;
 }
@@ -43,6 +46,11 @@ void AConveyorBelt::Tick(float DeltaTime)
 void AConveyorBelt::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+
+	OwnedObj.RemoveAll([](const TWeakObjectPtr<AMovableObject>& o)
+	{
+		return !o->IsValidLowLevel();
+	});
 	
 	if (player->isGrab)
 	{
@@ -57,6 +65,7 @@ void AConveyorBelt::Interact(class ANotEvenPlayer* player)
 	else
 	{
 		if (OwnedObj.IsEmpty()) return;
+		if (!OwnedObj[0]->IsValidLowLevel()) return;
 		OwnedObj[0]->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		player->AttachGrabObj(OwnedObj[0]);
 	}
@@ -87,7 +96,7 @@ void AConveyorBelt::MoveObject(float DeltaTime)
 						OwnedObj.RemoveAt(index);
 					}
 				}
-				return;
+				continue;
 			}
 			cast->AddActorWorldOffset(offset);
 		}

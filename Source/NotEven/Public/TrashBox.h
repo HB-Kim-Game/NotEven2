@@ -27,5 +27,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(EditAnywhere)
-	class AFoodIngredient* Food;
+	class UBoxComponent* OverlapBox;
+
+	void DestroyOverlapObjects();
 };

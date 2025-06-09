@@ -36,7 +36,6 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FVector Direction;
-
 	
 	UPROPERTY(EditAnywhere,Category=input)
 	class UInputMappingContext* IMC_Player;
@@ -53,6 +52,9 @@ public:
 	UPROPERTY(EditAnywhere,category=input)
 	class UInputAction* IA_PlayerChopAndThrow;
 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* DashEffect;
+
 	// 이동 입력
 	void OnActionMove(const FInputActionValue& value);
 	// 대쉬 입력
@@ -61,12 +63,29 @@ public:
 	void OnActionObjGrab(const FInputActionValue& value);
 	// 던지기 입력
 	void OnActionObjChoppingAndThrowing(const FInputActionValue& value);
+	
 
-	//대쉬 거리 변수
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Grab();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ChopAndThrow();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Dash();
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Dash();
+
+	void OnGrab();
+
+	//대쉬 거리 변경 변수
 	float DashDistance = 2000.f;
 
 	// 플레이어 캐릭터를 재시작할 게임 모드 클래스 호출
 	void CallRestartPlayer();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RestartPlayer();
 
 	void CallRestartPlayerDelay();
 
@@ -76,19 +95,32 @@ public:
 //--------------------------잡기,놓기-----------------------------
 	
 	// 잡기 상태 변수
+	UPROPERTY()
 	bool isGrab = false;
 
 	UPROPERTY(EditAnywhere)
 	AMovableObject* OwnedObj = nullptr;
 
 	UPROPERTY(EditAnywhere,Category=Food)
-	float ObjDistance = 300.f;
+	float ObjDistance = 75.f;
 
 	UPROPERTY(EditAnywhere)
 	TArray<AActor*> ObjActors;
-
+	
 	void AttachGrabObj(AActor* ObjActor);
+
+	UFUNCTION(Server, Reliable)
+	void Server_AttachGrabObj(AActor* ObjActor);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_AttachGrabObj(class AMovableObject* obj, bool bIsGrab);
+	
 	void DetachGrabObj();
+
+	UFUNCTION(Server, Reliable)
+	void Server_DetachGrabObj();
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_DetachGrabObj();
 
 //-----------------------던지기-----------------------
 	UPROPERTY(EditAnywhere)

@@ -27,6 +27,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetRPC_Interact(class ANotEvenPlayer* player);
+	
 	UPROPERTY(EditAnywhere)
 	FString IngredientID;
 

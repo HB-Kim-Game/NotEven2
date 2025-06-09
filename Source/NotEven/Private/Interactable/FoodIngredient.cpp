@@ -201,7 +201,7 @@ void AFoodIngredient::NetMulticast_SetCurrentState_Implementation(EIngredientSta
 {
 	CurrentState = next;
 
-	UE_LOG(LogTemp, Warning, TEXT("Visible : %d"), IconWidgetComp->GetVisibleFlag());
+	//UE_LOG(LogTemp, Warning, TEXT("Visible : %d"), IconWidgetComp->GetVisibleFlag());
 	IconWidgetComp->SetVisibility(CurrentState != EIngredientState::None);
 	
 	if (auto mesh = IngredientMeshes.Find(CurrentState))

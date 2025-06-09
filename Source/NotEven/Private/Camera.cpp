@@ -32,20 +32,20 @@ ACamera::ACamera()
 void ACamera::BeginPlay()
 {
 	Super::BeginPlay();
-
-	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
 	
-		FVector curLoc = FVector(0, 0, 0);
-		FVector newLoc = curLoc + FVector(-1500.f, 0.f, 1500.f);
-		SetActorLocation(newLoc);
+	SetActorLocation(FVector(-910.f, 0.f, 1750.f));
 
-		// 회전 설정: Pitch -50도
-		FRotator newRot = FRotator(-50.f, 0.f, 0.f); // Pitch, Yaw, Roll
-		SetActorRotation(newRot);
+	// 회전 설정: Pitch -50도
+	FRotator newRot = FRotator(-65.f, 0.f, 0.f); // Pitch, Yaw, Roll
+	SetActorRotation(newRot);
 
+	auto pc = GetWorld()->GetFirstPlayerController();
+
+	if (pc)
+	{
 		// 자기 자신을 ViewTarget으로 설정
-		PC->SetViewTargetWithBlend(this);
-	
+		pc->SetViewTargetWithBlend(this);	
+	}
 }
 
 // Called every frame
