@@ -38,7 +38,7 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			return;
 		}
 
-		if (player->)
+		//if (player->)
 	}
 	else
 	{
