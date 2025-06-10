@@ -29,10 +29,19 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	void AddProgress(float progress);
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 protected:
 	float MaxCookingProgress = 0.f;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_CurrentCookingProgress)
 	float CurrentCookingProgress = 0.f;
+
+	UFUNCTION()
+	void OnRep_CurrentCookingProgress();
 	
 	UPROPERTY()
 	TArray<FSubmitFoodIngredientData> Ingredients;
@@ -48,6 +57,12 @@ protected:
 	TSubclassOf<class USubmitFoodUI> IconClass;
 	UPROPERTY()
 	class USubmitFoodUI* IconWidget;
+	
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* ProgressWidgetComp;
+
+	UPROPERTY()
+	class UCookingProgress* ProgressWidget;
 
 	UPROPERTY()
 	class APlayerCameraManager* PlayerCameraManager;

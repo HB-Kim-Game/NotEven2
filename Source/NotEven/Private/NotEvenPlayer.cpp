@@ -170,13 +170,8 @@ void ANotEvenPlayer::NetMulticast_AttachGrabObj_Implementation(class AMovableObj
 	OwnedObj->SetOwner(this);
 
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *OwnedObj->GetName());
-	if (auto cast = Cast<APlate>(OwnedObj))
-	{
-		cast->SetGrab(true);
-		cast->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
-		return;
-	}
-	OwnedObj->Interact(this);
+	obj->SetGrab(true);
+	obj->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
 }
 
 // 오브젝트 떼기
