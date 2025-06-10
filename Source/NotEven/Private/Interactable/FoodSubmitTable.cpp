@@ -72,7 +72,7 @@ void AFoodSubmitTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer
 	{
 		if (plate->submitFood)
 		{
-			player->DetachGrabObj();
+			player->DetachGrabObj(false);
 			SubmitFood(plate->submitFood->GetIngredients(), plate);
 			return;
 		}

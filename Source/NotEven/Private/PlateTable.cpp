@@ -51,8 +51,7 @@ void APlateTable::Interact(class ANotEvenPlayer* player)
 		// moveObject을 Grad 하고 있으면
 		moveObject = player->OwnedObj;
 		moveObject->AttachToComponent(attachPoint,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		player->DetachGrabObj();
-		moveObject->BoxComp->SetSimulatePhysics(false);
+		player->DetachGrabObj(false);
 	}
 	else
 	{

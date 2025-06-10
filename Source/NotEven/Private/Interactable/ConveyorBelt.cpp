@@ -59,8 +59,7 @@ void AConveyorBelt::Interact(class ANotEvenPlayer* player)
 		if (!OwnedObj.IsEmpty()) return;
 		auto add = player->OwnedObj;
 		add->AttachToComponent(OverlapBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		player->DetachGrabObj();
-		add->BoxComp->SetSimulatePhysics(false);
+		player->DetachGrabObj(false);
 		if (OwnedObj.Contains(add)) return;
 		OwnedObj.Add(add);
 	}

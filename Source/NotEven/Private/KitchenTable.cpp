@@ -84,7 +84,7 @@ void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* p
 		}
 		// moveObject을 Grad 하고 있으면
 		moveObject = player->OwnedObj;
-		player->DetachGrabObj();
+		player->DetachGrabObj(false);
 		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);

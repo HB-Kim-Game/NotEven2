@@ -177,25 +177,27 @@ void ANotEvenPlayer::NetMulticast_AttachGrabObj_Implementation(class AMovableObj
 }
 
 // 오브젝트 떼기
-void ANotEvenPlayer::DetachGrabObj()
+void ANotEvenPlayer::DetachGrabObj(bool bIsSimulatedPhysics)
 {
-	Server_DetachGrabObj();
+	Server_DetachGrabObj(bIsSimulatedPhysics);
 }
 
-void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation()
+void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation(bool bIsSimulatedPhysics)
 {
 	if (!OwnedObj) return;
 	isGrab = false;
 	OwnedObj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	OwnedObj->SetOwner(nullptr);
 	OwnedObj->SetGrab(false);
+	OwnedObj->BoxComp->SetSimulatePhysics(bIsSimulatedPhysics);
+	OwnedObj->BoxComp->SetCollisionEnabled(bIsSimulatedPhysics ? ECollisionEnabled::Type::QueryAndPhysics : ECollisionEnabled::Type::NoCollision);
 	OwnedObj = nullptr;
 }
 
-void ANotEvenPlayer::Server_DetachGrabObj_Implementation()
+void ANotEvenPlayer::Server_DetachGrabObj_Implementation(bool bIsSimulatedPhysics)
 {
 	isGrab = false;
-	NetMulticast_DetachGrabObj();
+	NetMulticast_DetachGrabObj(bIsSimulatedPhysics);
 }
 
 // 다지기 및 던지기
@@ -223,7 +225,7 @@ void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
 		if (foodobj)
 		{
 			//OwnedObj를 떼어내고
-			DetachGrabObj();
+			DetachGrabObj(true);
 
 			//힘을 가하고 싶다
 			foodobj->BoxComp->AddImpulse(impulse);
@@ -314,7 +316,7 @@ void ANotEvenPlayer::OnGrab()
 				}
 			}
 		}
-		DetachGrabObj();
+		DetachGrabObj(true);
 		return;
 	}
 

@@ -81,7 +81,7 @@ void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			// food 를 OnPlate
 			OnPlate(food);
 			// 플레이어가 들고 있는 오브젝트를 Detach
-			player->DetachGrabObj();
+			player->DetachGrabObj(false);
 			auto destroyObj = food;
 			destroyObj->Destroy();
 			
