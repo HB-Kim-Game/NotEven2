@@ -4,7 +4,9 @@
 #include "Interactable/SubmitFood.h"
 #include "Components/WidgetComponent.h"
 #include "SubmitFoodUI.h"
+#include "CookingProgress.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 ASubmitFood::ASubmitFood()
 {
@@ -32,13 +34,21 @@ ASubmitFood::ASubmitFood()
 	
 	IconWidgetComp->SetWidgetClass(IconClass);
 
+	ProgressWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ProgressWidgetComp"));
+	
+	ConstructorHelpers::FClassFinder<UCookingProgress> progressClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_CookingProgress.WBP_CookingProgress_C'"));
+
+	if (progressClass.Succeeded())
+	{
+		ProgressWidgetComp->SetWidgetClass(progressClass.Class);
+	}
+
 	bReplicates = true;
 }
 
 void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, float CookingProgress, FIngredientPlaceData placeData)
 {
 	if (Ingredients.Num() >= 4) return;
-
 	
 	FSubmitFoodIngredientData add = FSubmitFoodIngredientData();
 	
@@ -89,6 +99,12 @@ void ASubmitFood::BeginPlay()
 	IconWidgetComp->SetDrawAtDesiredSize(true);
 	IconWidgetComp->SetDrawSize(FVector2D(150.f, 150.f));
 	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+
+	ProgressWidget = Cast<UCookingProgress>(ProgressWidgetComp->GetWidget());
+	ProgressWidgetComp->SetDrawSize(FVector2D(75.f, 30.f));
+	ProgressWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+
+	ProgressWidgetComp->SetVisibility(false);
 	
 	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 }
@@ -99,6 +115,38 @@ void ASubmitFood::Tick(float DeltaTime)
 
 	IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 200.f));
 	IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
+	
+	ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 300.f));
+	ProgressWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
+}
+
+void ASubmitFood::AddProgress(float progress)
+{
+	CurrentCookingProgress += progress;
+
+	OnRep_CurrentCookingProgress();
+}
+
+void ASubmitFood::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASubmitFood, CurrentCookingProgress);
+}
+
+void ASubmitFood::OnRep_CurrentCookingProgress()
+{
+	// ProgressBar 표시
+	if (ProgressWidget)
+	{
+		if (CurrentCookingProgress <= 0.01f)
+		{
+			ProgressWidgetComp->SetVisibility(false);
+			return;
+		}
+		
+		ProgressWidget->Progress = CurrentCookingProgress;
+	}
 }
 
 void ASubmitFood::FindMesh()
