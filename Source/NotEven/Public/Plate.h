@@ -32,6 +32,8 @@ public:
 	virtual void SetGrab(bool bGrab) override;
 
 	void OnPlate(AFoodIngredient* foodObj);
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UPROPERTY(EditAnywhere)
 	class ASubmitFood* submitFood;
@@ -45,6 +47,26 @@ public:
 	UFUNCTION()
 	void SetState(EPlatestate nextState);
 
+	UPROPERTY()
+	class UCookingProgress* WashingProgress;
+
+	UFUNCTION()
+	void Rep_CurrentWashingProgress();
+
+	void AddWashingProgress(float addProgress);
+
+	float GetCurrentWashingProgress() const;
+
+	float GetMaxWashingProgress() const;
+
+	void SetMaxWashingProgress(float progress);
+
+	UPROPERTY(ReplicatedUsing = Rep_CurrentWashingProgress)
+	float CurrentWashingProgress = 0.f;
+	float MaxWashingProgress = 10.f;
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* WashWidgetComp;
 	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* attachPoint ;

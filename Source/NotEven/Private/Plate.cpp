@@ -5,6 +5,9 @@
 
 #include "NotEvenPlayer.h"
 #include "SubmitFood.h"
+#include "Components/WidgetComponent.h"
+#include "CookingProgress.h"
+#include "Net/UnrealNetwork.h"
 
 APlate::APlate() : Super()
 {
@@ -23,6 +26,17 @@ APlate::APlate() : Super()
 	attachPoint->SetupAttachment(BoxComp);
 	attachPoint->SetBoxExtent(FVector(35, 35, 10));
 	attachPoint->SetRelativeLocation(FVector(0, 0, 20));
+
+
+
+	WashWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("WashWidgetComp"));
+	
+	ConstructorHelpers::FClassFinder<UCookingProgress> progressClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_CookingProgress.WBP_CookingProgress_C'"));
+
+	if (progressClass.Succeeded())
+	{
+		WashWidgetComp->SetWidgetClass(progressClass.Class);
+	}
 	
 	bReplicates = true;
 }
@@ -140,4 +154,47 @@ void APlate::SetState(EPlatestate nextState)
 			MeshComp->SetStaticMesh(*mesh);
 		}
 	}
+}
+
+void APlate::Rep_CurrentWashingProgress()
+{
+	if (CurrentWashingProgress <= 0.01f)
+	{
+		WashWidgetComp->SetVisibility(false);
+		return;
+	}
+
+	WashWidgetComp->SetVisibility(true);
+	WashingProgress->Progress = CurrentWashingProgress / MaxWashingProgress;
+}
+
+void APlate::AddWashingProgress(float addProgress)
+{
+	CurrentWashingProgress += addProgress;
+	if (HasAuthority())
+	{
+		Rep_CurrentWashingProgress();
+	}
+}
+
+float APlate::GetCurrentWashingProgress() const
+{
+	return CurrentWashingProgress;
+}
+
+float APlate::GetMaxWashingProgress() const
+{
+	return MaxWashingProgress;
+}
+
+void APlate::SetMaxWashingProgress(float progress)
+{
+	MaxWashingProgress = progress;
+}
+
+void APlate::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlate, CurrentWashingProgress);
 }

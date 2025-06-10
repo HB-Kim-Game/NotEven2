@@ -19,5 +19,18 @@ public:
 	AKitchenSink();
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Interact(class ANotEvenPlayer* player);
+
+	virtual void Washing(class ANotEvenPlayer* player);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Washing(class ANotEvenPlayer* player);
+	
+	UPROPERTY(EditAnywhere)
+	class APlate* PlateObj;
+
+	bool isInSink;
 	
 };
