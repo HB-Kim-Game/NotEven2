@@ -54,8 +54,7 @@ void ACuttingBoard::NetMulticast_Interact_Implementation(class ANotEvenPlayer* p
 			moveObject = food;
 			moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			isOnCuttingBoard = true;
-			player->DetachGrabObj();
-			moveObject->BoxComp->SetSimulatePhysics(false);
+			player->DetachGrabObj(false);
 		}
 	}
 	else

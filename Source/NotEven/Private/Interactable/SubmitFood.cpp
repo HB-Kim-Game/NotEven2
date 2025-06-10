@@ -95,6 +95,9 @@ void ASubmitFood::Interact(class ANotEvenPlayer* player)
 void ASubmitFood::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BoxComp->SetSimulatePhysics(false);
+	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	
 	IconWidgetComp->SetDrawAtDesiredSize(true);
 	IconWidgetComp->SetDrawSize(FVector2D(150.f, 150.f));

@@ -115,12 +115,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_AttachGrabObj(class AMovableObject* obj, bool bIsGrab);
 	
-	void DetachGrabObj();
+	void DetachGrabObj(bool bIsSimulatedPhysics);
 
 	UFUNCTION(Server, Reliable)
-	void Server_DetachGrabObj();
+	void Server_DetachGrabObj(bool bIsSimulatedPhysics);
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_DetachGrabObj();
+	void NetMulticast_DetachGrabObj(bool bIsSimulatedPhysics);
 
 //-----------------------던지기-----------------------
 	UPROPERTY(EditAnywhere)

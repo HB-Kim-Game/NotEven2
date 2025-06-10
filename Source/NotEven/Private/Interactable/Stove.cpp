@@ -44,8 +44,7 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 		if (auto pot = Cast<APot>(player->OwnedObj))
 		{
 			Pot = pot;
-			player->DetachGrabObj();
-			Pot->BoxComp->SetSimulatePhysics(false);
+			player->DetachGrabObj(false);
 			Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
 		}
