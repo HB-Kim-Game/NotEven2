@@ -69,7 +69,7 @@ public:
 	class UWidgetComponent* WashWidgetComp;
 	
 	UPROPERTY(EditAnywhere)
-	class UBoxComponent* attachPoint ;
+	class UBoxComponent* attachPoint;
 
 	UPROPERTY(Replicated)
 	EPlatestate CurrentState;
