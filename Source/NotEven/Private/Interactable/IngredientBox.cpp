@@ -55,6 +55,7 @@ AIngredientBox::AIngredientBox()
 	{
 		IconMaterial = iconMat.Object;
 	}
+	
 }
 
 void AIngredientBox::Interact(class ANotEvenPlayer* player)

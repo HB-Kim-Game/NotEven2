@@ -17,7 +17,7 @@ APot::APot()
 		MeshComp->SetStaticMesh(tempMesh.Object);
 	}
 
-	MeshComp->SetRelativeLocation(FVector(0, 0, -25.f));
+	MeshComp->SetRelativeLocation(FVector(0, 0, -10.f));
 
 	bReplicates = true;
 }
@@ -53,4 +53,33 @@ void APot::AddProgress(float progress)
 bool APot::HasSubmitFood()
 {
 	return SubmitFood != nullptr;
+}
+
+void APot::SetGrab(bool bGrab)
+{
+	Super::SetGrab(bGrab);
+
+	// 잡았을 경우
+	if (bGrab)
+	{
+		// 물리 끄기
+		BoxComp->SetSimulatePhysics(false);
+		// NoCollision으로 설정
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision); 
+	}
+	// 놓았을 경우
+	else
+	{
+		//물리 적용
+		BoxComp->SetSimulatePhysics(true);
+		BoxComp->SetMassScale(NAME_None,1.f);
+		//떨어질 때 회전값 잠금
+		BoxComp->BodyInstance.bLockRotation = true;
+
+		//떨어질 때 X,Y축의 이동을 잠그고 Z축으로만 이동하게 설정
+		BoxComp->BodyInstance.bLockXTranslation = true; // X축
+		BoxComp->BodyInstance.bLockYTranslation = true; // Y축
+		
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics); // Collision Enabled(QueryAndPhysics)으로 설정
+	}
 }

@@ -30,6 +30,8 @@ class NOTEVEN_API APot : public AMovableObject
 	void AddProgress(float progress);
 
 	bool HasSubmitFood();
+
+	virtual void SetGrab(bool bGrab) override;
 	
 protected:
 
