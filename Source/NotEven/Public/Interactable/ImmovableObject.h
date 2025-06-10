@@ -32,4 +32,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComp;
+
+	UPROPERTY(EditAnywhere)
+	bool bIsInteractable = false;
 };

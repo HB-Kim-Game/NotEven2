@@ -24,6 +24,8 @@ AConveyorBelt::AConveyorBelt()
 	MeshComp->SetRelativeLocation(FVector(0, 0, 55.f));
     MeshComp->SetRelativeScale3D(FVector(0.49f, 0.8f, 17.f));
 
+	bIsInteractable = true;
+	
 	bReplicates = true;
 }
 

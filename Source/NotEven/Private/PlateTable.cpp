@@ -6,8 +6,6 @@
 #include "NotEvenPlayer.h"
 #include "Plate.h"
 #include "Components/BoxComponent.h"
-#include "Framework/Text/Android/AndroidPlatformTextField.h"
-#include "WorldPartition/ContentBundle/ContentBundleLog.h"
 
 APlateTable::APlateTable()
 {
@@ -24,6 +22,8 @@ APlateTable::APlateTable()
 	attachPoint->SetBoxExtent(FVector(75, 75, 75));
 	attachPoint ->SetRelativeLocation(FVector(0, 0, 75));
 	attachPoint ->SetRelativeScale3D(FVector(1,1,0.25));
+
+	bIsInteractable = true;
 }
 
 void APlateTable::Interact(class ANotEvenPlayer* player)

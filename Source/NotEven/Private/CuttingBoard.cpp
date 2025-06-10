@@ -31,6 +31,8 @@ ACuttingBoard::ACuttingBoard()
 	{
 		CuttingEffect = tempDashEffect.Object;
 	}
+
+	bIsInteractable = true;
 }
 
 void ACuttingBoard::Interact(class ANotEvenPlayer* player)
