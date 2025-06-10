@@ -19,6 +19,8 @@ AStove::AStove()
 	}
 	
 	bReplicates = true;
+
+	bIsInteractable = true;
 }
 
 void AStove::Interact(class ANotEvenPlayer* player)
@@ -38,7 +40,15 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			return;
 		}
 
-		//if (player->)
+		// 냄비가 없을경우, 손에 들고있는 것이 냄비일때
+		if (auto pot = Cast<APot>(player->OwnedObj))
+		{
+			Pot = pot;
+			player->DetachGrabObj();
+			Pot->BoxComp->SetSimulatePhysics(false);
+			Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
+		}
 	}
 	else
 	{

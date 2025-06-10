@@ -3,6 +3,7 @@
 
 #include "NotEvenPlayer.h"
 
+#include "ConveyorBelt.h"
 #include "CuttingBoard.h"
 #include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
@@ -24,6 +25,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "Stove.h"
 
 
 // Sets default values
@@ -279,61 +281,54 @@ void ANotEvenPlayer::OnGrab()
 		{
 			for (auto tempGrabObj : hitResults)
 			{
-				// 만약에 테이블이면은
-				if (auto table = Cast<AKitchenTable>(tempGrabObj.GetActor()))
+				if (auto immovableObj = Cast<AImmovableObject>(tempGrabObj.GetActor()))
 				{
-					// -> 테이블 위에 상호작용 하고싶다
-					table ->Interact(this);
-					return;
-				}
-
-				if (auto plateTable = Cast<APlateTable>(tempGrabObj.GetActor()))
-				{
-					plateTable ->Interact(this);
-				}
-
-				// 만약에 음식 제출테이블이면
-				if (auto subtable = Cast<AFoodSubmitTable>(tempGrabObj.GetActor()))
-				{
-					// -> 제출테이블에 상호작용 하고싶다
-					subtable ->Interact(this);
-					return;
-				}
-				
-				// 만약에 도마이면
-				// -> 도마 위에 놓기를 하고 싶다
-				if (auto cuttingBoard = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
-				{
-					// 프라이팬, 도마 위에 이미 음식이 놓여져 있으면
-					if (auto food = Cast<AFoodIngredient>(OwnedObj))
+					if (immovableObj->bIsInteractable)
 					{
-						if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
+						// 만약에 도마이면
+						// -> 도마 위에 놓기를 하고 싶다
+						if (auto cuttingBoard = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
 						{
-							return rule.State == food->GetIngredientState() && rule.Requirement.Contains(EPlacementRequirement::CuttingBoard);
-						}))
-						{
-							return;
-						}
-					}
+							// 프라이팬, 도마 위에 이미 음식이 놓여져 있으면
+							if (auto food = Cast<AFoodIngredient>(OwnedObj))
+							{
+								if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
+								{
+									return rule.State == food->GetIngredientState() && rule.Requirement.Contains(EPlacementRequirement::CuttingBoard);
+								}))
+								{
+									return;
+								}
+							}
 					
-					if (Cast<AFoodIngredient>(OwnedObj))
-					{
-						cuttingBoard ->Interact(this);
+							if (Cast<AFoodIngredient>(OwnedObj))
+							{
+								cuttingBoard ->Interact(this);
+								return;
+							}
+						}
+						
+						immovableObj->Interact(this);
 						return;
 					}
-				}
-
-				// 3. 만약에 쓰레기통이면
-				if (auto trashBox = Cast<ATrashBox>(tempGrabObj.GetActor()))
-				{
-					// 쓰레기통이랑 상호작용 하고싶다
-					trashBox -> Interact(this);
-					return;
 				}
 			}
 		}
 		DetachGrabObj();
 		return;
+	}
+
+	hitResults.Empty();
+	
+	//잡을 수 있는 Obj Collision이면
+	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
+	{
+		for (auto tempGrabObj : hitResults)
+		{
+			AttachGrabObj(tempGrabObj.GetActor());
+			return;
+		}
 	}
 	
 	hitResults.Empty();
@@ -348,19 +343,6 @@ void ANotEvenPlayer::OnGrab()
 				unGrabObj->Interact(this);
 				return;
 			}
-		}
-	}
-	
-	hitResults.Empty();
-	
-	//잡을 수 있는 Obj Collision이면
-	if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
-		FQuat::Identity,ECC_GameTraceChannel1,FCollisionShape::MakeBox(boxExtent)))
-	{
-		for (auto tempGrabObj : hitResults)
-		{
-			AttachGrabObj(tempGrabObj.GetActor());
-			return;
 		}
 	}
 }

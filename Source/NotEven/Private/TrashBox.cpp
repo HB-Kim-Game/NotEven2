@@ -24,6 +24,8 @@ ATrashBox::ATrashBox()
 
 	OverlapBox->SetBoxExtent(FVector(10.f, 10.f, 10.f));
 	OverlapBox->SetupAttachment(BoxComp);
+
+	bIsInteractable = true;
 }
 
 void ATrashBox::Interact(class ANotEvenPlayer* player)

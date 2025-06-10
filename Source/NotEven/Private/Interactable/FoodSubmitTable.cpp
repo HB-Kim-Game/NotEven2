@@ -36,6 +36,8 @@ AFoodSubmitTable::AFoodSubmitTable()
 	}
 	
 	TextWidgetComp->SetWidgetClass(TextClass);
+
+	bIsInteractable = true;
 }
 
 void AFoodSubmitTable::BeginPlay()
