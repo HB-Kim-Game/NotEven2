@@ -15,13 +15,21 @@ AVehicle::AVehicle()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 	boxComp -> SetupAttachment(RootComponent);
-	boxComp ->SetBoxExtent(FVector(250.f, 150.f, 125.f));
+	boxComp ->SetBoxExtent(FVector(250.f, 150.f, 100.f));
 
 	meshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("meshComp"));
 	meshComp -> SetupAttachment(boxComp);
-	meshComp -> SetRelativeScale3D(FVector(5.f,3.f,2.5f));
+	meshComp -> SetRelativeScale3D(FVector(5.f));
+	meshComp -> SetRelativeLocationAndRotation(FVector(0, 0, -100.f), FRotator(0.f,-90.f,0.f));
 	meshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Script/Engine.StaticMesh'/Game/KHB/Models/car_stationwagon.car_stationwagon'"));
+	if (tempMesh.Succeeded())
+	{
+		meshComp->SetStaticMesh(tempMesh.Object);
+	}
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -47,8 +55,6 @@ void AVehicle::Tick(float DeltaTime)
 
 	FVector newLoc = GetActorLocation() + Direction * Speed * DeltaTime;
 	SetActorLocation(newLoc);
-	
-
 }
 
 void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -65,7 +71,7 @@ void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 	ANotEvenPlayer* player = Cast<ANotEvenPlayer>(OtherActor);
 	if (player)
 	{
-		player->UnPossessed();
+		player->DisableInput(Cast<APlayerController>(player->GetController()));
 		player->GetMesh()->SetSimulatePhysics(true);
 		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("root"),true,true);
 		player->CallRestartPlayerDelay();

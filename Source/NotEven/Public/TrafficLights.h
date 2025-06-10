@@ -35,7 +35,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPointLightComponent* YellowLight;
 
+	UFUNCTION(NetMulticast, Reliable)
 	void SetGreen();
+	UFUNCTION(NetMulticast, Reliable)
 	void SetRed();
+	UFUNCTION(NetMulticast, Reliable)
 	void SetYellow();
 };

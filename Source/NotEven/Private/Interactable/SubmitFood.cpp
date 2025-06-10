@@ -32,6 +32,7 @@ ASubmitFood::ASubmitFood()
 	
 	IconWidgetComp->SetWidgetClass(IconClass);
 
+	bReplicates = true;
 }
 
 void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, float CookingProgress, FIngredientPlaceData placeData)
@@ -49,7 +50,7 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 
 	add.IngredientData = temp;
 	add.PlacementData = placeData;
-
+	
 	CurrentCookingProgress += CookingProgress;
 	MaxCookingProgress += data.MaxCookingProgress;
 	

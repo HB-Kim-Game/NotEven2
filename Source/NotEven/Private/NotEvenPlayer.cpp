@@ -21,9 +21,9 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameManager/OrderManager.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Net/Core/Analytics/NetStatsUtils.h"
-#include "Physics/ImmediatePhysics/ImmediatePhysicsShared/ImmediatePhysicsCore.h"
+#include "NiagaraComponent.h"
 
 
 // Sets default values
@@ -49,7 +49,14 @@ ANotEvenPlayer::ANotEvenPlayer()
 	}
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> tempDashEffect(TEXT("/Script/Niagara.NiagaraSystem'/Game/KHB/Models/NS_Dust.NS_Dust'"));
+	if (tempDashEffect.Succeeded())
+	{
+		DashEffect = tempDashEffect.Object;
+	}
 	
+	bReplicates = true;
 }
 
 void ANotEvenPlayer::NotifyControllerChanged()
@@ -64,6 +71,7 @@ void ANotEvenPlayer::NotifyControllerChanged()
 		}
 	}
 }
+
 
 
 // Called when the game starts or when spawned
@@ -132,12 +140,137 @@ void ANotEvenPlayer::OnActionMove(const FInputActionValue& value)
 // 캐릭터 대쉬
 void ANotEvenPlayer::OnActionDash(const FInputActionValue& value)
 {
-	FVector forwordDir = this->GetActorRotation().Vector();
-	LaunchCharacter(forwordDir*DashDistance,true,true);
+	ServerRPC_Dash();
 }
 
 // 캐릭터 잡기 입력
 void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
+{
+	ServerRPC_Grab();
+}
+
+// 오브젝트 붙이기
+void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
+{
+	Server_AttachGrabObj(ObjActor);	
+}
+
+void ANotEvenPlayer::Server_AttachGrabObj_Implementation(AActor* ObjActor)
+{
+	isGrab = true;
+	OwnedObj = Cast<AMovableObject>(ObjActor);
+	NetMulticast_AttachGrabObj(OwnedObj, true);
+}
+
+void ANotEvenPlayer::NetMulticast_AttachGrabObj_Implementation(class AMovableObject* obj, bool bIsGrab)
+{
+	if (!obj) return;
+	isGrab = bIsGrab;
+	OwnedObj = obj;
+	OwnedObj->SetOwner(this);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *OwnedObj->GetName());
+	if (auto cast = Cast<APlate>(OwnedObj))
+	{
+		cast->SetGrab(true);
+		cast->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
+		return;
+	}
+	OwnedObj->Interact(this);
+}
+
+// 오브젝트 떼기
+void ANotEvenPlayer::DetachGrabObj()
+{
+	Server_DetachGrabObj();
+}
+
+void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation()
+{
+	if (!OwnedObj) return;
+	isGrab = false;
+	OwnedObj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	OwnedObj->SetOwner(nullptr);
+	OwnedObj->SetGrab(false);
+	OwnedObj = nullptr;
+}
+
+void ANotEvenPlayer::Server_DetachGrabObj_Implementation()
+{
+	isGrab = false;
+	NetMulticast_DetachGrabObj();
+}
+
+// 다지기 및 던지기
+void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& value)
+{
+	ServerRPC_ChopAndThrow();
+}
+
+void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
+{
+	//만약에 잡기를 하고 있으면
+	if (isGrab==true)
+	{
+		auto plateobj = Cast<APlate>(OwnedObj);
+		auto foodobj = Cast<AFoodIngredient>(OwnedObj) ;
+		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
+
+		// 만약 접시이면
+		if (plateobj)
+		{
+			//던지지 않는다
+			return;
+		}
+		// 만약 음식이면
+		if (foodobj)
+		{
+			//OwnedObj를 떼어내고
+			DetachGrabObj();
+
+			//힘을 가하고 싶다
+			foodobj->BoxComp->AddImpulse(impulse);
+		}
+	}
+	
+	TArray<FHitResult> hitResults;
+	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius());
+	boxExtent.Z = 300.f;
+
+	// 만약에 잡기를 안하고 있으면
+	if (isGrab==false)
+	{
+		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
+		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
+		{
+			for (auto tempGrabObj : hitResults)
+			{
+				if (auto* unGrabObj = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
+				{
+					unGrabObj->Cutting(this);
+					return;
+				}
+			}
+		}
+	}
+}
+
+void ANotEvenPlayer::ServerRPC_Dash_Implementation()
+{
+	NetMulticast_Dash();
+}
+
+void ANotEvenPlayer::NetMulticast_Dash_Implementation()
+{
+	if (DashEffect)
+	{
+		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DashEffect, GetActorLocation());
+	}
+	FVector forwordDir = this->GetActorRotation().Vector();
+	LaunchCharacter(forwordDir*DashDistance,true,true);
+}
+
+void ANotEvenPlayer::OnGrab()
 {
 	TArray<FHitResult> hitResults;
 	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
@@ -232,93 +365,30 @@ void ANotEvenPlayer::OnActionObjGrab(const FInputActionValue& value)
 		for (auto tempGrabObj : hitResults)
 		{
 			AttachGrabObj(tempGrabObj.GetActor());
-
 			return;
 		}
 	}
 }
 
-// 오브젝트 붙이기
-void ANotEvenPlayer::AttachGrabObj(AActor* ObjActor)
+void ANotEvenPlayer::ServerRPC_Grab_Implementation()
 {
-	OwnedObj = Cast<AMovableObject>(ObjActor);
-	OwnedObj->SetOwner(this);
-	OwnedObj->Interact(this);
-	isGrab = true;
-}
-
-// 오브젝트 떼기
-void ANotEvenPlayer::DetachGrabObj()
-{
-	if (!OwnedObj)
-		return;
-	OwnedObj ->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	OwnedObj -> SetOwner(nullptr);
-	OwnedObj->SetGrab(false);
-	OwnedObj = nullptr;
-	isGrab = false;
-}
-
-// 다지기 및 던지기
-void ANotEvenPlayer::OnActionObjChoppingAndThrowing(const FInputActionValue& value)
-{
-	//만약에 잡기를 하고 있으면
-	if (isGrab==true)
-	{
-		auto plateobj = Cast<APlate>(OwnedObj);
-		auto foodobj = Cast<AFoodIngredient>(OwnedObj) ;
-		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
-
-		// 만약 접시이면
-		if (plateobj)
-		{
-			//던지지 않는다
-			return;
-		}
-		// 만약 음식이면
-		if (foodobj)
-		{
-			//OwnedObj를 떼어내고
-			DetachGrabObj();
-
-			//힘을 가하고 싶다
-			foodobj->BoxComp->AddImpulse(impulse);
-		}
-	}
-	
-	TArray<FHitResult> hitResults;
-	FVector boxExtent = FVector(GetCapsuleComponent()->GetScaledCapsuleRadius()+10.f);
-	boxExtent.Z = 300.f;
-
-	// 만약에 잡기를 안하고 있으면
-	if (isGrab==false)
-	{
-		if (GetWorld()->SweepMultiByChannel(hitResults,GetActorLocation(),GetActorLocation()+GetActorForwardVector()*ObjDistance,
-		FQuat::Identity,ECC_GameTraceChannel2,FCollisionShape::MakeBox(boxExtent)))
-		{
-			for (auto tempGrabObj : hitResults)
-			{
-				if (auto* unGrabObj = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
-				{
-					unGrabObj->Cutting(this);
-					return;
-				}
-			}
-		}
-	}
+	UE_LOG(LogTemp, Warning, TEXT("OnGrab Server"));
+	OnGrab();
 }
 
 void ANotEvenPlayer::CallRestartPlayer()
 {
-	// 폰 컨트롤러에 대한 래퍼런스 구하기
-	APlayerController* controllerRef = GetWorld()->GetFirstPlayerController();
-	
+	if (HasAuthority()) ServerRPC_RestartPlayer();
+}
+
+void ANotEvenPlayer::ServerRPC_RestartPlayer_Implementation()
+{
 	//월드와 월드의 게임 모드가 RestartPlayer 함수를 호출하도록 함
 	if (UWorld* World = GetWorld())
 	{
 		if (ANotEvenGameMode* gm = Cast<ANotEvenGameMode>(World->GetAuthGameMode()))
 		{
-			gm-> RestartPlayer(controllerRef);
+			gm->RestartPlayer(GetController());
 		}
 	}
 }

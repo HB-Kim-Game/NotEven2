@@ -27,6 +27,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UResultUI* ResultUI;
 
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	class UWidgetAnimation* Start;
+
 protected:
 	virtual void NativeConstruct() override;
 };

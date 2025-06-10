@@ -23,8 +23,8 @@ APlate::APlate() : Super()
 	attachPoint->SetupAttachment(BoxComp);
 	attachPoint->SetBoxExtent(FVector(35, 35, 10));
 	attachPoint->SetRelativeLocation(FVector(0, 0, 20));
-	//attachPoint->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	//attachPoint->SetRelativeRotation(FRotator(90, 0, 0));
+	
+	bReplicates = true;
 }
 
 void APlate::BeginPlay()
@@ -32,6 +32,7 @@ void APlate::BeginPlay()
 	Super::BeginPlay();
 
 	SetState(EPlatestate::Clean);
+	BoxComp->SetSimulatePhysics(false);
 }
 
 void APlate::Tick(float DeltaTime)
@@ -43,7 +44,12 @@ void APlate::Tick(float DeltaTime)
 void APlate::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+	
+	NetMulticast_Interact(player);
+}
 
+void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
+{
 	// 플레이어가 isGrab 이고, 플레이어한테 OwnedObj가 있으면
 	if (player && player -> isGrab && player -> OwnedObj)
 	{
@@ -62,7 +68,8 @@ void APlate::Interact(class ANotEvenPlayer* player)
 			OnPlate(food);
 			// 플레이어가 들고 있는 오브젝트를 Detach
 			player->DetachGrabObj();
-			food ->Destroy();
+			auto destroyObj = food;
+			destroyObj->Destroy();
 			
 		}
 	}
@@ -114,8 +121,8 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 			
 			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>(attachLocation,attachRotation);
 			sbfood->AddIngredient(foodObj->GetIngredientData(),foodObj->GetIngredientState(),foodObj->GetCurrentCookingProgress(), foodObj->GetIngredientPlaceData());
-			sbfood ->BoxComp->SetSimulatePhysics(false);
-			sbfood ->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName("AttachPoint"));
+			sbfood->BoxComp->SetSimulatePhysics(false);
+			sbfood->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName("AttachPoint"));
 			submitFood = sbfood;
 			return;
 		}

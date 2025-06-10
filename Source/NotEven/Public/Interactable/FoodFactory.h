@@ -3,21 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ImmovableObject.h"
 #include "IngredientStruct.h"
 #include "GameFramework/Actor.h"
-#include "IngredientBox.generated.h"
+#include "FoodFactory.generated.h"
 
 UCLASS()
-class NOTEVEN_API AIngredientBox : public AImmovableObject
+class NOTEVEN_API AFoodFactory : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AIngredientBox();
-
-	virtual void Interact(class ANotEvenPlayer* player) override;
+	AFoodFactory();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,11 +24,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void NetRPC_Interact(class ANotEvenPlayer* player);
-	
+protected:
 	UPROPERTY(EditAnywhere)
-	FString IngredientID;
+	class AConveyorBelt* StartBelt;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FString> IngredientIDs;
 
 	UPROPERTY(EditAnywhere, blueprintReadWrite)
 	class UDataTable* IngredientTable;
@@ -45,12 +43,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	FIngredientPlaceData PlaceData;
 
-	UPROPERTY(editAnywhere)
-	class UStaticMeshComponent* IconMesh;
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* BoxComp;
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(editAnywhere)
-	class UMaterialInterface* IconMaterial;
-
-	UPROPERTY()
-	class UMaterialInstanceDynamic* IconDynamic;
+	FTimerHandle TimerHandle;
 };

@@ -25,6 +25,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Interact(class ANotEvenPlayer* player);
 
 	virtual void SetGrab(bool bGrab) override;
 

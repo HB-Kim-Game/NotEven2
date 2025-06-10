@@ -30,6 +30,4 @@ class NOTEVEN_API USubmitFoodUI : public UUserWidget
 	void ShowIconImage(TArray<struct FRecipeIngredientData> data);
 
 	virtual void NativeConstruct() override;
-
-	void SetMaterial();
 };

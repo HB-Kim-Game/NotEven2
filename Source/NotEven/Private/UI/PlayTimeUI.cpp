@@ -11,6 +11,7 @@ void UPlayTimeUI::SetMaxTime(AOrderManager* orderManager)
 {
 	OrderManager = orderManager;
 	MaxTime = orderManager->GetMaxTime();
+	ShowRemainTime(MaxTime);
 }
 
 void UPlayTimeUI::ShowRemainTime(float currentTime)

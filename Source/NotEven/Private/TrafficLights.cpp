@@ -48,6 +48,9 @@ ATrafficLights::ATrafficLights()
 	RedLight->SetVisibility(false);
 	GreenLight->SetVisibility(false);
 	YellowLight->SetVisibility(false);
+
+	bReplicates = true;
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -61,27 +64,28 @@ void ATrafficLights::BeginPlay()
 void ATrafficLights::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ATrafficLights::SetGreen()
+
+void ATrafficLights::SetYellow_Implementation()
+{
+	YellowLight->SetVisibility(true);
+	RedLight->SetVisibility(false);
+	GreenLight->SetVisibility(false);
+}
+
+void ATrafficLights::SetGreen_Implementation()
 {
 	GreenLight->SetVisibility(true);
 	RedLight->SetVisibility(false);
 	YellowLight->SetVisibility(false);
 }
 
-void ATrafficLights::SetRed()
+
+void ATrafficLights::SetRed_Implementation()
 {
 	RedLight->SetVisibility(true);
 	GreenLight->SetVisibility(false);
 	YellowLight->SetVisibility(false);
-}
-
-void ATrafficLights::SetYellow()
-{
-	YellowLight->SetVisibility(true);
-	RedLight->SetVisibility(false);
-	GreenLight->SetVisibility(false);
 }
 

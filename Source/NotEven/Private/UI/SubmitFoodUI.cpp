@@ -10,10 +10,11 @@
 
 void USubmitFoodUI::ShowIconImage(TArray<FRecipeIngredientData> data)
 {
-	if (IconImages.Num() > 0)
+	if (!IconImages.IsEmpty())
 	{
 		for (auto i : IconImages)
 		{
+			if (!i->IsValidLowLevel()) continue;
 			i->SetVisibility(ESlateVisibility::Collapsed);
 		}	
 	}
