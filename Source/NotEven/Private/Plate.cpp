@@ -197,4 +197,5 @@ void APlate::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APlate, CurrentWashingProgress);
+	DOREPLIFETIME(APlate, CurrentState);
 }
