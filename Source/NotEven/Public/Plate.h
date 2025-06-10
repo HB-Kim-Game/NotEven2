@@ -70,4 +70,8 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* attachPoint ;
+
+	UPROPERTY(Replicated)
+	EPlatestate CurrentState;
+	
 };

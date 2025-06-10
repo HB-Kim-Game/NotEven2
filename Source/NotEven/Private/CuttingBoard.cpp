@@ -74,7 +74,8 @@ void ACuttingBoard::NetMulticast_Cutting_Implementation(class ANotEvenPlayer* pl
 	// 만약 도마 위에 음식이 존재하면
 	if (isOnCuttingBoard == true)
 	{
-		if (moveObject-> GetIngredientState()!=EIngredientState::None) return;
+		if (moveObject-> GetIngredientState()!=EIngredientState::None)
+			return;
 		// 실행 될 때마다 currentCount를 올리고 싶다
 		moveObject->AddCookingProgress(10);
 		// 카운트가 maxCount랑 같아지면
