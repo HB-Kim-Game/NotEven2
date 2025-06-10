@@ -71,8 +71,7 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 	{
 		IconWidget = Cast<USubmitFoodUI>(IconWidgetComp->GetWidget());
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Add : %d"), GetIngredients().Num());
+	
 	IconWidget->ShowIconImage(GetIngredients());
 }
 
@@ -119,7 +118,7 @@ void ASubmitFood::Tick(float DeltaTime)
 	IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 200.f));
 	IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 	
-	ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 300.f));
+	ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X - 75.f, GetActorLocation().Y, GetActorLocation().Z + 200.f));
 	ProgressWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 }
 
@@ -137,6 +136,33 @@ void ASubmitFood::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	DOREPLIFETIME(ASubmitFood, CurrentCookingProgress);
 }
 
+float ASubmitFood::GetCurrentCookingProgress() const
+{
+	return CurrentCookingProgress;
+}
+
+float ASubmitFood::GetMaxCookingProgress() const
+{
+	return MaxCookingProgress;
+}
+
+void ASubmitFood::SetState(EIngredientState next)
+{
+	for (auto i : Ingredients)
+	{
+		i.IngredientData.RequireState = next;
+		UE_LOG(LogTemp, Warning, TEXT("%hd"),i.IngredientData.RequireState);
+	}
+
+	for (auto i : Ingredients)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("@@@@ %hd"),i.IngredientData.RequireState);
+	}
+
+	FindMesh();
+}
+
+
 void ASubmitFood::OnRep_CurrentCookingProgress()
 {
 	// ProgressBar 표시
@@ -147,8 +173,8 @@ void ASubmitFood::OnRep_CurrentCookingProgress()
 			ProgressWidgetComp->SetVisibility(false);
 			return;
 		}
-		
-		ProgressWidget->Progress = CurrentCookingProgress;
+		ProgressWidgetComp->SetVisibility(true);
+		ProgressWidget->Progress = CurrentCookingProgress / MaxCookingProgress;
 	}
 }
 
@@ -156,12 +182,16 @@ void ASubmitFood::FindMesh()
 {
 	TArray<FSubmitFoodMeshData*> array;
 	MeshTable->GetAllRows<FSubmitFoodMeshData>(nullptr, array);
+
+	for (auto i : Ingredients)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("State : %hd"),i.IngredientData.RequireState);
+	}
 	
 	TArray<FRecipeIngredientData> temp = GetIngredients();
 	
 	if (auto find = array.FindByPredicate([this, temp](const FSubmitFoodMeshData* item)
 	{
-		UE_LOG(LogTemp,Warning,TEXT("ASubmitFood::[%s]"), *item->MeshAssetPath);
 		bool condition = true;
 		for (auto i : temp)
 		{
@@ -175,6 +205,7 @@ void ASubmitFood::FindMesh()
 	}))
 	{
 		
+		UE_LOG(LogTemp,Warning,TEXT("ASubmitFood::[%s]"), *(*find)->MeshAssetPath);
 		UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, *((*find)->MeshAssetPath));
 		MeshComp->SetStaticMesh(mesh);
 	}

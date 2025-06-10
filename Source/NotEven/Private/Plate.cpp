@@ -4,6 +4,7 @@
 #include "Plate.h"
 
 #include "NotEvenPlayer.h"
+#include "Pot.h"
 #include "SubmitFood.h"
 
 APlate::APlate() : Super()
@@ -71,6 +72,24 @@ void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			auto destroyObj = food;
 			destroyObj->Destroy();
 			
+		}
+
+		if (APot* pot = Cast<APot>(player->OwnedObj))
+		{
+			if(!pot->SubmitFood) return;
+			UE_LOG(LogTemp, Warning, TEXT("%hd"),pot->SubmitFood->GetIngredients()[0].RequireState);
+			if (pot->SubmitFood->GetIngredients().ContainsByPredicate([](FRecipeIngredientData& data)
+			{
+				return data.RequireState == EIngredientState::Boiled;
+			}))
+			{
+				auto food = pot->SubmitFood;
+				pot->SubmitFood = nullptr;
+				pot->bIsBoiled = false;
+				submitFood = food;
+				food->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				food->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName("AttachPoint"));
+			}
 		}
 	}
 	else

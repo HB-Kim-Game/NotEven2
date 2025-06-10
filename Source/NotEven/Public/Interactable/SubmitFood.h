@@ -33,6 +33,11 @@ public:
 	void AddProgress(float progress);
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	float GetCurrentCookingProgress() const;
+	float GetMaxCookingProgress() const;
+
+	void SetState(EIngredientState next);
 	
 protected:
 	float MaxCookingProgress = 0.f;

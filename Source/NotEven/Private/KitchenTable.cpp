@@ -5,6 +5,7 @@
 #include "MovableObject.h"
 #include "NotEvenPlayer.h"
 #include "Plate.h"
+#include "Pot.h"
 #include "Components/BoxComponent.h"
 
 AKitchenTable::AKitchenTable()
@@ -77,10 +78,12 @@ void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* p
 				onplateObj->Interact(player);
 				return;
 			}
-			else
+			else if (auto onPotObj = Cast<APot>(moveObject))
 			{
+				onPotObj->Interact(player);
 				return;
 			}
+			else return;
 		}
 		// moveObject을 Grad 하고 있으면
 		moveObject = player->OwnedObj;

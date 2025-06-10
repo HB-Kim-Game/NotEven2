@@ -6,6 +6,7 @@
 #include "FoodIngredient.h"
 #include "NotEvenPlayer.h"
 #include "Plate.h"
+#include "Pot.h"
 #include "SubmitFood.h"
 #include "Components/BoxComponent.h"
 
@@ -59,6 +60,19 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 				{
 					food->Destroy();
 				}
+			}
+
+			if (APot* pot = Cast<APot>(moveObject))
+			{
+				auto food = pot->SubmitFood;
+				pot->SubmitFood = nullptr;
+				pot->bISBurned = false;
+				
+				if (food)
+				{
+					food->Destroy();
+				}
+				
 			}
 		}
 	}

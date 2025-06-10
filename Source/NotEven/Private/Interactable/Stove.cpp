@@ -88,7 +88,7 @@ void AStove::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Pot && Pot->HasSubmitFood() && HasAuthority()) AddProgress();
+	if (Pot && Pot->HasSubmitFood() && !Pot->bISBurned && HasAuthority()) AddProgress();
 }
 
 void AStove::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -100,5 +100,5 @@ void AStove::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLife
 
 void AStove::AddProgress_Implementation()
 {
-	Pot->AddProgress(AddAmount);
+	Pot->AddProgress(AddAmount * GetWorld()->GetDeltaSeconds());
 }
