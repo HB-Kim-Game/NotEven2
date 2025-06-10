@@ -12,6 +12,7 @@
 #include "FoodIngredient.h"
 #include "FoodSubmitTable.h"
 #include "ImmovableObject.h"
+#include "KitchenSink.h"
 #include "KitchenTable.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
@@ -244,9 +245,17 @@ void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
 		{
 			for (auto tempGrabObj : hitResults)
 			{
+				// 도마
 				if (auto* unGrabObj = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
 				{
 					unGrabObj->Cutting(this);
+					return;
+				}
+
+				// 싱크대
+				if (auto* unGrabObj = Cast<AKitchenSink>(tempGrabObj.GetActor()))
+				{
+					unGrabObj->Washing(this);
 					return;
 				}
 			}
