@@ -14,14 +14,14 @@ void USubmitFoodUI::ShowIconImage(TArray<FRecipeIngredientData> data)
 	{
 		for (auto i : IconImages)
 		{
-			if (!i->IsValidLowLevel()) continue;
+			if (i == nullptr) continue;
 			i->SetVisibility(ESlateVisibility::Collapsed);
 		}	
 	}
 	
 	for (int32 i = 0; i < data.Num(); i++)
 	{
-		if (i >= IconImages.Num())
+		if (i > IconImages.Num() - 1)
 		{
 			if(UImage* iconImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()))
 			{
@@ -52,4 +52,6 @@ void USubmitFoodUI::ShowIconImage(TArray<FRecipeIngredientData> data)
 void USubmitFoodUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	IconImages.Empty(4);
 }

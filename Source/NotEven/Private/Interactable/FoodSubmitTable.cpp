@@ -58,6 +58,11 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
+	NetMulticast_Interact(player);
+}
+
+void AFoodSubmitTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
+{
 	auto PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	TextWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(TextWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
 
@@ -65,6 +70,7 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 	{
 		if (plate->submitFood)
 		{
+			player->DetachGrabObj();
 			SubmitFood(plate->submitFood->GetIngredients(), plate);
 			return;
 		}
@@ -79,14 +85,12 @@ void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& in
 	if (HasAuthority())
 	{
 		OrderManager->CheckOrder(ingredients);
-	}
-	plate->submitFood->Destroy();
-	plate->Destroy();
-	
-	
-	GetWorld()->GetTimerManager().SetTimer(PlateSpawnTimer,FTimerDelegate::CreateLambda([&,plate]()
+		GetWorld()->GetTimerManager().SetTimer(PlateSpawnTimer,FTimerDelegate::CreateLambda([&,plate]()
 	{
 		plateTable->MakePlate();
 	}),5,false);
-	
+		
+	}
+	plate->submitFood->Destroy();
+	plate->Destroy();
 }

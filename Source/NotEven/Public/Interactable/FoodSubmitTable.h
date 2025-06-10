@@ -21,6 +21,8 @@ public:
 	
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Interact(class ANotEvenPlayer* player);
 	void SubmitFood(const TArray<struct FRecipeIngredientData>& ingredients, class APlate* plate);
 
 	FTimerHandle PlateSpawnTimer;

@@ -39,7 +39,6 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 {
 	if (Ingredients.Num() >= 4) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Add"));
 	
 	FSubmitFoodIngredientData add = FSubmitFoodIngredientData();
 	
@@ -63,6 +62,7 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 		IconWidget = Cast<USubmitFoodUI>(IconWidgetComp->GetWidget());
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Add : %d"), GetIngredients().Num());
 	IconWidget->ShowIconImage(GetIngredients());
 }
 
@@ -105,8 +105,6 @@ void ASubmitFood::FindMesh()
 {
 	TArray<FSubmitFoodMeshData*> array;
 	MeshTable->GetAllRows<FSubmitFoodMeshData>(nullptr, array);
-
-	UE_LOG(LogTemp, Warning, TEXT("Count : %d"), array.Num());
 	
 	TArray<FRecipeIngredientData> temp = GetIngredients();
 	
