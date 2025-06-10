@@ -48,6 +48,10 @@ void UResultUI::ShowResult(class UResultData* data)
 	
 	ResultScoreText->SetText(FText::FromString(FString::FromInt(data->ResultScore)));
 
+	bool buttonCondition = GetWorld()->GetFirstPlayerController()->HasAuthority();
+	RestartButton->SetIsEnabled(buttonCondition);
+	QuitButton->SetIsEnabled(buttonCondition);
+
 	if (FStageRequireScore* find = ScoreTable->FindRow<FStageRequireScore>(FName(data->StageID), FString("")))
 	{
 		StageText->SetText(FText::FromString(find->DisplayName));
