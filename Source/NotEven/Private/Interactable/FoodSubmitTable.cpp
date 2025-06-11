@@ -38,6 +38,7 @@ AFoodSubmitTable::AFoodSubmitTable()
 	TextWidgetComp->SetWidgetClass(TextClass);
 
 	bIsInteractable = true;
+	bReplicates = true;
 }
 
 void AFoodSubmitTable::BeginPlay()
@@ -88,10 +89,9 @@ void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& in
 	{
 		OrderManager->CheckOrder(ingredients);
 		GetWorld()->GetTimerManager().SetTimer(PlateSpawnTimer,FTimerDelegate::CreateLambda([&,plate]()
-	{
-		plateTable->MakePlate();
-	}),5,false);
-		
+		{
+			plateTable->MakePlate();
+		}),5,false);
 	}
 	plate->submitFood->Destroy();
 	plate->Destroy();

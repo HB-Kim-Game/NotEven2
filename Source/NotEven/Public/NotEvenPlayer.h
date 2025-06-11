@@ -76,6 +76,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_Dash();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Throwing(class AFoodIngredient* foodobj);
+
 	void OnGrab();
 
 	//대쉬 거리 변경 변수
@@ -123,9 +126,6 @@ public:
 	void NetMulticast_DetachGrabObj(bool bIsSimulatedPhysics);
 
 //-----------------------던지기-----------------------
-	UPROPERTY(EditAnywhere)
-	class AFoodIngredient* foodObj;
-	
 	bool isThrown = false;
 	// void ReleaseGradObj(AActor* ObjActor);
 	//AActor* ObjActor

@@ -64,7 +64,7 @@ protected:
 	FIngredientData Data;
 
 	// 조리 상태
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	EIngredientState CurrentState;
 
 	// 상태에 따른 올라갈 수 있는 장소 모음

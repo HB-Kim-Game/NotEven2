@@ -73,6 +73,8 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 	}
 	
 	IconWidget->ShowIconImage(GetIngredients());
+
+	AddProgress(0.0001f);
 }
 
 TArray<FRecipeIngredientData> ASubmitFood::GetIngredients() const
@@ -94,6 +96,8 @@ void ASubmitFood::Interact(class ANotEvenPlayer* player)
 void ASubmitFood::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	SetReplicateMovement(true);
 
 	BoxComp->SetSimulatePhysics(false);
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
@@ -134,6 +138,7 @@ void ASubmitFood::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASubmitFood, CurrentCookingProgress);
+	DOREPLIFETIME(ASubmitFood, MaxCookingProgress);
 }
 
 float ASubmitFood::GetCurrentCookingProgress() const
@@ -148,17 +153,12 @@ float ASubmitFood::GetMaxCookingProgress() const
 
 void ASubmitFood::SetState(EIngredientState next)
 {
-	for (auto i : Ingredients)
+	int ingredientsNum = Ingredients.Num();
+	for (int i = 0; i < ingredientsNum; i++)
 	{
-		i.IngredientData.RequireState = next;
-		UE_LOG(LogTemp, Warning, TEXT("%hd"),i.IngredientData.RequireState);
+		Ingredients[i].IngredientData.RequireState = next;
 	}
-
-	for (auto i : Ingredients)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("@@@@ %hd"),i.IngredientData.RequireState);
-	}
-
+	
 	FindMesh();
 }
 
@@ -182,17 +182,12 @@ void ASubmitFood::FindMesh()
 {
 	TArray<FSubmitFoodMeshData*> array;
 	MeshTable->GetAllRows<FSubmitFoodMeshData>(nullptr, array);
-
-	for (auto i : Ingredients)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("State : %hd"),i.IngredientData.RequireState);
-	}
 	
 	TArray<FRecipeIngredientData> temp = GetIngredients();
 	
 	if (auto find = array.FindByPredicate([this, temp](const FSubmitFoodMeshData* item)
 	{
-		bool condition = true;
+		bool condition = false;
 		for (auto i : temp)
 		{
 			condition = item->Ingredients.ContainsByPredicate([i](const FRecipeIngredientData& recipe)
@@ -200,7 +195,7 @@ void ASubmitFood::FindMesh()
 				return i.IngredientID == recipe.IngredientID && i.RequireState == recipe.RequireState;
 			});
 		}
-
+		
 		return condition;
 	}))
 	{

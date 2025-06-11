@@ -61,7 +61,6 @@ void APot::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			player->DetachGrabObj(false);
 			auto destroyObj = food;
 			destroyObj->Destroy();
-			
 		}
 	}
 	else
@@ -75,7 +74,6 @@ void APot::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 void APot::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(APot, SubmitFood);
 	DOREPLIFETIME(APot, bISBurned);
 	DOREPLIFETIME(APot, bIsBoiled);
 }
@@ -85,15 +83,12 @@ void APot::AddProgress(float progress)
 	if (SubmitFood->GetCurrentCookingProgress() >= SubmitFood->GetMaxCookingProgress() && !bIsBoiled)
 	{
 		bIsBoiled = true;
-		UE_LOG(LogTemp,Warning,TEXT("Boiled"));
 		OnRep_Boiled();
-		return;
 	}
 	
 	if (SubmitFood->GetCurrentCookingProgress() / SubmitFood->GetMaxCookingProgress() >= 1.5f)
 	{
 		bISBurned = true;
-		UE_LOG(LogTemp,Warning,TEXT("Burned"));
 		OnRep_Burned();
 		return;
 	}
@@ -149,7 +144,7 @@ void APot::OnPot(class AFoodIngredient* food)
 			return;
 		}
 		SubmitFood -> AddIngredient(food->GetIngredientData(),food->GetIngredientState(),food->GetCurrentCookingProgress(), food->GetIngredientPlaceData());
-		bIsBoiled = false;
+		ServerRPC_SetBoiled(true);
 	}
 }
 
@@ -161,4 +156,16 @@ void APot::OnRep_Burned()
 void APot::OnRep_Boiled()
 {
 	if (bIsBoiled) SubmitFood->SetState(EIngredientState::Boiled);
+}
+
+void APot::ServerRPC_SetBoiled_Implementation(bool isBoiled)
+{
+	bIsBoiled = isBoiled;
+	OnRep_Boiled();
+}
+
+void APot::ServerRPC_SetBurned_Implementation(bool isBurned)
+{
+	bISBurned = isBurned;
+	OnRep_Burned();
 }

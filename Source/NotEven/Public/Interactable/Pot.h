@@ -36,13 +36,18 @@ class NOTEVEN_API APot : public AMovableObject
 
 	void OnPot(class AFoodIngredient* food);
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Burned)
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetBoiled(bool isBoiled);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetBurned(bool isBurned);
+
+	UPROPERTY(ReplicatedUsing=OnRep_Burned)
 	bool bISBurned = false;
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Boiled)
+	UPROPERTY(ReplicatedUsing=OnRep_Boiled)
 	bool bIsBoiled = false;
 
-	UPROPERTY(VisibleAnywhere, Replicated)
+	UPROPERTY(VisibleAnywhere)
 	class ASubmitFood* SubmitFood;
 
 protected:

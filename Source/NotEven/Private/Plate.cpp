@@ -91,7 +91,6 @@ void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 		if (APot* pot = Cast<APot>(player->OwnedObj))
 		{
 			if(!pot->SubmitFood) return;
-			UE_LOG(LogTemp, Warning, TEXT("%hd"),pot->SubmitFood->GetIngredients()[0].RequireState);
 			if (pot->SubmitFood->GetIngredients().ContainsByPredicate([](FRecipeIngredientData& data)
 			{
 				return data.RequireState == EIngredientState::Boiled;
@@ -99,8 +98,9 @@ void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			{
 				auto food = pot->SubmitFood;
 				pot->SubmitFood = nullptr;
-				pot->bIsBoiled = false;
 				submitFood = food;
+				food->ProgressWidgetComp->SetVisibility(false);
+				pot->ServerRPC_SetBoiled(false);
 				food->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 				food->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName("AttachPoint"));
 			}

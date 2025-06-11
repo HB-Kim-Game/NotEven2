@@ -66,7 +66,8 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 			{
 				auto food = pot->SubmitFood;
 				pot->SubmitFood = nullptr;
-				pot->bISBurned = false;
+				pot->ServerRPC_SetBoiled(false);
+				pot->ServerRPC_SetBurned(false);
 				
 				if (food)
 				{
