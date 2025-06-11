@@ -38,9 +38,15 @@ public:
 	float GetMaxCookingProgress() const;
 
 	void SetState(EIngredientState next);
-	
-	UPROPERTY(EditAnywhere)
-	class UWidgetComponent* ProgressWidgetComp;
+
+	UFUNCTION()
+	void RemoveWidget(AActor* DestroyedActor);
+
+	UPROPERTY()
+	class USubmitFoodUI* IconWidget;
+
+	UPROPERTY()
+	class UCookingProgress* ProgressWidget;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Replicated)
@@ -61,16 +67,8 @@ protected:
 	void FindMesh();
 
 	UPROPERTY()
-	class UWidgetComponent* IconWidgetComp;
-	UPROPERTY()
 	TSubclassOf<class USubmitFoodUI> IconClass;
-	UPROPERTY()
-	class USubmitFoodUI* IconWidget;
-
-	UPROPERTY()
-	class UCookingProgress* ProgressWidget;
-
-	UPROPERTY()
-	class APlayerCameraManager* PlayerCameraManager;
 	
+	UPROPERTY()
+	TSubclassOf<class UCookingProgress> ProgressClass;
 };

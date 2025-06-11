@@ -5,6 +5,8 @@
 #include "Components/WidgetComponent.h"
 #include "SubmitFoodUI.h"
 #include "CookingProgress.h"
+#include "IngredientActorIcon.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -21,9 +23,6 @@ ASubmitFood::ASubmitFood()
 		MeshTable = tempTable.Object;
 	}
 
-	IconWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidgetComp"));
-	IconWidgetComp->SetupAttachment(BoxComp);
-
 	BoxComp->SetCollisionProfileName(FName("Food"));
 	ConstructorHelpers::FClassFinder<USubmitFoodUI> iconClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_SubmitFoodUI.WBP_SubmitFoodUI_C'"));
 
@@ -32,15 +31,11 @@ ASubmitFood::ASubmitFood()
 		IconClass = iconClass.Class;
 	}
 	
-	IconWidgetComp->SetWidgetClass(IconClass);
-
-	ProgressWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ProgressWidgetComp"));
-	
 	ConstructorHelpers::FClassFinder<UCookingProgress> progressClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_CookingProgress.WBP_CookingProgress_C'"));
 
 	if (progressClass.Succeeded())
 	{
-		ProgressWidgetComp->SetWidgetClass(progressClass.Class);
+		ProgressClass = progressClass.Class;
 	}
 
 	bReplicates = true;
@@ -67,14 +62,9 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 
 	FindMesh();
 
-	if (!IconWidget)
-	{
-		IconWidget = Cast<USubmitFoodUI>(IconWidgetComp->GetWidget());
-	}
-	
 	IconWidget->ShowIconImage(GetIngredients());
 
-	AddProgress(0.0001f);
+	AddProgress(0.00001f);
 }
 
 TArray<FRecipeIngredientData> ASubmitFood::GetIngredients() const
@@ -101,29 +91,37 @@ void ASubmitFood::BeginPlay()
 
 	BoxComp->SetSimulatePhysics(false);
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	
-	IconWidgetComp->SetDrawAtDesiredSize(true);
-	IconWidgetComp->SetDrawSize(FVector2D(150.f, 150.f));
-	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
 
-	ProgressWidget = Cast<UCookingProgress>(ProgressWidgetComp->GetWidget());
-	ProgressWidgetComp->SetDrawSize(FVector2D(75.f, 30.f));
-	ProgressWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+	IconWidget = CreateWidget<USubmitFoodUI>(GetWorld(), IconClass);
+	IconWidget->AddToViewport();
+	IconWidget->SetDesiredSizeInViewport(FVector2D(75.f, 75.f));
 
-	ProgressWidgetComp->SetVisibility(false);
+	ProgressWidget = CreateWidget<UCookingProgress>(GetWorld(), ProgressClass);
+	ProgressWidget->AddToViewport();
+	ProgressWidget->SetDesiredSizeInViewport(FVector2D(75.f, 15.f));
+	ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
 	
-	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	OnDestroyed.AddDynamic(this, &ASubmitFood::RemoveWidget);
 }
 
 void ASubmitFood::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 200.f));
-	IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
+	FVector2D screenPosition;
+	UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(), GetActorLocation(), screenPosition);
+
+	FVector2D iconPosition = screenPosition;
+	iconPosition.X = iconPosition.X - 75.0f;
+	iconPosition.Y = iconPosition.Y - 200.f;
 	
-	ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X - 75.f, GetActorLocation().Y, GetActorLocation().Z + 200.f));
-	ProgressWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
+	IconWidget->SetPositionInViewport(iconPosition);
+	
+	FVector2D progressPosition = screenPosition;
+	progressPosition.X = progressPosition.X - 75.0f;
+	progressPosition.Y = progressPosition.Y + 75.f;
+	
+	ProgressWidget->SetPositionInViewport(progressPosition);
 }
 
 void ASubmitFood::AddProgress(float progress)
@@ -170,10 +168,10 @@ void ASubmitFood::OnRep_CurrentCookingProgress()
 	{
 		if (CurrentCookingProgress <= 0.01f)
 		{
-			ProgressWidgetComp->SetVisibility(false);
+			ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
 			return;
 		}
-		ProgressWidgetComp->SetVisibility(true);
+		ProgressWidget->SetVisibility(ESlateVisibility::Visible);
 		ProgressWidget->Progress = CurrentCookingProgress / MaxCookingProgress;
 	}
 }
@@ -204,4 +202,10 @@ void ASubmitFood::FindMesh()
 		UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, *((*find)->MeshAssetPath));
 		MeshComp->SetStaticMesh(mesh);
 	}
+}
+
+void ASubmitFood::RemoveWidget(AActor* DestroyedActor)
+{
+	if (IconWidget) IconWidget->RemoveFromParent();
+	if (ProgressWidget) ProgressWidget->RemoveFromParent();
 }
