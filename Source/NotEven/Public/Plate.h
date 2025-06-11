@@ -61,9 +61,12 @@ public:
 
 	void SetMaxWashingProgress(float progress);
 
+	UFUNCTION(netMulticast, Reliable)
+	void NetMulticast_SetCurrentState(EPlatestate next);
+
 	UPROPERTY(ReplicatedUsing = Rep_CurrentWashingProgress)
 	float CurrentWashingProgress = 0.f;
-	float MaxWashingProgress = 10.f;
+	float MaxWashingProgress = 100.f;
 
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* WashWidgetComp;

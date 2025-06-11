@@ -47,6 +47,8 @@ void APlate::BeginPlay()
 
 	SetState(EPlatestate::Clean);
 	BoxComp->SetSimulatePhysics(false);
+
+	WashingProgress = Cast<UCookingProgress>(WashWidgetComp->GetWidget());
 }
 
 void APlate::Tick(float DeltaTime)
@@ -147,12 +149,17 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 void APlate::SetState(EPlatestate nextState)
 {
 	Platestate=nextState;
-	if(auto mesh =  StateMeshMap.Find(Platestate))
+
+	NetMulticast_SetCurrentState(Platestate);
+
+}
+
+void APlate::AddWashingProgress(float addProgress)
+{
+	CurrentWashingProgress += addProgress;
+	if (HasAuthority())
 	{
-		if (*mesh)
-		{
-			MeshComp->SetStaticMesh(*mesh);
-		}
+		Rep_CurrentWashingProgress();
 	}
 }
 
@@ -168,14 +175,6 @@ void APlate::Rep_CurrentWashingProgress()
 	WashingProgress->Progress = CurrentWashingProgress / MaxWashingProgress;
 }
 
-void APlate::AddWashingProgress(float addProgress)
-{
-	CurrentWashingProgress += addProgress;
-	if (HasAuthority())
-	{
-		Rep_CurrentWashingProgress();
-	}
-}
 
 float APlate::GetCurrentWashingProgress() const
 {
@@ -190,6 +189,22 @@ float APlate::GetMaxWashingProgress() const
 void APlate::SetMaxWashingProgress(float progress)
 {
 	MaxWashingProgress = progress;
+}
+
+void APlate::NetMulticast_SetCurrentState_Implementation(EPlatestate next)
+{
+	CurrentState = next;
+	
+	if(auto mesh =  StateMeshMap.Find(Platestate))
+	{
+		if (*mesh)
+		{
+			MeshComp->SetStaticMesh(*mesh);
+		}
+	}
+
+	CurrentWashingProgress = 0.f;
+	WashWidgetComp->SetVisibility(false);
 }
 
 void APlate::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

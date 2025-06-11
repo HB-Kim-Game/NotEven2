@@ -50,11 +50,25 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 			player->AttachGrabObj(PlateObj);
 		}
 	}
+	else
+	{
+		if (PlateObj)
+		{
+			isInSink = false;
+			PlateObj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			PlateObj->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("GrabPoint"));
+			player->AttachGrabObj(PlateObj);
+			
+		}
+	}
 }
 
 void AKitchenSink::Washing(class ANotEvenPlayer* player)
 {
 	NetMulticast_Washing(player);
+	
+	// 실행 될 때마다 currentCount를 올리고 싶다
+	PlateObj->AddWashingProgress(10);
 }
 
 void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* player)
@@ -66,8 +80,7 @@ void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* pla
 		UE_LOG(LogTemp, Display, TEXT("isInSink == true"));
 		if (PlateObj->CurrentState != EPlatestate::Dirty)
 			return;
-		// 실행 될 때마다 currentCount를 올리고 싶다
-		PlateObj->AddWashingProgress(10);
+		
 		UE_LOG(LogTemp, Display, TEXT("WashingProgress added"));
 		// 카운트가 maxCount랑 같아지면
 		if (PlateObj->GetCurrentWashingProgress() >= PlateObj->GetMaxWashingProgress())
