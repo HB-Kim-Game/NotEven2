@@ -53,7 +53,7 @@ public:
 	UFUNCTION()
 	void Rep_CurrentWashingProgress();
 
-	void AddWashingProgress(float addProgress);
+	float AddWashingProgress(float addProgress);
 
 	float GetCurrentWashingProgress() const;
 
@@ -70,6 +70,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* WashWidgetComp;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UCookingProgress> ProgressClass;
 	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* attachPoint;

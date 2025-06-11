@@ -26,7 +26,7 @@ public:
 	virtual void Washing(class ANotEvenPlayer* player);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_Washing(class ANotEvenPlayer* player);
+	void NetMulticast_Washing(class ANotEvenPlayer* player, float currentWashingProgress);
 	
 	UPROPERTY(EditAnywhere)
 	class APlate* PlateObj;

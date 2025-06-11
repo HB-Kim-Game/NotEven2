@@ -44,7 +44,7 @@ void ACamera::BeginPlay()
 	if (pc)
 	{
 		// 자기 자신을 ViewTarget으로 설정
-		pc->SetViewTargetWithBlend(this);	
+		pc->SetViewTargetWithBlend(this);
 	}
 }
 
