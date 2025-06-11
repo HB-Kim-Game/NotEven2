@@ -3,6 +3,8 @@
 
 #include "Interactable/Pot.h"
 
+#include "FoodIngredient.h"
+#include "NotEvenPlayer.h"
 #include "SubmitFood.h"
 #include "Net/UnrealNetwork.h"
 
@@ -32,21 +34,65 @@ void APot::BeginPlay()
 void APot::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+
+	NetMulticast_Interact(player);
 }
 
 void APot::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 {
 	// Plate 처럼
+	// 플레이어가 isGrab 이고, 플레이어한테 OwnedObj가 있으면
+	if (player && player -> isGrab && player -> OwnedObj)
+	{
+		if (AFoodIngredient* food = Cast<AFoodIngredient>(player->OwnedObj))
+		{
+			if (bISBurned) return;
+			
+			if (!food->GetIngredientPlaceData().PlacementRules.ContainsByPredicate([food](FIngredientPlaceRule& rule)
+			{
+				return rule.State == food->GetIngredientState() && rule.Requirement.Contains(EPlacementRequirement::Pot);
+			}))
+			{
+				return;
+			}
+			// food 를 OnPot
+			OnPot(food);
+			// 플레이어가 들고 있는 오브젝트를 Detach
+			player->DetachGrabObj(false);
+			auto destroyObj = food;
+			destroyObj->Destroy();
+		}
+	}
+	else
+	{
+		SetGrab(true);
+		// 플레이어의 SkeletalMesh 내에 있는 Socket에 붙이기
+		AttachToComponent(player->GetMesh(),FAttachmentTransformRules::SnapToTargetIncludingScale,TEXT("GrabPoint"));
+	}
 }
 
 void APot::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(APot, SubmitFood);
+	DOREPLIFETIME(APot, bISBurned);
+	DOREPLIFETIME(APot, bIsBoiled);
 }
 
 void APot::AddProgress(float progress)
 {
+	if (SubmitFood->GetCurrentCookingProgress() >= SubmitFood->GetMaxCookingProgress() && !bIsBoiled)
+	{
+		bIsBoiled = true;
+		OnRep_Boiled();
+	}
+	
+	if (SubmitFood->GetCurrentCookingProgress() / SubmitFood->GetMaxCookingProgress() >= 1.5f)
+	{
+		bISBurned = true;
+		OnRep_Burned();
+		return;
+	}
+	
 	SubmitFood->AddProgress(progress);
 }
 
@@ -82,4 +128,44 @@ void APot::SetGrab(bool bGrab)
 		
 		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics); // Collision Enabled(QueryAndPhysics)으로 설정
 	}
+}
+
+void APot::OnPot(class AFoodIngredient* food)
+{
+	if (food)
+	{
+		if (SubmitFood == nullptr)
+		{
+			ASubmitFood* sbfood = GetWorld()->SpawnActor<ASubmitFood>();
+			sbfood->AddIngredient(food->GetIngredientData(),food->GetIngredientState(),food->GetCurrentCookingProgress(), food->GetIngredientPlaceData());
+			sbfood->BoxComp->SetSimulatePhysics(false);
+			sbfood->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
+			SubmitFood = sbfood;
+			return;
+		}
+		SubmitFood -> AddIngredient(food->GetIngredientData(),food->GetIngredientState(),food->GetCurrentCookingProgress(), food->GetIngredientPlaceData());
+		ServerRPC_SetBoiled(true);
+	}
+}
+
+void APot::OnRep_Burned()
+{
+	if (bISBurned) SubmitFood->SetState(EIngredientState::Burned);
+}
+
+void APot::OnRep_Boiled()
+{
+	if (bIsBoiled) SubmitFood->SetState(EIngredientState::Boiled);
+}
+
+void APot::ServerRPC_SetBoiled_Implementation(bool isBoiled)
+{
+	bIsBoiled = isBoiled;
+	OnRep_Boiled();
+}
+
+void APot::ServerRPC_SetBurned_Implementation(bool isBurned)
+{
+	bISBurned = isBurned;
+	OnRep_Burned();
 }

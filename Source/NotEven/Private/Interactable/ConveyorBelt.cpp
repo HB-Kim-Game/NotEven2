@@ -83,23 +83,7 @@ void AConveyorBelt::MoveObject(float DeltaTime)
 	{
 		if (auto cast = Cast<AMovableObject>(actor))
 		{
-			if (cast->BoxComp->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
-			{
-				if(OwnedObj.Contains(cast))
-				{
-					int32 index = OwnedObj.IndexOfByPredicate([cast](AMovableObject* moveObj)
-					{
-						return cast == moveObj;
-					});
-
-					if (index != INDEX_NONE)
-					{
-						OwnedObj.RemoveAt(index);
-					}
-				}
-				continue;
-			}
-			cast->AddActorWorldOffset(offset);
+			if (OwnedObj.Contains(cast)) cast->AddActorWorldOffset(offset);
 		}
 	}
 }
@@ -107,7 +91,7 @@ void AConveyorBelt::MoveObject(float DeltaTime)
 void AConveyorBelt::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 	class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OwnedObj.Contains(OtherActor)) return;
+	if (OwnedObj.Contains(OtherActor) || OtherActor->GetOwner() != nullptr) return;
 	
 	if (auto cast = Cast<AMovableObject>(OtherActor))
 	{

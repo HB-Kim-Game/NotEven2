@@ -33,8 +33,17 @@ public:
 	void AddProgress(float progress);
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	float GetCurrentCookingProgress() const;
+	float GetMaxCookingProgress() const;
+
+	void SetState(EIngredientState next);
+	
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* ProgressWidgetComp;
 	
 protected:
+	UPROPERTY(VisibleAnywhere, Replicated)
 	float MaxCookingProgress = 0.f;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_CurrentCookingProgress)
@@ -57,9 +66,6 @@ protected:
 	TSubclassOf<class USubmitFoodUI> IconClass;
 	UPROPERTY()
 	class USubmitFoodUI* IconWidget;
-	
-	UPROPERTY(EditAnywhere)
-	class UWidgetComponent* ProgressWidgetComp;
 
 	UPROPERTY()
 	class UCookingProgress* ProgressWidget;

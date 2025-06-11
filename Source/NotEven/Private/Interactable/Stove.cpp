@@ -27,11 +27,6 @@ void AStove::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
-	NetMulticast_Interact(player);
-}
-
-void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
-{
 	if (player->isGrab)
 	{
 		if (Pot)
@@ -47,17 +42,22 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 			player->DetachGrabObj(false);
 			Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
+			return;
 		}
 	}
-	else
-	{
-		if (Pot == nullptr) return;
+	
+	NetMulticast_Interact(player);
+}
 
-		Pot->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		auto detachPot = Pot;
-		player->AttachGrabObj(detachPot);
-		Pot = nullptr;
-	}
+void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
+{
+	if (Pot == nullptr) return;
+
+	Pot->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	auto detachPot = Pot;
+	player->AttachGrabObj(detachPot);
+	Pot = nullptr;
+	
 }
 
 void AStove::Server_SpawnObject_Implementation()
@@ -88,7 +88,7 @@ void AStove::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Pot && Pot->HasSubmitFood() && HasAuthority()) AddProgress();
+	if (Pot && Pot->HasSubmitFood() && !Pot->bISBurned && HasAuthority()) AddProgress();
 }
 
 void AStove::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -100,5 +100,5 @@ void AStove::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLife
 
 void AStove::AddProgress_Implementation()
 {
-	Pot->AddProgress(AddAmount);
+	Pot->AddProgress(AddAmount * GetWorld()->GetDeltaSeconds());
 }

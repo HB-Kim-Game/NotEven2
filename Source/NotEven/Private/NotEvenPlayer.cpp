@@ -213,9 +213,7 @@ void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
 	if (isGrab==true)
 	{
 		auto plateobj = Cast<APlate>(OwnedObj);
-		auto foodobj = Cast<AFoodIngredient>(OwnedObj) ;
-		FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
-
+		auto foodobj = Cast<AFoodIngredient>(OwnedObj);
 		// 만약 접시이면
 		if (plateobj)
 		{
@@ -226,10 +224,8 @@ void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
 		if (foodobj)
 		{
 			//OwnedObj를 떼어내고
-			DetachGrabObj(true);
-
 			//힘을 가하고 싶다
-			foodobj->BoxComp->AddImpulse(impulse);
+			NetMulticast_Throwing(foodobj);
 		}
 	}
 	
@@ -276,6 +272,13 @@ void ANotEvenPlayer::NetMulticast_Dash_Implementation()
 	}
 	FVector forwordDir = this->GetActorRotation().Vector();
 	LaunchCharacter(forwordDir*DashDistance,true,true);
+}
+
+void ANotEvenPlayer::NetMulticast_Throwing_Implementation(class AFoodIngredient* foodobj)
+{
+	FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
+	NetMulticast_DetachGrabObj_Implementation(true);
+	foodobj->BoxComp->AddImpulse(impulse);
 }
 
 void ANotEvenPlayer::OnGrab()

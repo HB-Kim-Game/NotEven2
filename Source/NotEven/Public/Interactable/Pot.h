@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FoodIngredient.h"
 #include "Interactable/MovableObject.h"
 #include "Pot.generated.h"
 
@@ -32,9 +33,28 @@ class NOTEVEN_API APot : public AMovableObject
 	bool HasSubmitFood();
 
 	virtual void SetGrab(bool bGrab) override;
-	
+
+	void OnPot(class AFoodIngredient* food);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetBoiled(bool isBoiled);
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SetBurned(bool isBurned);
+
+	UPROPERTY(ReplicatedUsing=OnRep_Burned)
+	bool bISBurned = false;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Boiled)
+	bool bIsBoiled = false;
+
+	UPROPERTY(VisibleAnywhere)
+	class ASubmitFood* SubmitFood;
+
 protected:
 
-	UPROPERTY(VisibleAnywhere, Replicated)
-	class ASubmitFood* SubmitFood;
+	UFUNCTION()
+	void OnRep_Burned();
+
+	UFUNCTION()
+	void OnRep_Boiled();
 };

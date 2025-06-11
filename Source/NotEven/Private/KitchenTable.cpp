@@ -5,6 +5,7 @@
 #include "MovableObject.h"
 #include "NotEvenPlayer.h"
 #include "Plate.h"
+#include "Pot.h"
 #include "Components/BoxComponent.h"
 
 AKitchenTable::AKitchenTable()
@@ -34,6 +35,24 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
+	if (player -> isGrab == true)
+	{
+		if (moveObject!=nullptr)
+		{
+			if(auto onplateObj = Cast<APlate>(moveObject))
+			{
+				//onplate 에 음식이 들어간다
+				onplateObj->Interact(player);
+				return;
+			}
+			if (auto onPotObj = Cast<APot>(moveObject))
+			{
+				onPotObj->Interact(player);
+				return;
+			}
+		}
+	}
+	
 	NetMulticast_Interact(player);
 }
 
@@ -77,16 +96,17 @@ void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* p
 				onplateObj->Interact(player);
 				return;
 			}
-			else
+			if (auto onPotObj = Cast<APot>(moveObject))
 			{
+				onPotObj->Interact(player);
 				return;
 			}
 		}
 		// moveObject을 Grad 하고 있으면
 		moveObject = player->OwnedObj;
-		player->DetachGrabObj(false);
 		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		player->DetachGrabObj(false);
 		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 	else

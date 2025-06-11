@@ -47,6 +47,8 @@ void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
 
+	BoxComp->SetSimulatePhysics(false);
+
 	IconWidget = Cast<UIngredientActorIcon>(IconWidgetComp->GetWidget());
 	IconWidgetComp->SetDrawSize(FVector2D(45.f, 45.f));
 	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
@@ -100,8 +102,20 @@ void AFoodIngredient::NetMulticast_InitializeIngredient_Implementation(FIngredie
 
 	SetMaxCookingProgress(Data.MaxCookingProgress);
 
-	SetState(EIngredientState::None);
-
+	CurrentState = EIngredientState::None;
+	IconWidgetComp->SetVisibility(CurrentState != EIngredientState::None);
+	
+	if (auto mesh = IngredientMeshes.Find(CurrentState))
+	{
+		if (*mesh)
+		{
+			MeshComp->SetStaticMesh(*mesh);
+			BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
+			if ((*mesh)->GetBounds().BoxExtent.Z > MeshComp->Bounds.BoxExtent.X) MeshComp->SetRelativeRotation(FRotator(90.f, 0, 0));
+			else MeshComp->SetRelativeRotation(FRotator(0, 0, 0));
+		}
+	}
+	
 	if (IconWidget)
 	{
 		if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
@@ -109,7 +123,10 @@ void AFoodIngredient::NetMulticast_InitializeIngredient_Implementation(FIngredie
 			IconWidget->SetIconImage(texture);
 		}
 	}
-
+	
+	CurrentCookingProgress = 0.0f;
+	ProgressWidgetComp->SetVisibility(false);
+	
 	BoxComp->SetMassOverrideInKg(NAME_None, 150.f);
 	BoxComp->SetLinearDamping(2.f);
 }
@@ -200,8 +217,6 @@ void AFoodIngredient::Rep_CurrentCookingProgress()
 void AFoodIngredient::NetMulticast_SetCurrentState_Implementation(EIngredientState next)
 {
 	CurrentState = next;
-
-	//UE_LOG(LogTemp, Warning, TEXT("Visible : %d"), IconWidgetComp->GetVisibleFlag());
 	IconWidgetComp->SetVisibility(CurrentState != EIngredientState::None);
 	
 	if (auto mesh = IngredientMeshes.Find(CurrentState))
@@ -210,6 +225,16 @@ void AFoodIngredient::NetMulticast_SetCurrentState_Implementation(EIngredientSta
 		{
 			MeshComp->SetStaticMesh(*mesh);
 			BoxComp->SetBoxExtent(MeshComp->GetStaticMesh()->GetBounds().BoxExtent);
+			if ((*mesh)->GetBounds().BoxExtent.Z > MeshComp->Bounds.BoxExtent.X) MeshComp->SetRelativeRotation(FRotator(90.f, 0, 0));
+			else MeshComp->SetRelativeRotation(FRotator(0, 0, 0));
+		}
+	}
+	
+	if (IconWidget)
+	{
+		if (UTexture2D* texture = LoadObject<UTexture2D>(nullptr, *Data.IconAssetPath))
+		{
+			IconWidget->SetIconImage(texture);
 		}
 	}
 	
@@ -222,7 +247,6 @@ void AFoodIngredient::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AFoodIngredient, CurrentCookingProgress);
-	DOREPLIFETIME(AFoodIngredient, CurrentState);
 }
 
 void AFoodIngredient::NetRPC_Interact_Implementation(class ANotEvenPlayer* player)
