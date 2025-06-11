@@ -8,18 +8,13 @@
 #include "CookingProgress.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 AFoodIngredient::AFoodIngredient()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	IconWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidgetComp"));
-	IconWidgetComp->SetupAttachment(BoxComp);
-
-	ProgressWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("ProgressWidgetComp"));
-	ProgressWidgetComp->SetupAttachment(BoxComp);
 
 	BoxComp->SetCollisionProfileName(FName("Food"));
 	ConstructorHelpers::FClassFinder<UIngredientActorIcon> iconClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_IngredientActorIcon.WBP_IngredientActorIcon_C'"));
@@ -29,16 +24,12 @@ AFoodIngredient::AFoodIngredient()
 		IconClass = iconClass.Class;
 	}
 	
-	IconWidgetComp->SetWidgetClass(IconClass);
-	
 	ConstructorHelpers::FClassFinder<UCookingProgress> progressClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_CookingProgress.WBP_CookingProgress_C'"));
 
 	if (progressClass.Succeeded())
 	{
 		ProgressClass = progressClass.Class;
 	}
-
-	ProgressWidgetComp->SetWidgetClass(ProgressClass);
 	
 	bReplicates = true;
 }
@@ -49,31 +40,50 @@ void AFoodIngredient::BeginPlay()
 
 	BoxComp->SetSimulatePhysics(false);
 
-	IconWidget = Cast<UIngredientActorIcon>(IconWidgetComp->GetWidget());
-	IconWidgetComp->SetDrawSize(FVector2D(45.f, 45.f));
-	IconWidgetComp->SetWidgetSpace(EWidgetSpace::World);
-	ProgressWidget = Cast<UCookingProgress>(ProgressWidgetComp->GetWidget());
-	
-	ProgressWidgetComp->SetDrawSize(FVector2D(75.f, 30.f));
-	ProgressWidgetComp->SetWidgetSpace(EWidgetSpace::World);
-	
-	PlayerCameraManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	IconWidget = CreateWidget<UIngredientActorIcon>(GetWorld(), IconClass);
+	IconWidget->AddToViewport();
+	IconWidget->SetDesiredSizeInViewport(FVector2D(32.f, 32.f));
+	IconWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	ProgressWidget = CreateWidget<UCookingProgress>(GetWorld(), ProgressClass);
+	ProgressWidget->AddToViewport();
+	ProgressWidget->SetDesiredSizeInViewport(FVector2D(75.f, 15.f));
+	ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	OnDestroyed.AddDynamic(this, &AFoodIngredient::RemoveWidget);
 }
 
 void AFoodIngredient::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (CurrentState != EIngredientState::None)
-	{
-		IconWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 250.f));
-		IconWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(IconWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));
-	}
+	FVector2D screenPosition;
+	UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(), GetActorLocation(), screenPosition);
+
+	FVector2D iconPosition = screenPosition;
+	iconPosition.X = iconPosition.X - 32.0f;
+	iconPosition.Y = iconPosition.Y - 125.f;
 	
-	if (ProgressWidgetComp->GetVisibleFlag())
+	IconWidget->SetPositionInViewport(iconPosition);
+	
+	if (ProgressWidget->GetVisibility() != ESlateVisibility::Hidden)
 	{
-		ProgressWidgetComp->SetWorldLocation(FVector(GetActorLocation().X, GetActorLocation().Y, CurrentState != EIngredientState::None ? GetActorLocation().Z + 350.f : GetActorLocation().Z + 250.f));
-		ProgressWidgetComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(ProgressWidgetComp->GetComponentLocation(), PlayerCameraManager->GetCameraLocation()));	
+		if (CurrentState != EIngredientState::None)
+		{
+			FVector2D progressPosition = screenPosition;
+			progressPosition.X = progressPosition.X - 75.0f;
+			progressPosition.Y = progressPosition.Y + 75.f;
+	
+			ProgressWidget->SetPositionInViewport(progressPosition);
+		}
+		else
+		{
+			FVector2D progressPosition = screenPosition;
+			progressPosition.X = progressPosition.X - 75.0f;
+			progressPosition.Y = progressPosition.Y - 75.f;
+	
+			ProgressWidget->SetPositionInViewport(progressPosition);
+		}
 	}
 }
 
@@ -103,7 +113,21 @@ void AFoodIngredient::NetMulticast_InitializeIngredient_Implementation(FIngredie
 	SetMaxCookingProgress(Data.MaxCookingProgress);
 
 	CurrentState = EIngredientState::None;
-	IconWidgetComp->SetVisibility(CurrentState != EIngredientState::None);
+
+	if (!IconWidget)
+	{
+		IconWidget = CreateWidget<UIngredientActorIcon>(GetWorld(), IconClass);
+		IconWidget->AddToViewport();
+		IconWidget->SetDesiredSizeInViewport(FVector2D(32.f, 32.f));
+		IconWidget->SetVisibility(ESlateVisibility::Hidden);
+
+		ProgressWidget = CreateWidget<UCookingProgress>(GetWorld(), ProgressClass);
+		ProgressWidget->AddToViewport();
+		ProgressWidget->SetDesiredSizeInViewport(FVector2D(75.f, 15.f));
+		ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+	
+	IconWidget->SetVisibility(ESlateVisibility::Hidden);
 	
 	if (auto mesh = IngredientMeshes.Find(CurrentState))
 	{
@@ -125,7 +149,7 @@ void AFoodIngredient::NetMulticast_InitializeIngredient_Implementation(FIngredie
 	}
 	
 	CurrentCookingProgress = 0.0f;
-	ProgressWidgetComp->SetVisibility(false);
+	ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
 	
 	BoxComp->SetMassOverrideInKg(NAME_None, 150.f);
 	BoxComp->SetLinearDamping(2.f);
@@ -205,11 +229,11 @@ void AFoodIngredient::Rep_CurrentCookingProgress()
 {
 	if (CurrentCookingProgress <= 0.01f)
 	{
-		ProgressWidgetComp->SetVisibility(false);
+		ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 
-	ProgressWidgetComp->SetVisibility(true);
+	ProgressWidget->SetVisibility(ESlateVisibility::Visible);
 	ProgressWidget->Progress = CurrentCookingProgress / MaxCookingProgress;
 	
 }
@@ -217,7 +241,7 @@ void AFoodIngredient::Rep_CurrentCookingProgress()
 void AFoodIngredient::NetMulticast_SetCurrentState_Implementation(EIngredientState next)
 {
 	CurrentState = next;
-	IconWidgetComp->SetVisibility(CurrentState != EIngredientState::None);
+	IconWidget->SetVisibility(CurrentState != EIngredientState::None ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	
 	if (auto mesh = IngredientMeshes.Find(CurrentState))
 	{
@@ -239,7 +263,7 @@ void AFoodIngredient::NetMulticast_SetCurrentState_Implementation(EIngredientSta
 	}
 	
 	CurrentCookingProgress = 0.0f;
-	ProgressWidgetComp->SetVisibility(false);
+	ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AFoodIngredient::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -247,6 +271,12 @@ void AFoodIngredient::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AFoodIngredient, CurrentCookingProgress);
+}
+
+void AFoodIngredient::RemoveWidget(AActor* DestroyedActor)
+{
+	if (IconWidget) IconWidget->RemoveFromParent();
+	if (ProgressWidget) ProgressWidget->RemoveFromParent();
 }
 
 void AFoodIngredient::NetRPC_Interact_Implementation(class ANotEvenPlayer* player)

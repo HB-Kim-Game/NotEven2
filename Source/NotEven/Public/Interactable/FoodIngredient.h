@@ -58,6 +58,9 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION()
+	void RemoveWidget(AActor* DestroyedActor);
+
 protected:
 	// ID, 이름, 상태에 따른 에셋 Path
 	UPROPERTY()
@@ -80,12 +83,6 @@ protected:
 	float MaxCookingProgress = 0.f;
 
 	UPROPERTY(EditAnywhere)
-	class UWidgetComponent* IconWidgetComp;
-
-	UPROPERTY(EditAnywhere)
-	class UWidgetComponent* ProgressWidgetComp;
-
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UIngredientActorIcon> IconClass;
 
 	UPROPERTY(EditAnywhere)
@@ -96,9 +93,6 @@ protected:
 
 	UPROPERTY()
 	class UCookingProgress* ProgressWidget;
-
-	UPROPERTY()
-	class APlayerCameraManager* PlayerCameraManager;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void NetRPC_Interact(class ANotEvenPlayer* player);

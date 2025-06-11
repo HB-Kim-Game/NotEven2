@@ -32,7 +32,7 @@ void USubmitFoodUI::ShowIconImage(TArray<FRecipeIngredientData> data)
 					mat->SetTextureParameterValue(FName("IconImage"), texture);
 				}
 				UUniformGridSlot* slot = Parent->AddChildToUniformGrid(iconImage, i / 2, i % 2);
-				iconImage->SetDesiredSizeOverride(FVector2D(50.f, 50.f));
+				iconImage->SetDesiredSizeOverride(FVector2D(32.f, 32.f));
 				slot->SetHorizontalAlignment(HAlign_Fill);
 				slot->SetVerticalAlignment(VAlign_Fill);
 				IconImages.Add(iconImage);
