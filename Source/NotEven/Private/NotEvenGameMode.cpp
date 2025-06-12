@@ -2,10 +2,8 @@
 
 
 #include "NotEvenGameMode.h"
-
 #include "NotEvenPlayer.h"
-#include "GameFramework/PlayerStart.h"
-#include "GameManager/OrderManager.h"
+#include "Camera/CameraActor.h"
 #include "Kismet/GameplayStatics.h"
 
 ANotEvenGameMode::ANotEvenGameMode()
@@ -16,13 +14,7 @@ ANotEvenGameMode::ANotEvenGameMode()
 void ANotEvenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// // PlayerDied 델리게이트를 게임 모드의 PlayerDied 함수에 바인딩
-	// if (!OnPlayerDied.IsBound())
-	// {
-	// 	OnPlayerDied.AddDynamic(this, &ANotEvenGameMode::PlayerDied);
-	// }
-	//
+	
 }
 
 void ANotEvenGameMode::RestartPlayer(AController* NewPlayer)
@@ -36,7 +28,7 @@ void ANotEvenGameMode::RestartPlayer(AController* NewPlayer)
 	}
 	
 	Super::RestartPlayer(NewPlayer);
-
+	
 	// 월드에서 BP_Camera 를 찾는다.
 	// BP_Camera 를 viewTarget 로 지정한다.
 	TArray<AActor*> outPawns;

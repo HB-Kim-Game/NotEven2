@@ -61,6 +61,14 @@ void AFoodSubmitTable::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
+	if (auto plate = Cast<APlate>(player->OwnedObj))
+	{
+		GetWorld()->GetTimerManager().SetTimer(PlateSpawnTimer,FTimerDelegate::CreateLambda([&,plate]()
+		{
+			plateTable->MakePlate();
+		}),5,false);	
+	}
+	
 	NetMulticast_Interact(player);
 }
 
@@ -74,6 +82,7 @@ void AFoodSubmitTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer
 		if (plate->submitFood)
 		{
 			player->DetachGrabObj(false);
+			
 			SubmitFood(plate->submitFood->GetIngredients(), plate);
 			return;
 		}
@@ -88,10 +97,6 @@ void AFoodSubmitTable::SubmitFood(const TArray<struct FRecipeIngredientData>& in
 	if (HasAuthority())
 	{
 		OrderManager->CheckOrder(ingredients);
-		GetWorld()->GetTimerManager().SetTimer(PlateSpawnTimer,FTimerDelegate::CreateLambda([&,plate]()
-		{
-			plateTable->MakePlate();
-		}),5,false);
 	}
 	plate->submitFood->Destroy();
 	plate->Destroy();

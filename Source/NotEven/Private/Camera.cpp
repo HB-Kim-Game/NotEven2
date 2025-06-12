@@ -2,6 +2,8 @@
 
 
 #include "Camera.h"
+
+#include "NotEvenPlayer.h"
 #include "Components/SceneComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
@@ -33,19 +35,15 @@ void ACamera::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	SetActorLocation(FVector(-910.f, 0.f, 1750.f));
-
+	SetActorLocation(FVector(-4100.f, 0.f, 4800.f));
+	
 	// 회전 설정: Pitch -50도
-	FRotator newRot = FRotator(-65.f, 0.f, 0.f); // Pitch, Yaw, Roll
+	FRotator newRot = FRotator(-50.f, 0.f, 0.f); // Pitch, Yaw, Roll
 	SetActorRotation(newRot);
 
-	auto pc = GetWorld()->GetFirstPlayerController();
+	CameraComp->SetFieldOfView(35);
 
-	if (pc)
-	{
-		// 자기 자신을 ViewTarget으로 설정
-		pc->SetViewTargetWithBlend(this);
-	}
+	CameraLocation=GetActorLocation();
 }
 
 // Called every frame
@@ -53,5 +51,48 @@ void ACamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	auto pc = UGameplayStatics::GetPlayerController(GetWorld(),0);
+	if (!pc)
+		return;
+
+	AActor* currentTarget = pc->GetViewTarget();
+	if (currentTarget != this)
+	{
+		pc->SetViewTargetWithBlend(this,0,VTBlend_Linear,0,false);
+	}
+	
+
+	TArray<AActor*> Player;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ANotEvenPlayer::StaticClass(),Player);
+
+	if (Player.Num() < 2)
+		return;
+
+	if (Player.Num()>=2)
+	{
+		FVector playerLoc1 = Player[0]->GetActorLocation();
+		FVector playerLoc2 = Player[1]->GetActorLocation();
+		
+		// 두 플레이어 간의 거리
+		CurrentDistance = FVector::Dist(playerLoc1, playerLoc2);
+		
+		
+		// float Alpha = FMath::Clamp((CurrentDistance-MinDistance)/(MaxDistance-MinDistance), 0.f, 0.5f);
+		// float newFov= FMath::Lerp(MinFov,MaxFov,Alpha);
+		//
+		// CameraComp->SetFieldOfView(newFov);
+
+		// 두 플레이어 간의 거리 중간 벡터
+		FVector midPoint = (playerLoc1+playerLoc2)/2;
+		FVector targetLoc = CameraComp->GetComponentLocation();
+		
+		targetLoc.X = FMath::Clamp(midPoint.X,CameraLocation.X - MoveRange,CameraLocation.X + MoveRange);
+		targetLoc.Y = FMath::Clamp(midPoint.Y,CameraLocation.Y - MoveRange,CameraLocation.Y + MoveRange);
+
+		FVector newLoc = FMath::VInterpTo(GetActorLocation(),targetLoc,DeltaTime, 2.f);
+		SetActorLocation(newLoc);
+
+		
+	}
 }
 
