@@ -109,7 +109,7 @@ void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 				auto food = pot->SubmitFood;
 				pot->SubmitFood = nullptr;
 				submitFood = food;
-				food->ProgressWidget->SetVisibility(ESlateVisibility::Hidden);
+				food->ProgressWidget->SetColorAndOpacity(FLinearColor(1,1,1,0));
 				pot->ServerRPC_SetBoiled(false);
 				food->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 				food->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,FName("AttachPoint"));

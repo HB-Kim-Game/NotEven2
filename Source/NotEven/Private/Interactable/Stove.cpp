@@ -54,12 +54,7 @@ void AStove::Interact(class ANotEvenPlayer* player)
 void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 {
 	if (Pot == nullptr) return;
-
-	if (Pot->CookingIcon->WarningPlayer)
-	{
-		Pot->CookingIcon->WarningPlayer->Stop();
-		Pot->CookingIcon->SetColorAndOpacity(FLinearColor(1,1,1,0));
-	}
+	
 	Pot->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	auto detachPot = Pot;
 	player->AttachGrabObj(detachPot);
@@ -84,11 +79,6 @@ void AStove::NetMulticast_SpawnObject_Implementation()
 void AStove::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		Server_SpawnObject();
-	}
 }
 
 void AStove::Tick(float DeltaTime)

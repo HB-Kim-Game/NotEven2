@@ -112,8 +112,8 @@ void ASubmitFood::Tick(float DeltaTime)
 	UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(), GetActorLocation(), screenPosition);
 
 	FVector2D iconPosition = screenPosition;
-	iconPosition.X = iconPosition.X - 75.0f;
-	iconPosition.Y = iconPosition.Y - 200.f;
+	iconPosition.X = iconPosition.X - 50.0f;
+	iconPosition.Y = iconPosition.Y - 75.f;
 	
 	IconWidget->SetPositionInViewport(iconPosition);
 	

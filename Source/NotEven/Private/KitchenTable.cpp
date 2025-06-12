@@ -58,33 +58,27 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 
 void AKitchenTable::Server_SpawnObject_Implementation()
 {
-	SpawnObject();
+	if (!bIsSpawnObject) return;
+	auto spawnObj = GetWorld()->SpawnActor<AMovableObject>(SpawnObjectClass);
+	if (auto plate = Cast<APlate>(spawnObj))
+	{
+		plate->SetState(EPlatestate::Clean);
+	}
+	SpawnObject(spawnObj);
 }
 
-void AKitchenTable::SpawnObject_Implementation()
+void AKitchenTable::SpawnObject_Implementation(class AMovableObject* spawnObject)
 {
-	if (bIsSpawnObject)
-	{
-		auto spawnObj = GetWorld()->SpawnActor<AMovableObject>(SpawnObjectClass);
-		if (auto plate = Cast<APlate>(spawnObj))
-		{
-			plate->SetState(EPlatestate::Clean);
-		}
-		moveObject = spawnObj;
-		moveObject->BoxComp->SetSimulatePhysics(false);
-		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision); 
-		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
+	moveObject = spawnObject;
+	moveObject->BoxComp->SetSimulatePhysics(false);
+	moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision); 
+	moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void AKitchenTable::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
-	{
-		Server_SpawnObject();
-	}
 }
 
 void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)

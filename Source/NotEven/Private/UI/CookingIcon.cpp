@@ -13,6 +13,7 @@ void UCookingIcon::ShowIcon(EIngredientState state)
 		StopAllAnimations();
 		PlayAnimation(Normal);
 	}
+	
 	if (auto v = Icons.Find(state))
 	{
 		SetColorAndOpacity(FLinearColor(1,1,1,0));
@@ -34,5 +35,15 @@ void UCookingIcon::ShowWarning(float Speed)
 		WarningPlayer->SetPlaybackSpeed(Speed);
 		return;
 	}
-	WarningPlayer = PlayAnimation(Warning, 0, 0, EUMGSequencePlayMode::PingPong, Speed);
+	WarningPlayer = PlayAnimation(Warning, 0, 0, EUMGSequencePlayMode::Forward, Speed);
+}
+
+void UCookingIcon::DisappearIcon()
+{
+	if (WarningPlayer && WarningPlayer->GetPlaybackStatus() != EMovieScenePlayerStatus::Stopped)
+	{
+		StopAllAnimations();
+		PlayAnimation(Normal);
+	}
+	
 }

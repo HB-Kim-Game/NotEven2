@@ -90,12 +90,6 @@ void APot::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 	{
 		SetGrab(true);
 		
-		if (CookingIcon->WarningPlayer && CookingIcon->WarningPlayer->GetPlaybackStatus() != EMovieScenePlayerStatus::Stopped)
-		{
-			CookingIcon->WarningPlayer->Stop();
-			CookingIcon->PlayAnimation(CookingIcon->Normal);
-		}
-		
 		// 플레이어의 SkeletalMesh 내에 있는 Socket에 붙이기
 		AttachToComponent(player->GetMesh(),FAttachmentTransformRules::SnapToTargetIncludingScale,TEXT("GrabPoint"));
 	}
@@ -148,12 +142,7 @@ void APot::SetGrab(bool bGrab)
 		BoxComp->SetSimulatePhysics(false);
 		// NoCollision으로 설정
 		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-
-		if (CookingIcon->WarningPlayer && CookingIcon->WarningPlayer->GetPlaybackStatus() != EMovieScenePlayerStatus::Stopped)
-		{
-			CookingIcon->WarningPlayer->Stop();
-			CookingIcon->PlayAnimation(CookingIcon->Normal);
-		}
+		CookingIcon->DisappearIcon();
 	}
 	// 놓았을 경우
 	else
@@ -206,6 +195,10 @@ void APot::OnRep_Burned()
 		SubmitFood->SetState(EIngredientState::Burned);
 		CookingIcon->ShowIcon(EIngredientState::Burned);
 	}
+	else
+	{
+		CookingIcon->DisappearIcon();
+	}
 }
 
 void APot::OnRep_Boiled()
@@ -217,11 +210,7 @@ void APot::OnRep_Boiled()
 	}
 	else
 	{
-		if (CookingIcon->WarningPlayer && CookingIcon->WarningPlayer->GetPlaybackStatus() != EMovieScenePlayerStatus::Stopped)
-		{
-			CookingIcon->WarningPlayer->Stop();
-			CookingIcon->PlayAnimation(CookingIcon->Normal);
-		}
+		CookingIcon->DisappearIcon();
 	}
 }
 

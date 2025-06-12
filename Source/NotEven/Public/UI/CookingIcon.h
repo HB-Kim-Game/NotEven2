@@ -47,6 +47,8 @@ public:
 
 	void ShowWarning(float Speed);
 
+	void DisappearIcon();
+
 	UPROPERTY()
 	class UUMGSequencePlayer* WarningPlayer;
 
