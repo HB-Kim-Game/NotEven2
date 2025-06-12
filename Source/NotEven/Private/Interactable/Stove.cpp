@@ -58,6 +58,7 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 	if (Pot->CookingIcon->WarningPlayer)
 	{
 		Pot->CookingIcon->WarningPlayer->Stop();
+		Pot->CookingIcon->SetColorAndOpacity(FLinearColor(1,1,1,0));
 	}
 	Pot->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	auto detachPot = Pot;

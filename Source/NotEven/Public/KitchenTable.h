@@ -27,7 +27,7 @@ public:
 	void Server_SpawnObject();
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void SpawnObject();
+	void SpawnObject(class AMovableObject* spawnObject);
 	
 protected:
 

@@ -8,7 +8,11 @@
 
 void UCookingIcon::ShowIcon(EIngredientState state)
 {
-	StopAllAnimations();
+	if (WarningPlayer && WarningPlayer->GetPlaybackStatus() != EMovieScenePlayerStatus::Stopped)
+	{
+		StopAllAnimations();
+		PlayAnimation(Normal);
+	}
 	if (auto v = Icons.Find(state))
 	{
 		SetColorAndOpacity(FLinearColor(1,1,1,0));
@@ -16,8 +20,7 @@ void UCookingIcon::ShowIcon(EIngredientState state)
 		BackgroundImage->SetColorAndOpacity(v->BackgroundColor);
 		IconImage->SetBrushFromTexture(v->IconImage);
 
-		if (state == EIngredientState::Burned) SetColorAndOpacity(FLinearColor::White);
-		else PlayAnimation(Appear);
+		PlayAnimation(Appear);
 	}
 }
 
@@ -26,7 +29,7 @@ void UCookingIcon::ShowWarning(float Speed)
 	Border->SetColorAndOpacity(FLinearColor::Black);
 	BackgroundImage->SetColorAndOpacity(WarningColor);
 	IconImage->SetBrushFromTexture(WarningIcon);
-	if (WarningPlayer && WarningPlayer->IsPlayingForward())
+	if (WarningPlayer && WarningPlayer->GetPlaybackStatus() != EMovieScenePlayerStatus::Stopped)
 	{
 		WarningPlayer->SetPlaybackSpeed(Speed);
 		return;

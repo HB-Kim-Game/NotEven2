@@ -40,6 +40,8 @@ public:
 	class UWidgetAnimation* Appear;
 	UPROPERTY(meta=(BindWidgetAnim), Transient)
 	class UWidgetAnimation* Warning;
+	UPROPERTY(meta=(BindWidgetAnim), Transient)
+	class UWidgetAnimation* Normal;
 
 	void ShowIcon(EIngredientState state);
 

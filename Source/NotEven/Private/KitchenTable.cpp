@@ -58,29 +58,25 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 
 void AKitchenTable::Server_SpawnObject_Implementation()
 {
-	SpawnObject();
-}
-
-void AKitchenTable::SpawnObject_Implementation()
-{
 	if (bIsSpawnObject)
 	{
 		auto spawnObj = GetWorld()->SpawnActor<AMovableObject>(SpawnObjectClass);
-		moveObject = spawnObj;
+		SpawnObject(spawnObj);
+	}
+}
+
+void AKitchenTable::SpawnObject_Implementation(class AMovableObject* spawnObject)
+{
+		moveObject = spawnObject;
 		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision); 
 		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
+	
 }
 
 void AKitchenTable::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (HasAuthority())
-	{
-		Server_SpawnObject();
-	}
 }
 
 void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)

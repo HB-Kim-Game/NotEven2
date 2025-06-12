@@ -3,13 +3,17 @@
 
 #include "GameManager/OrderManager.h"
 #include "IngredientStruct.h"
+#include "KitchenSink.h"
+#include "KitchenTable.h"
 #include "OrderListViewer.h"
 #include "PlayerUI.h"
 #include "PlayTimeUI.h"
 #include "PriceUI.h"
 #include "ResultUI.h"
+#include "Stove.h"
 #include "Data/RecipeData.h"
 #include "Data/ResultData.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -62,6 +66,27 @@ void AOrderManager::BeginPlay()
 				if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
 				this->AddOrder();
 			}, FMath::RandRange(5.f, 7.f), true);
+
+			TArray<AActor*> tables;
+			UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AKitchenTable::StaticClass(), tables);
+			for (AActor* actor : tables)
+			{
+				if (auto table = Cast<AKitchenTable>(actor))
+				{
+					table->Server_SpawnObject();
+				}
+			}
+
+			TArray<AActor*> stoves;
+			UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AStove::StaticClass(), stoves);
+			for (AActor* actor : stoves)
+			{
+				if (auto stove = Cast<AStove>(actor))
+				{
+					stove->Server_SpawnObject();
+				}
+			}
+			
 		}));
 		
 		OnGameEnd.Add(FSimpleDelegate::CreateLambda([&]()
