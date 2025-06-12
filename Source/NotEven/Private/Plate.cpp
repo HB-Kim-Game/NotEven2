@@ -8,6 +8,7 @@
 #include "SubmitFood.h"
 #include "Components/WidgetComponent.h"
 #include "CookingProgress.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 APlate::APlate() : Super()
@@ -36,7 +37,7 @@ APlate::APlate() : Super()
 
 	if (progressClass.Succeeded())
 	{
-		WashWidgetComp->SetWidgetClass(progressClass.Class);
+		ProgressClass = progressClass.Class;
 	}
 	
 	bReplicates = true;
@@ -48,13 +49,21 @@ void APlate::BeginPlay()
 
 	SetState(EPlatestate::Clean);
 	BoxComp->SetSimulatePhysics(false);
-
-	WashingProgress = Cast<UCookingProgress>(WashWidgetComp->GetWidget());
+	
+	WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
+	WashingProgress->AddToViewport();
+	WashingProgress->SetDesiredSizeInViewport(FVector2D(75,15));
+	WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+	
 }
 
 void APlate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	FVector2D screenPos = FVector2D::ZeroVector;
+	UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(),GetActorLocation(),screenPos);
+	WashingProgress->SetPositionInViewport(screenPos);
 	
 }
 
@@ -173,24 +182,26 @@ void APlate::SetState(EPlatestate nextState)
 
 }
 
-void APlate::AddWashingProgress(float addProgress)
+float APlate::AddWashingProgress(float addProgress)
 {
 	CurrentWashingProgress += addProgress;
 	if (HasAuthority())
 	{
 		Rep_CurrentWashingProgress();
 	}
+
+	return CurrentWashingProgress;
 }
 
 void APlate::Rep_CurrentWashingProgress()
 {
 	if (CurrentWashingProgress <= 0.01f)
 	{
-		WashWidgetComp->SetVisibility(false);
+		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 
-	WashWidgetComp->SetVisibility(true);
+	WashingProgress->SetVisibility(ESlateVisibility::Visible);
 	WashingProgress->Progress = CurrentWashingProgress / MaxWashingProgress;
 }
 
@@ -223,9 +234,11 @@ void APlate::NetMulticast_SetCurrentState_Implementation(EPlatestate next)
 	}
 
 	CurrentWashingProgress = 0.f;
-	WashWidgetComp->SetVisibility(false);
+	if (WashingProgress)
+	{
+		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
-
 void APlate::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

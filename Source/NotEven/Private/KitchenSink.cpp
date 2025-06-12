@@ -3,6 +3,7 @@
 
 #include "KitchenSink.h"
 
+#include "CookingProgress.h"
 #include "NotEvenPlayer.h"
 #include "Plate.h"
 
@@ -37,9 +38,13 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 		if (plate)
 		{
 			PlateObj = plate;
-			PlateObj->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("WashingPoint"));
-			isInSink = true;
-			player->DetachGrabObj(false);
+			if (plate->Platestate==EPlatestate::Dirty)
+			{
+				PlateObj->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("WashingPoint"));
+				isInSink = true;
+				player->DetachGrabObj(false);
+			}
+
 		}
 		else
 		{
@@ -65,13 +70,12 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 
 void AKitchenSink::Washing(class ANotEvenPlayer* player)
 {
-	NetMulticast_Washing(player);
-	
 	// 실행 될 때마다 currentCount를 올리고 싶다
-	PlateObj->AddWashingProgress(10);
+	NetMulticast_Washing(player, PlateObj->AddWashingProgress(10));
 }
+	
 
-void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* player)
+void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* player,float currentWashingProgress)
 {
 	UE_LOG(LogTemp, Display, TEXT("Washing"));
 	// 만약 싱크대 안에 접시가 존재하면
@@ -83,7 +87,7 @@ void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* pla
 		
 		UE_LOG(LogTemp, Display, TEXT("WashingProgress added"));
 		// 카운트가 maxCount랑 같아지면
-		if (PlateObj->GetCurrentWashingProgress() >= PlateObj->GetMaxWashingProgress())
+		if (currentWashingProgress >= PlateObj->GetMaxWashingProgress())
 		{
 			// 설거지를 완료하고 싶다
 			// -> 기존에 있던 접시(Dirty)의 상태를
