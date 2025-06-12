@@ -34,6 +34,9 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 	if (player->isGrab == true)
 	{
 		auto plate = Cast<APlate>(player->OwnedObj);
+
+		if (!plate)
+			return;
 		
 		if (plate)
 		{
@@ -44,7 +47,6 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 				isInSink = true;
 				player->DetachGrabObj(false);
 			}
-
 		}
 		else
 		{
@@ -63,7 +65,6 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 			PlateObj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			PlateObj->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("GrabPoint"));
 			player->AttachGrabObj(PlateObj);
-			
 		}
 	}
 }
@@ -71,9 +72,10 @@ void AKitchenSink::NetMulticast_Interact_Implementation(class ANotEvenPlayer* pl
 void AKitchenSink::Washing(class ANotEvenPlayer* player)
 {
 	// 실행 될 때마다 currentCount를 올리고 싶다
+	if (!PlateObj)
+		return;
 	NetMulticast_Washing(player, PlateObj->AddWashingProgress(10));
 }
-	
 
 void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* player,float currentWashingProgress)
 {
@@ -82,20 +84,17 @@ void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* pla
 	if (isInSink == true)
 	{
 		UE_LOG(LogTemp, Display, TEXT("isInSink == true"));
-		if (PlateObj->CurrentState != EPlatestate::Dirty)
+		if (PlateObj->Platestate != EPlatestate::Dirty)
 			return;
-		
 		UE_LOG(LogTemp, Display, TEXT("WashingProgress added"));
 		// 카운트가 maxCount랑 같아지면
 		if (currentWashingProgress >= PlateObj->GetMaxWashingProgress())
 		{
 			// 설거지를 완료하고 싶다
-			// -> 기존에 있던 접시(Dirty)의 상태를
-			// -> 접시(Clean) 상태를 변환하고 싶다
+			// -> 접시(Clean) 상태로 변환하고 싶다
 			PlateObj->SetState(EPlatestate::Clean);
 		}
-		
-		if (PlateObj->CurrentState == EPlatestate::Clean)
+		if (PlateObj->Platestate == EPlatestate::Clean)
 		{
 			PlateObj->AttachToComponent(MeshComp,FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("CompletePoint"));
 		}

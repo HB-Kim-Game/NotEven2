@@ -46,8 +46,7 @@ APlate::APlate() : Super()
 void APlate::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetState(EPlatestate::Clean);
+	
 	BoxComp->SetSimulatePhysics(false);
 	
 	WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
@@ -177,7 +176,9 @@ void APlate::OnPlate(AFoodIngredient* foodObj)
 void APlate::SetState(EPlatestate nextState)
 {
 	Platestate=nextState;
-
+	
+	UE_LOG(LogTemp,Warning,TEXT("APlate::State : %hd"), Platestate);
+	UE_LOG(LogTemp,Warning,TEXT("APlate::sERVER_SetCurrentState_Implementation"));
 	NetMulticast_SetCurrentState(Platestate);
 
 }
@@ -195,7 +196,7 @@ float APlate::AddWashingProgress(float addProgress)
 
 void APlate::Rep_CurrentWashingProgress()
 {
-	if (CurrentWashingProgress <= 0.01f)
+	if (CurrentWashingProgress <= 0.f)
 	{
 		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
 		return;
@@ -223,7 +224,9 @@ void APlate::SetMaxWashingProgress(float progress)
 
 void APlate::NetMulticast_SetCurrentState_Implementation(EPlatestate next)
 {
-	CurrentState = next;
+	UE_LOG(LogTemp,Warning,TEXT("APlate::State : %hd"), Platestate);
+	UE_LOG(LogTemp,Warning,TEXT("APlate::NetMulticast_SetCurrentState_Implementation"));
+	Platestate = next;
 	
 	if(auto mesh =  StateMeshMap.Find(Platestate))
 	{
@@ -232,17 +235,14 @@ void APlate::NetMulticast_SetCurrentState_Implementation(EPlatestate next)
 			MeshComp->SetStaticMesh(*mesh);
 		}
 	}
-
-	CurrentWashingProgress = 0.f;
-	if (WashingProgress)
-	{
-		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
-	}
+	
+	CurrentWashingProgress=0.f;
+	WashingProgress->SetVisibility(ESlateVisibility::Hidden);
 }
+
 void APlate::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APlate, CurrentWashingProgress);
-	DOREPLIFETIME(APlate, CurrentState);
 }

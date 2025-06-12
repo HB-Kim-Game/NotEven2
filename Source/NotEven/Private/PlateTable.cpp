@@ -24,6 +24,7 @@ APlateTable::APlateTable()
 	attachPoint ->SetRelativeScale3D(FVector(1,1,0.25));
 
 	bIsInteractable = true;
+	bReplicates = true;
 }
 
 void APlateTable::Interact(class ANotEvenPlayer* player)

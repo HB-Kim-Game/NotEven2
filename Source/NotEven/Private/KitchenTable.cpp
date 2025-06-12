@@ -66,6 +66,10 @@ void AKitchenTable::SpawnObject_Implementation()
 	if (bIsSpawnObject)
 	{
 		auto spawnObj = GetWorld()->SpawnActor<AMovableObject>(SpawnObjectClass);
+		if (auto plate = Cast<APlate>(spawnObj))
+		{
+			plate->SetState(EPlatestate::Clean);
+		}
 		moveObject = spawnObj;
 		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision); 
