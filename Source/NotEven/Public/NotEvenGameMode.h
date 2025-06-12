@@ -33,9 +33,5 @@ public:
 	// 델리게이트를 바인딩할 시그니처
 	UPROPERTY()
 	FOnPlayerDiedSignature OnPlayerDied;
-
-
-	
-
 	
 };
