@@ -3,8 +3,10 @@
 
 #include "Interactable/Stove.h"
 
+#include "CookingIcon.h"
 #include "NotEvenPlayer.h"
 #include "Pot.h"
+#include "Animation/UMGSequencePlayer.h"
 #include "Net/UnrealNetwork.h"
 
 AStove::AStove()
@@ -53,6 +55,10 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 {
 	if (Pot == nullptr) return;
 
+	if (Pot->CookingIcon->WarningPlayer)
+	{
+		Pot->CookingIcon->WarningPlayer->Stop();
+	}
 	Pot->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	auto detachPot = Pot;
 	player->AttachGrabObj(detachPot);

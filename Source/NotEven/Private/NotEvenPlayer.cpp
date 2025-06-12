@@ -53,7 +53,7 @@ ANotEvenPlayer::ANotEvenPlayer()
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> tempDashEffect(TEXT("/Script/Niagara.NiagaraSystem'/Game/KHB/Models/NS_Dust.NS_Dust'"));
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> tempDashEffect(TEXT("/Script/Niagara.NiagaraSystem'/Game/KHB/Models/NS_DashDust.NS_DashDust'"));
 	if (tempDashEffect.Succeeded())
 	{
 		DashEffect = tempDashEffect.Object;
@@ -268,7 +268,10 @@ void ANotEvenPlayer::NetMulticast_Dash_Implementation()
 {
 	if (DashEffect)
 	{
-		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DashEffect, GetActorLocation());
+		FVector effectLocation = GetActorLocation();
+		effectLocation -= GetActorForwardVector() * 25.f;
+		auto effect = UNiagaraFunctionLibrary::SpawnSystemAttached(DashEffect, GetMesh(), FName(), effectLocation, GetActorRotation(),
+			EAttachLocation::Type::KeepWorldPosition, true);
 	}
 	FVector forwordDir = this->GetActorRotation().Vector();
 	LaunchCharacter(forwordDir*DashDistance,true,true);

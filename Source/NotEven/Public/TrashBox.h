@@ -20,6 +20,9 @@ public:
 
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_Interact(class ANotEvenPlayer* player);
+
 protected:
 	virtual void BeginPlay() override;
 

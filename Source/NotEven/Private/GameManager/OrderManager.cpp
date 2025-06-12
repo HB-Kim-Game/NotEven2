@@ -57,8 +57,6 @@ void AOrderManager::BeginPlay()
 		{
 			UE_LOG(LogTemp,Warning,TEXT("PlayerUI OnGameStart"));
 			this->AddOrder();
-	
-			
 			this->GetWorld()->GetTimerManager().SetTimer(this->TimerHandle, [this]()
 			{
 				if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
@@ -229,7 +227,8 @@ void AOrderManager::InitWidget()
 		PlayerUI->PlayTime->SetMaxTime(this);
 		PlayerUI->PriceUI->ShowCurrentScore();
 		PlayerUI->BindToAnimationFinished(PlayerUI->Start, OnFinishedStartAnim);
-		PlayerUI->PlayAnimation(PlayerUI->Start);
+
+		PlayerUI->GameStart();
 	}
 }
 

@@ -32,6 +32,7 @@ ACuttingBoard::ACuttingBoard()
 		CuttingEffect = tempDashEffect.Object;
 	}
 
+	bReplicates = true;
 	bIsInteractable = true;
 }
 
@@ -75,6 +76,17 @@ void ACuttingBoard::NetMulticast_Cutting_Implementation(class ANotEvenPlayer* pl
 	{
 		if (moveObject-> GetIngredientState()!=EIngredientState::None)
 			return;
+		
+		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), CuttingEffect, FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 60.f));
+	}
+}
+
+void ACuttingBoard::Cutting(class ANotEvenPlayer* player)
+{
+	if (isOnCuttingBoard == true)
+	{
+		if (moveObject-> GetIngredientState()!=EIngredientState::None)
+			return;
 		// 실행 될 때마다 currentCount를 올리고 싶다
 		moveObject->AddCookingProgress(10);
 		// 카운트가 maxCount랑 같아지면
@@ -85,11 +97,6 @@ void ACuttingBoard::NetMulticast_Cutting_Implementation(class ANotEvenPlayer* pl
 			// -> 음식(Slice) 상태를 변환하고 싶다
 			moveObject->SetState(EIngredientState::Sliced);
 		}
-		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), CuttingEffect, FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 60.f));
 	}
-}
-
-void ACuttingBoard::Cutting(class ANotEvenPlayer* player)
-{
 	NetMulticast_Cutting(player);
 }

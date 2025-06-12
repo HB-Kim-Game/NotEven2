@@ -6,6 +6,9 @@
 #include "FoodIngredient.h"
 #include "NotEvenPlayer.h"
 #include "SubmitFood.h"
+#include "Blueprint/UserWidget.h"
+#include "CookingIcon.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 APot::APot()
@@ -21,6 +24,13 @@ APot::APot()
 
 	MeshComp->SetRelativeLocation(FVector(0, 0, -10.f));
 
+	ConstructorHelpers::FClassFinder<UCookingIcon> tempClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_CookingIcon.WBP_CookingIcon_C'"));
+
+	if (tempClass.Succeeded())
+	{
+		IconClass = tempClass.Class;
+	}
+	
 	bReplicates = true;
 }
 
@@ -29,6 +39,17 @@ void APot::BeginPlay()
 	Super::BeginPlay();
 	
 	BoxComp->SetSimulatePhysics(false);
+	CookingIcon = CreateWidget<UCookingIcon>(GetWorld(), IconClass);
+	CookingIcon->AddToViewport();
+
+	OnDestroyed.AddDynamic(this, &APot::RemoveWidget);
+}
+
+void APot::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	MoveIcon();
 }
 
 void APot::Interact(class ANotEvenPlayer* player)
@@ -86,6 +107,11 @@ void APot::AddProgress(float progress)
 		OnRep_Boiled();
 	}
 	
+	if (bIsBoiled &&  SubmitFood->GetCurrentCookingProgress() > 110.f && static_cast<int32>(SubmitFood->GetCurrentCookingProgress()) % 3 == 0)
+	{
+		NetMulticast_ShowWarning(SubmitFood->GetCurrentCookingProgress() , SubmitFood->GetMaxCookingProgress());
+	}
+	
 	if (SubmitFood->GetCurrentCookingProgress() / SubmitFood->GetMaxCookingProgress() >= 1.5f)
 	{
 		bISBurned = true;
@@ -94,6 +120,7 @@ void APot::AddProgress(float progress)
 	}
 	
 	SubmitFood->AddProgress(progress);
+
 }
 
 bool APot::HasSubmitFood()
@@ -144,18 +171,44 @@ void APot::OnPot(class AFoodIngredient* food)
 			return;
 		}
 		SubmitFood -> AddIngredient(food->GetIngredientData(),food->GetIngredientState(),food->GetCurrentCookingProgress(), food->GetIngredientPlaceData());
-		ServerRPC_SetBoiled(true);
+		ServerRPC_SetBoiled(false);
 	}
+}
+
+void APot::NetMulticast_ShowWarning_Implementation(float currentProgress, float maxProgress)
+{
+	float DangerRatio = FMath::Clamp((currentProgress - maxProgress) / (maxProgress * 0.5f)
+		, 0.f, 1.f);
+	
+	CookingIcon->ShowWarning(
+		FMath::Lerp(1.f, 5.f, DangerRatio));
 }
 
 void APot::OnRep_Burned()
 {
-	if (bISBurned) SubmitFood->SetState(EIngredientState::Burned);
+	if (bISBurned)
+	{
+		SubmitFood->SetState(EIngredientState::Burned);
+		CookingIcon->ShowIcon(EIngredientState::Burned);
+	}
 }
 
 void APot::OnRep_Boiled()
 {
-	if (bIsBoiled) SubmitFood->SetState(EIngredientState::Boiled);
+	if (bIsBoiled)
+	{
+		SubmitFood->SetState(EIngredientState::Boiled);
+		CookingIcon->ShowIcon(EIngredientState::Boiled);
+	}
+}
+
+void APot::MoveIcon()
+{
+	if (!CookingIcon) return;
+	FVector2D screenPosition;
+	UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(), GetActorLocation(), screenPosition);
+	screenPosition.X = screenPosition.X - 40;
+	CookingIcon->SetPositionInViewport(screenPosition);
 }
 
 void APot::ServerRPC_SetBoiled_Implementation(bool isBoiled)
@@ -168,4 +221,9 @@ void APot::ServerRPC_SetBurned_Implementation(bool isBurned)
 {
 	bISBurned = isBurned;
 	OnRep_Burned();
+}
+
+void APot::RemoveWidget(AActor* DestroyedActor)
+{
+	if (CookingIcon) CookingIcon->RemoveFromParent();
 }

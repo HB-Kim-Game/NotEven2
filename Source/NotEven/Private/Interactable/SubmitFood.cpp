@@ -64,7 +64,7 @@ void ASubmitFood::AddIngredient(FIngredientData data, EIngredientState state, fl
 
 	IconWidget->ShowIconImage(GetIngredients());
 
-	AddProgress(0.00001f);
+	AddProgress(0.000001f);
 }
 
 TArray<FRecipeIngredientData> ASubmitFood::GetIngredients() const
@@ -126,6 +126,8 @@ void ASubmitFood::Tick(float DeltaTime)
 
 void ASubmitFood::AddProgress(float progress)
 {
+	if (!HasAuthority()) return;
+	
 	CurrentCookingProgress += progress;
 
 	OnRep_CurrentCookingProgress();
@@ -197,8 +199,6 @@ void ASubmitFood::FindMesh()
 		return condition;
 	}))
 	{
-		
-		UE_LOG(LogTemp,Warning,TEXT("ASubmitFood::[%s]"), *(*find)->MeshAssetPath);
 		UStaticMesh* mesh = LoadObject<UStaticMesh>(nullptr, *((*find)->MeshAssetPath));
 		MeshComp->SetStaticMesh(mesh);
 	}

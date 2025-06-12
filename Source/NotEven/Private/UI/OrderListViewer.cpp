@@ -168,6 +168,7 @@ void UOrderListViewer::InitializeItem()
 	for (int i = 0; i < FetchedDatas.Num(); i++)
 	{
 		SpawnItems[i]->FetchData(FetchedDatas[i]);
+		SpawnItems[i]->Selected();
 		SpawnItems[i]->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
 
