@@ -20,6 +20,8 @@ class NOTEVEN_API APot : public AMovableObject
 	APot();
 
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
@@ -41,6 +43,9 @@ class NOTEVEN_API APot : public AMovableObject
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_SetBurned(bool isBurned);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_ShowWarning(float currentProgress, float maxProgress);
+
 	UPROPERTY(ReplicatedUsing=OnRep_Burned)
 	bool bISBurned = false;
 
@@ -50,6 +55,12 @@ class NOTEVEN_API APot : public AMovableObject
 	UPROPERTY(VisibleAnywhere)
 	class ASubmitFood* SubmitFood;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UCookingIcon> IconClass;
+
+	UPROPERTY(EditAnywhere)
+	class UCookingIcon* CookingIcon;
+
 protected:
 
 	UFUNCTION()
@@ -57,4 +68,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_Boiled();
+
+	void MoveIcon();
+
+	UFUNCTION()
+	void RemoveWidget(AActor* DestroyedActor);
 };

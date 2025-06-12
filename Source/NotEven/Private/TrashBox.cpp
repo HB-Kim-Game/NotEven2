@@ -27,12 +27,18 @@ ATrashBox::ATrashBox()
 	OverlapBox->SetupAttachment(BoxComp);
 
 	bIsInteractable = true;
+	bReplicates = true;
 }
 
 void ATrashBox::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+	
+	NetMulticast_Interact(player);
+}
 
+void ATrashBox::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
+{
 	// 만약에 플레이어가 isGrab 상태이면
 	if (player && player -> isGrab)
 	{
@@ -66,19 +72,19 @@ void ATrashBox::Interact(class ANotEvenPlayer* player)
 			{
 				auto food = pot->SubmitFood;
 				pot->SubmitFood = nullptr;
-				pot->ServerRPC_SetBoiled(false);
-				pot->ServerRPC_SetBurned(false);
+				if (HasAuthority())
+				{
+					pot->ServerRPC_SetBoiled(false);
+					pot->ServerRPC_SetBurned(false);	
+				}
 				
 				if (food)
 				{
 					food->Destroy();
 				}
-				
 			}
 		}
 	}
-	
-	
 }
 
 void ATrashBox::BeginPlay()

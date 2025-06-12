@@ -30,6 +30,19 @@ public:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Start;
 
+	UPROPERTY(meta = (BindWidget))
+	class UImage* Mask;
+	
+	void GameStart();
+
 protected:
 	virtual void NativeConstruct() override;
+
+	UPROPERTY(EditAnywhere)
+	class UMaterialInterface* MaskMaterial;
+	UPROPERTY()
+	class UMaterialInstanceDynamic* Dynamic_Mask;
+
+	FTimerHandle StartHandle;
+
 };
