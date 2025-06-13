@@ -1,1 +1,1 @@
-C:\UnrealEngine\UE_5.5\Engine\Binaries\Win64\UnrealEditor.exe C:\Projects\Net\NotEven\NotEven.uproject "MapDesign?listen" -game -ResX=1920 -ResY=1080 -WinX=100 -WinY=100 -WINDOWED -log
+C:\UnrealEngine\UE_5.5\Engine\Binaries\Win64\UnrealEditor.exe C:\Projects\Net\NotEven\NotEven.uproject /Game/KHB/Maps/Lobby?Listen -game -ResX=1920 -ResY=1080 -WinX=100 -WinY=100 -WINDOWED -log
