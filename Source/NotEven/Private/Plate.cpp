@@ -48,11 +48,14 @@ void APlate::BeginPlay()
 	Super::BeginPlay();
 	
 	BoxComp->SetSimulatePhysics(false);
-	
-	WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
-	WashingProgress->AddToViewport();
-	WashingProgress->SetDesiredSizeInViewport(FVector2D(75,15));
-	WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+
+	if (!WashingProgress)
+	{
+		WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
+		WashingProgress->AddToViewport();
+		WashingProgress->SetDesiredSizeInViewport(FVector2D(75,15));
+		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
 	
 }
 
@@ -236,7 +239,14 @@ void APlate::NetMulticast_SetCurrentState_Implementation(EPlatestate next)
 		}
 	}
 	
-	CurrentWashingProgress=0.f;
+	CurrentWashingProgress = 0.f;
+	if (!WashingProgress)
+	{
+		WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
+		WashingProgress->AddToViewport();
+		WashingProgress->SetDesiredSizeInViewport(FVector2D(75,15));
+		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
 	WashingProgress->SetVisibility(ESlateVisibility::Hidden);
 }
 
