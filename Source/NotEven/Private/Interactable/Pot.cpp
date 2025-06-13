@@ -8,8 +8,10 @@
 #include "SubmitFood.h"
 #include "Blueprint/UserWidget.h"
 #include "CookingIcon.h"
+#include "Animation/UMGSequencePlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "IMovieScenePlayer.h"
 
 APot::APot()
 {
@@ -87,6 +89,7 @@ void APot::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 	else
 	{
 		SetGrab(true);
+		
 		// 플레이어의 SkeletalMesh 내에 있는 Socket에 붙이기
 		AttachToComponent(player->GetMesh(),FAttachmentTransformRules::SnapToTargetIncludingScale,TEXT("GrabPoint"));
 	}
@@ -138,7 +141,8 @@ void APot::SetGrab(bool bGrab)
 		// 물리 끄기
 		BoxComp->SetSimulatePhysics(false);
 		// NoCollision으로 설정
-		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision); 
+		BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		CookingIcon->DisappearIcon();
 	}
 	// 놓았을 경우
 	else
@@ -191,6 +195,10 @@ void APot::OnRep_Burned()
 		SubmitFood->SetState(EIngredientState::Burned);
 		CookingIcon->ShowIcon(EIngredientState::Burned);
 	}
+	else
+	{
+		CookingIcon->DisappearIcon();
+	}
 }
 
 void APot::OnRep_Boiled()
@@ -199,6 +207,10 @@ void APot::OnRep_Boiled()
 	{
 		SubmitFood->SetState(EIngredientState::Boiled);
 		CookingIcon->ShowIcon(EIngredientState::Boiled);
+	}
+	else
+	{
+		CookingIcon->DisappearIcon();
 	}
 }
 
