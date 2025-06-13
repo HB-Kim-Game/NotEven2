@@ -28,7 +28,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetRPC_Interact(class ANotEvenPlayer* player);
+	void NetRPC_Interact(class ANotEvenPlayer* player, class AFoodIngredient* Ingredient);
 	
 	UPROPERTY(EditAnywhere)
 	FString IngredientID;

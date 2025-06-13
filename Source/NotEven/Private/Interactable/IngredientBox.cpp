@@ -61,8 +61,13 @@ AIngredientBox::AIngredientBox()
 void AIngredientBox::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
+
+	auto* ingredient = GetWorld()->SpawnActor<AFoodIngredient>(AFoodIngredient::StaticClass(),
+		FVector(player->GetActorLocation().X, player->GetActorLocation().Y, player->GetActorLocation().Z + 200.f), FRotator::ZeroRotator);
+
+	ingredient->InitializeIngredient(Data, PlaceData);
 	
-	NetRPC_Interact(player);
+	NetRPC_Interact(player, ingredient);
 }
 
 // Called when the game starts or when spawned
@@ -99,14 +104,8 @@ void AIngredientBox::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AIngredientBox::NetRPC_Interact_Implementation(class ANotEvenPlayer* player)
+void AIngredientBox::NetRPC_Interact_Implementation(class ANotEvenPlayer* player, class AFoodIngredient* Ingredient)
 {
-	auto* ingredient = GetWorld()->SpawnActor<AFoodIngredient>(AFoodIngredient::StaticClass(),
-		FVector(player->GetActorLocation().X, player->GetActorLocation().Y, player->GetActorLocation().Z + 200.f), FRotator::ZeroRotator);
-
-	ingredient->InitializeIngredient(Data, PlaceData);
-	
-	player->AttachGrabObj(ingredient);
-	ingredient->Interact(player);
+	player->AttachGrabObj(Ingredient);
 }
 

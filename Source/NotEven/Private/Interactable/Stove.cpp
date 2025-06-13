@@ -71,9 +71,12 @@ void AStove::Server_SpawnObject_Implementation()
 void AStove::NetMulticast_SpawnObject_Implementation(class APot* pot)
 {
 	Pot = pot;
-	Pot->BoxComp->SetSimulatePhysics(false);
-	Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
+	if (Pot)
+	{
+		Pot->BoxComp->SetSimulatePhysics(false);
+		Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
+	}
 }
 
 void AStove::BeginPlay()
