@@ -12,6 +12,7 @@
 #include "Components/HorizontalBox.h"
 #include "Data/RecipeData.h"
 #include "GameManager/OrderManager.h"
+#include "Kismet/GameplayStatics.h"
 
 int32 UOrderListViewer::GetCursor() const
 {
@@ -72,7 +73,6 @@ bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientDa
 		if (nullptr == cast) continue;
 		if (nullptr == cast->GetRecipeData()) continue;
 		if (cast->bIsChecked) continue;
-
 
 		TArray<FRecipeIngredientData*> checkedData;
 		
@@ -146,6 +146,7 @@ void UOrderListViewer::InitializeItem()
 					this->OrderManager->RemoveOrder(data, false);
 					item->BindToAnimationFinished(item->Failed, this->OnAnimFinished);
 				}
+				if (FailSound) UGameplayStatics::PlaySound2D(GetWorld(), FailSound);
 				item->bIsChecked = true;
 			}));
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([item,this](URecipeData* data)
@@ -156,7 +157,8 @@ void UOrderListViewer::InitializeItem()
 					this->OrderManager->AddScore(data->Price + 8.f * this->OrderManager->GetCurrentComboCount());	
 					this->OrderManager->RemoveOrder(data, true);
 				}
-				
+
+				if (SuccessSound) UGameplayStatics::PlaySound2D(GetWorld(), SuccessSound);
 				item->bIsChecked = true;
 				
 				item->BindToAnimationFinished(item->Success, this->OnAnimFinished);
