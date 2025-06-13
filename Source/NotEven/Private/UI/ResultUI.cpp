@@ -99,7 +99,10 @@ void UResultUI::NativeConstruct()
 
 void UResultUI::OnClickedRestartButton()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName(GetWorld()->GetCurrentLevel()->GetName()));
+	if (GetWorld()->GetFirstPlayerController()->HasAuthority())
+	{
+		GetWorld()->ServerTravel("/Game/KHB/Maps/MapDesign?listen", true);
+	}
 
 	this->GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
 	this->GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
