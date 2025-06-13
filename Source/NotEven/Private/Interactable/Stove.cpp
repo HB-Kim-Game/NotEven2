@@ -64,13 +64,13 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 
 void AStove::Server_SpawnObject_Implementation()
 {
-	NetMulticast_SpawnObject();
+	auto spawnPot = GetWorld()->SpawnActor<APot>(PotClass);
+	NetMulticast_SpawnObject(spawnPot);
 }
 
-void AStove::NetMulticast_SpawnObject_Implementation()
+void AStove::NetMulticast_SpawnObject_Implementation(class APot* pot)
 {
-	auto spawnPot = GetWorld()->SpawnActor<APot>(PotClass);
-	Pot = spawnPot;
+	Pot = pot;
 	Pot->BoxComp->SetSimulatePhysics(false);
 	Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));

@@ -32,7 +32,7 @@ public:
 	void Server_SpawnObject();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_SpawnObject();
+	void NetMulticast_SpawnObject(class APot* pot);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Replicated)
