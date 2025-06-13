@@ -28,8 +28,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* RootComp;
+
 	UPROPERTY(EditAnywhere)
-	class USpringArmComponent* SpringArmComp;
+	class USkeletalMeshComponent* MeshComp;
+
 	UPROPERTY(EditAnywhere)
-	class UCameraComponent* CameraComp;
+	class UNiagaraComponent* ParticleComp;
 };

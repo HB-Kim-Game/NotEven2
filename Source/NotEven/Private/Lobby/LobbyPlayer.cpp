@@ -3,8 +3,7 @@
 
 #include "Lobby/LobbyPlayer.h"
 
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ALobbyPlayer::ALobbyPlayer()
@@ -15,19 +14,19 @@ ALobbyPlayer::ALobbyPlayer()
 	RootComp = CreateDefaultSubobject<USceneComponent>("RootComp");
 	RootComp->SetupAttachment(RootComponent);
 	
-	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-	SpringArmComp->SetupAttachment(RootComp);
+	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetupAttachment(RootComp);
 
-	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-	CameraComp->SetupAttachment(SpringArmComp);
-	
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	ParticleComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ParticleComp"));
+	ParticleComp->SetupAttachment(RootComp);
 }
 
 // Called when the game starts or when spawned
 void ALobbyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
