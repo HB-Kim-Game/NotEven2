@@ -73,7 +73,7 @@ void AVehicle::OnBoxCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 	{
 		player->DisableInput(Cast<APlayerController>(player->GetController()));
 		player->GetMesh()->SetSimulatePhysics(true);
-		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("root"),true,true);
+		player -> GetMesh()->AddImpulseToAllBodiesBelow(impulseResult,FName("body"),true,true);
 		player->CallRestartPlayerDelay();
 		player->DetachGrabObj(true);
 	}

@@ -47,7 +47,7 @@ AIngredientBox::AIngredientBox()
 		IconMesh->SetStaticMesh(iconMesh.Object);
 	}
 
-	IconMesh->SetRelativeLocationAndRotation(FVector(0.f, -20.f, 150.f),FRotator(0.f, 0.f, 0.f));
+	IconMesh->SetRelativeLocationAndRotation(FVector(0.f, -20.f, 151.f),FRotator(0.f, 0.f, 0.f));
 	IconMesh->SetRelativeScale3D(FVector(0.75f));
 
 	ConstructorHelpers::FObjectFinder<UMaterialInterface> iconMat(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/KHB/UI/M_CircleMaskNotUI_Inst.M_CircleMaskNotUI_Inst'"));

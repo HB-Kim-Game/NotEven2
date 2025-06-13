@@ -144,10 +144,9 @@ void UOrderListViewer::InitializeItem()
 					this->OrderManager->AddFailure(data->Price / 2);
 					this->OrderManager->AddScore(-data->Price / 2);	
 					this->OrderManager->RemoveOrder(data, false);
+					item->BindToAnimationFinished(item->Failed, this->OnAnimFinished);
 				}
 				item->bIsChecked = true;
-
-				item->BindToAnimationFinished(item->Failed, this->OnAnimFinished);
 			}));
 			item->OnOrderSuccess.Add(FOnOrderSuccess::FDelegate::CreateLambda([item,this](URecipeData* data)
 			{
