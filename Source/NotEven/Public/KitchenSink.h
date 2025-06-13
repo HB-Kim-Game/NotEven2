@@ -32,5 +32,8 @@ public:
 	class APlate* PlateObj;
 
 	bool isInSink;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UAnimMontage* InteractMontage;
 	
 };

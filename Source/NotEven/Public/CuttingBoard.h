@@ -38,6 +38,10 @@ public:
 	float currentCount=0;
 	float maxCount=10;
 
+	UPROPERTY(EditDefaultsOnly)
+	class UAnimMontage* InteractMontage;
+
+	
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* CuttingEffect;
 };

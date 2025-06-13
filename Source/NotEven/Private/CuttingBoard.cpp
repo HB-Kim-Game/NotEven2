@@ -46,7 +46,7 @@ void ACuttingBoard::Interact(class ANotEvenPlayer* player)
 void ACuttingBoard::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 {
 	// 만약에 플레이어가 isGrab 상태이면
-	if (player -> isGrab == true)
+	if (player -> isGrab == true)//
 	{
 		// moveObject을 Grad 하고 있으면
 		auto food = Cast<AFoodIngredient>(player->OwnedObj);
@@ -76,6 +76,12 @@ void ACuttingBoard::NetMulticast_Cutting_Implementation(class ANotEvenPlayer* pl
 	{
 		if (moveObject-> GetIngredientState()!=EIngredientState::None)
 			return;
+
+		UAnimInstance* animInst = player->GetMesh()->GetAnimInstance();
+		if (animInst && InteractMontage && !animInst->IsAnyMontagePlaying())
+		{
+			animInst->Montage_Play(InteractMontage);
+		}
 		
 		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), CuttingEffect, FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 60.f));
 	}

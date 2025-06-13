@@ -54,7 +54,7 @@ void APlate::BeginPlay()
 		WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
 		WashingProgress->AddToViewport();
 		WashingProgress->SetDesiredSizeInViewport(FVector2D(75,15));
-		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+		WashingProgress->SetColorAndOpacity(FLinearColor(1,1,1,0));
 	}
 	
 }
@@ -201,11 +201,11 @@ void APlate::Rep_CurrentWashingProgress()
 {
 	if (CurrentWashingProgress <= 0.f)
 	{
-		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+		WashingProgress->SetColorAndOpacity(FLinearColor(1,1,1,0));
 		return;
 	}
 
-	WashingProgress->SetVisibility(ESlateVisibility::Visible);
+	WashingProgress->SetColorAndOpacity(FLinearColor(1,1,1,1));
 	WashingProgress->Progress = CurrentWashingProgress / MaxWashingProgress;
 }
 
@@ -245,9 +245,8 @@ void APlate::NetMulticast_SetCurrentState_Implementation(EPlatestate next)
 		WashingProgress = CreateWidget<UCookingProgress>(GetWorld(),ProgressClass);
 		WashingProgress->AddToViewport();
 		WashingProgress->SetDesiredSizeInViewport(FVector2D(75,15));
-		WashingProgress->SetVisibility(ESlateVisibility::Hidden);
 	}
-	WashingProgress->SetVisibility(ESlateVisibility::Hidden);
+	WashingProgress->SetColorAndOpacity(FLinearColor(1,1,1,0));
 }
 
 void APlate::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

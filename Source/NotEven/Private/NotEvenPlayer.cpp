@@ -26,6 +26,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "PlayerAnim.h"
 #include "Stove.h"
 
 
@@ -36,11 +37,11 @@ ANotEvenPlayer::ANotEvenPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/LGJ/Assets/Customizable_Stickman_Hypercasual/BananaMan.BananaMan'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KHB/Models/Robot/robot.robot''"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0,0,-90), FRotator(0,-90,0));
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0,0,-90), FRotator(0,90,0));
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
 		
 	}
@@ -244,7 +245,9 @@ void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
 				// 도마
 				if (auto* unGrabObj = Cast<ACuttingBoard>(tempGrabObj.GetActor()))
 				{
+				
 					unGrabObj->Cutting(this);
+					
 					return;
 				}
 
@@ -269,7 +272,7 @@ void ANotEvenPlayer::NetMulticast_Dash_Implementation()
 	if (DashEffect)
 	{
 		FVector effectLocation = GetActorLocation();
-		effectLocation -= GetActorForwardVector() * 25.f;
+		effectLocation -= GetActorForwardVector() * 30.f;
 		auto effect = UNiagaraFunctionLibrary::SpawnSystemAttached(DashEffect, GetMesh(), FName(), effectLocation, GetActorRotation(),
 			EAttachLocation::Type::KeepWorldPosition, true);
 	}

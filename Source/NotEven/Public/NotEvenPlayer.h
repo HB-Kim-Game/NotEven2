@@ -127,6 +127,7 @@ public:
 
 //-----------------------던지기-----------------------
 	bool isThrown = false;
-	// void ReleaseGradObj(AActor* ObjActor);
-	//AActor* ObjActor
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+	class UAnimMontage* InteractMontage;
 };

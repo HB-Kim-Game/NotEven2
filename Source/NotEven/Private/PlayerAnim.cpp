@@ -22,3 +22,8 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaTime)
 		Speed = FVector::DotProduct(vel, Player->GetActorForwardVector());
 	}
 }
+
+void UPlayerAnim::PlayInteractMontage()
+{
+	Montage_Play(InteractMontage);
+}

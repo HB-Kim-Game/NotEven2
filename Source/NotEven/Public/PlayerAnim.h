@@ -24,5 +24,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Speed;
+
+	UPROPERTY(editAnywhere, Category=Montage)
+	class UAnimMontage* InteractMontage;
+
+	UFUNCTION()
+	void PlayInteractMontage();
+	
 	
 };

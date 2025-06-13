@@ -77,10 +77,10 @@ void ACamera::Tick(float DeltaTime)
 		CurrentDistance = FVector::Dist(playerLoc1, playerLoc2);
 		
 		
-		// float Alpha = FMath::Clamp((CurrentDistance-MinDistance)/(MaxDistance-MinDistance), 0.f, 0.5f);
-		// float newFov= FMath::Lerp(MinFov,MaxFov,Alpha);
-		//
-		// CameraComp->SetFieldOfView(newFov);
+		float Alpha = FMath::Clamp((CurrentDistance-MinDistance)/(MaxDistance-MinDistance), 0.f, 0.5f);
+		float newFov= FMath::Lerp(MinFov,MaxFov,Alpha);
+		
+		CameraComp->SetFieldOfView(newFov);
 
 		// 두 플레이어 간의 거리 중간 벡터
 		FVector midPoint = (playerLoc1+playerLoc2)/2;
