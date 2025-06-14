@@ -3,31 +3,25 @@
 
 #include "NotEvenPlayer.h"
 
-#include "ConveyorBelt.h"
+
 #include "CuttingBoard.h"
 #include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "FoodIngredient.h"
-#include "FoodSubmitTable.h"
 #include "ImmovableObject.h"
 #include "KitchenSink.h"
-#include "KitchenTable.h"
 #include "MovableObject.h"
 #include "NotEvenGameMode.h"
 #include "Plate.h"
-#include "PlateTable.h"
 #include "SubmitFood.h"
-#include "TrashBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameManager/OrderManager.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
-#include "PlayerAnim.h"
-#include "Stove.h"
 
 
 // Sets default values
@@ -37,7 +31,7 @@ ANotEvenPlayer::ANotEvenPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KHB/Models/Robot/robot.robot''"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KHB/Models/Robot/robot.robot'"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);

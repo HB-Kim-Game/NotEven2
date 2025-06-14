@@ -34,10 +34,10 @@ public:
 	FVector CameraLocation;
 	float MoveRange = 100.f;
 	
-	float MinDistance = 1500.f;
+	float MinDistance = 1000.f;
 	float MaxDistance = 2000.f;
 	
-	float MaxFov = 38.f;
+	float MaxFov = 36.f;
 	float MinFov = 35.f;
 	
 };
