@@ -42,7 +42,7 @@ protected:
 	TSubclassOf<class APot> PotClass;
 
 	UPROPERTY(EditAnywhere)
-	float AddAmount = 5.f;
+	float AddAmount = 10.f;
 
 	UFUNCTION(Server, Reliable)
 	void AddProgress();

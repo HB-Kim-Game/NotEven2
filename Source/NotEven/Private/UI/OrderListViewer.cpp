@@ -105,6 +105,8 @@ bool UOrderListViewer::CheckOrderSuccess(const TArray<struct FRecipeIngredientDa
 		cast->StopAllAnimations();
 		cast->PlayAnimation(cast->Failed);
 	}
+
+	if (NoOrderSound) UGameplayStatics::PlaySound2D(GetWorld(), NoOrderSound);
 	
 	UE_LOG(LogTemp, Warning, TEXT("No Same Order"));
 	return false;
@@ -133,6 +135,11 @@ void UOrderListViewer::InitializeItem()
 	{
 		if (UOrderItem* item = Cast<UOrderItem>(CreateWidget(GetWorld(), ItemClass)))
 		{
+			OrderManager->OnGameEnd.Add(FSimpleDelegate::CreateLambda([item]()
+			{
+				item->FetchData(nullptr);
+			}));
+			
 			SpawnItems.Add(item);
 			item->SetVisibility(ESlateVisibility::Collapsed);
 			castPanel->AddChildToHorizontalBox(item);
@@ -158,7 +165,11 @@ void UOrderListViewer::InitializeItem()
 					this->OrderManager->RemoveOrder(data, true);
 				}
 
-				if (SuccessSound) UGameplayStatics::PlaySound2D(GetWorld(), SuccessSound);
+				if (SuccessSound)
+				{
+					UGameplayStatics::PlaySound2D(GetWorld(), SuccessCoinSound);
+					UGameplayStatics::PlaySound2D(GetWorld(), SuccessSound);
+				}
 				item->bIsChecked = true;
 				
 				item->BindToAnimationFinished(item->Success, this->OnAnimFinished);

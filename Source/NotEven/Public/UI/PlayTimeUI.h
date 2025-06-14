@@ -23,6 +23,9 @@ public:
 	class UWidgetAnimation* Countdown;
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* TimeOver;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* FinishSound;
 	
 	void SetMaxTime(class AOrderManager* orderManager);
 

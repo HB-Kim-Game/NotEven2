@@ -21,7 +21,7 @@ void URenderTargetUI::SetTarget(class AActor* actor)
 	CaptureComp->AttachToComponent(actor->GetRootComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 	
 	CaptureComp->ProjectionType = ECameraProjectionMode::Type::Orthographic;
-	CaptureComp->OrthoWidth = 320;
+	CaptureComp->OrthoWidth = 400;
 	CaptureComp->SetRelativeLocationAndRotation(FVector(500.f, 0.f, 40.f), FRotator(0.0f,-180.f, 0.0f));
 
 	CaptureComp->CaptureScene();

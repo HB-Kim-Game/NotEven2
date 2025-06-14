@@ -6,6 +6,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "GameManager/OrderManager.h"
+#include "Kismet/GameplayStatics.h"
 
 void UPlayTimeUI::SetMaxTime(AOrderManager* orderManager)
 {
@@ -19,6 +20,7 @@ void UPlayTimeUI::ShowRemainTime(float currentTime)
 	if (currentTime <= 0.f)
 	{
 		PlayAnimation(TimeOver);
+		if (FinishSound) UGameplayStatics::PlaySound2D(GetWorld(), FinishSound);
 		return;	
 	}
 
