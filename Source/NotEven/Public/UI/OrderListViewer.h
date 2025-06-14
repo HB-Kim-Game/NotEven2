@@ -48,7 +48,11 @@ protected:
 	class AOrderManager* OrderManager;
 
 	UPROPERTY(EditAnywhere)
+	USoundBase* SuccessCoinSound;
+	UPROPERTY(EditAnywhere)
 	USoundBase* SuccessSound;
 	UPROPERTY(EditAnywhere)
 	USoundBase* FailSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* NoOrderSound;
 };

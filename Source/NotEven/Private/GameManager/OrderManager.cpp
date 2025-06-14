@@ -15,6 +15,7 @@
 #include "Data/ResultData.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Sound/AmbientSound.h"
 
 // Sets default values for this component's properties
 AOrderManager::AOrderManager()
@@ -220,10 +221,18 @@ void AOrderManager::NetRPC_ShowResult_Implementation(int32 successOrder, int32 f
 	data->ResultFailureOrderCount = failedOrder;
 	data->FailureScore = failureScore;
 	data->ResultScore = currentScore;
-			
+
+	AActor* BGM = UGameplayStatics::GetActorOfClass(GetWorld(), AAmbientSound::StaticClass());
+
+	if (auto cast = Cast<AAmbientSound>(BGM))
+	{
+		cast->Stop();
+	}
+	
 	if (PlayerUI->ResultUI)
 	{
 		// Result UI에 정보보내기
+		if (Result) UGameplayStatics::PlaySound2D(GetWorld(), Result);
 		PlayerUI->ResultUI->SetVisibility(ESlateVisibility::Visible);
 		PlayerUI->ResultUI->ShowResult(data);
 		GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
@@ -243,7 +252,7 @@ void AOrderManager::InitWidget()
 	PlayerUI = Cast<UPlayerUI>(CreateWidget(GetWorld(), PlayerUIClass));
 	if (PlayerUI)
 	{
-		PlayerUI->AddToViewport();	
+		PlayerUI->AddToViewport(10);	
 		PlayerUI->OrderListViewer->SetOrderManager(this);
 		PlayerUI->PriceUI->SetOrderManager(this);
 		PlayerUI->PlayTime->BindToAnimationFinished(PlayerUI->PlayTime->TimeOver, OnFinishedTimeOverAnim);
@@ -252,7 +261,7 @@ void AOrderManager::InitWidget()
 		PlayerUI->PlayTime->SetMaxTime(this);
 		PlayerUI->PriceUI->ShowCurrentScore();
 		PlayerUI->BindToAnimationFinished(PlayerUI->Start, OnFinishedStartAnim);
-
+		
 		PlayerUI->GameStart();
 	}
 }

@@ -119,4 +119,10 @@ protected:
 
 	UFUNCTION()
 	void GameStart();
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* Result;
+	
+	UPROPERTY(EditAnywhere)
+	USoundBase* Start;
 };
