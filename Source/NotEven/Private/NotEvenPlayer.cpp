@@ -60,6 +60,7 @@ ANotEvenPlayer::ANotEvenPlayer()
 	{
 		ObjectTrail = tempTrailEffect.Object;
 	}
+
 	
 	bReplicates = true;
 }
