@@ -130,4 +130,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
 	class UAnimMontage* InteractMontage;
+
+//--------------VFX--------------------------
+
+	UPROPERTY(EditDefaultsOnly,Category=VFX)
+	class UNiagaraSystem* ObjectTrail;
+
+	UPROPERTY()
+	class UNiagaraComponent* VfxComp;
 };

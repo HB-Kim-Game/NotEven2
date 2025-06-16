@@ -52,6 +52,13 @@ ANotEvenPlayer::ANotEvenPlayer()
 	if (tempDashEffect.Succeeded())
 	{
 		DashEffect = tempDashEffect.Object;
+		
+	}
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem>tempTrailEffect(TEXT("/Script/Niagara.NiagaraSystem'/Game/LGJ/Niagara/NS_ObjectTrail.NS_ObjectTrail'"));
+	if (tempTrailEffect.Succeeded())
+	{
+		ObjectTrail = tempTrailEffect.Object;
 	}
 	
 	bReplicates = true;
@@ -276,9 +283,17 @@ void ANotEvenPlayer::NetMulticast_Dash_Implementation()
 
 void ANotEvenPlayer::NetMulticast_Throwing_Implementation(class AFoodIngredient* foodobj)
 {
+	if (ObjectTrail)
+	{
+		FVector effectLocation = foodobj->GetActorLocation();
+		effectLocation -= GetActorForwardVector() * 30.f;
+		auto effect = UNiagaraFunctionLibrary::SpawnSystemAttached(ObjectTrail, foodobj->MeshComp, FName(), effectLocation, GetActorRotation(),
+		EAttachLocation::Type::KeepWorldPosition, true);
+	}
 	FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
 	NetMulticast_DetachGrabObj_Implementation(true);
 	foodobj->BoxComp->AddImpulse(impulse);
+	
 }
 
 void ANotEvenPlayer::OnGrab()
