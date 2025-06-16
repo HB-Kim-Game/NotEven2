@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "GameManager/NotEvenGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 void ULobbyUI::NativeConstruct()
 {
@@ -25,8 +26,6 @@ void ULobbyUI::NativeConstruct()
 
 void ULobbyUI::StartGame()
 {
-	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
-	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	LoadingPanel->SetVisibility(ESlateVisibility::Visible);
 	
 	if (GetWorld()->GetFirstPlayerController()->HasAuthority())

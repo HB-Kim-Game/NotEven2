@@ -85,12 +85,15 @@ void ANotEvenPlayer::BeginPlay()
 	Super::BeginPlay();
 	if (auto pc = GetWorld()->GetFirstPlayerController())
 	{
+		pc->SetInputMode(FInputModeGameOnly());
+		pc->SetShowMouseCursor(false);
+		
 		if (!pc->IsLocalController()) return;
 		
 		if (auto ui = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(),AOrderManager::StaticClass())))
 		{
 			ui -> InitWidget();
-		}	
+		}
 	}
 }
 
