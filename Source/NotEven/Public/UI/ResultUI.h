@@ -61,6 +61,10 @@ public:
 	class UButton* RestartButton;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitButton;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ConfirmSound;
+	
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	class UWidgetAnimation* Appear;
 

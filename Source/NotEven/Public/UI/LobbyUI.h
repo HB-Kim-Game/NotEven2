@@ -43,6 +43,9 @@ public:
 	UFUNCTION()
 	void SearchComplete();
 
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ConfirmSound;
+
 	UPROPERTY()
 	class UNotEvenGameInstance* GameInstance;
 };

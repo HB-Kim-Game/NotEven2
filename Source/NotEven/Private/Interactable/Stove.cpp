@@ -7,6 +7,7 @@
 #include "NotEvenPlayer.h"
 #include "Pot.h"
 #include "Animation/UMGSequencePlayer.h"
+#include "Components/PointLightComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AStove::AStove()
@@ -19,6 +20,9 @@ AStove::AStove()
 	{
 		MeshComp->SetStaticMesh(tempMesh.Object);
 	}
+
+	FireComp = CreateDefaultSubobject<UPointLightComponent>(TEXT("FireComp"));
+	FireComp->SetupAttachment(BoxComp);
 	
 	bReplicates = true;
 
@@ -41,6 +45,7 @@ void AStove::Interact(class ANotEvenPlayer* player)
 		if (auto pot = Cast<APot>(player->OwnedObj))
 		{
 			Pot = pot;
+			OnRep_Pot();
 			player->DetachGrabObj(false);
 			Pot->BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Pot->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachPoint"));
@@ -59,6 +64,7 @@ void AStove::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 	auto detachPot = Pot;
 	player->AttachGrabObj(detachPot);
 	Pot = nullptr;
+	OnRep_Pot();
 	
 }
 
@@ -101,4 +107,9 @@ void AStove::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLife
 void AStove::AddProgress_Implementation()
 {
 	Pot->AddProgress(AddAmount * GetWorld()->GetDeltaSeconds());
+}
+
+void AStove::OnRep_Pot()
+{
+	FireComp->SetVisibility(Pot != nullptr);
 }
