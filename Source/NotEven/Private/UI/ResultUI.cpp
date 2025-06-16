@@ -10,6 +10,7 @@
 #include "Components/TextBlock.h"
 #include "Data/NotEvenSave.h"
 #include "Data/ResultData.h"
+#include "GameManager/NotEvenGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 UResultUI::UResultUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -110,5 +111,8 @@ void UResultUI::OnClickedRestartButton()
 
 void UResultUI::OnClickedQuitButton()
 {
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);;
+	if (auto gi = Cast<UNotEvenGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		gi->ExitRoom();
+	}
 }

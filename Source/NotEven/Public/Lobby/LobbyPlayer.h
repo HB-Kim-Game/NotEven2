@@ -34,4 +34,13 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* ParticleComp;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ULobbyUI> LobbyUIClass;
+
+	UPROPERTY()
+	class ULobbyUI* LobbyUI;
+
+	UFUNCTION()
+	void CompleteCreateSession(FName SessionName, bool bWasSuccessful);
 };
