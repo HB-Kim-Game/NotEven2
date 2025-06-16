@@ -16,6 +16,8 @@ void UNotEvenGameInstance::Init()
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UNotEvenGameInstance::TravelLobby);
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UNotEvenGameInstance::OnFindSessionsComplete);
 		SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UNotEvenGameInstance::OnJoinSessionComplete);
+
+		GEngine->OnNetworkFailure().AddUObject(this, &UNotEvenGameInstance::OnNetworkFailure);
 	}
 }
 
@@ -157,7 +159,7 @@ void UNotEvenGameInstance::QuitGame(FName sessionName, bool bWasSuccessful)
 void UNotEvenGameInstance::OnMyExitRoomComplete(FName sessionName, bool bWasSuccessful)
 {
 	auto pc = GetWorld()->GetFirstPlayerController();
-	FString url = TEXT("/Game/Net/Maps/Lobby");
+	FString url = TEXT("/Game/KHB/Maps/Lobby");
 	pc->ClientTravel(url, TRAVEL_Absolute);
 	SessionInterface->OnDestroySessionCompleteDelegates.RemoveAll(this);
 }
