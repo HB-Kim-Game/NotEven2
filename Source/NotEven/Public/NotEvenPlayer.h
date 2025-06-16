@@ -136,6 +136,7 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category=VFX)
 	class UNiagaraSystem* ObjectTrail;
 
-	UPROPERTY()
-	class UNiagaraComponent* VfxComp;
+	UPROPERTY(EditDefaultsOnly,Category=VFX)
+	class USoundWave* DashSound;
+	
 };
