@@ -2,8 +2,10 @@
 
 
 #include "Lobby/LobbyPlayer.h"
-
 #include "NiagaraComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "LobbyUI.h"
+#include "GameManager/NotEvenGameInstance.h"
 
 // Sets default values
 ALobbyPlayer::ALobbyPlayer()
@@ -27,6 +29,19 @@ ALobbyPlayer::ALobbyPlayer()
 void ALobbyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	LobbyUI = CreateWidget<ULobbyUI>(GetWorld(), LobbyUIClass);
+	LobbyUI->AddToViewport();
+
+	if (auto gi = Cast<UNotEvenGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		if (!gi->IsInRoom())
+		{
+			gi->CreateMySession(2);
+			LobbyUI->SearchStart();
+			gi->SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &ALobbyPlayer::CompleteCreateSession);
+		}
+	}
 }
 
 // Called every frame
@@ -41,5 +56,10 @@ void ALobbyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ALobbyPlayer::CompleteCreateSession(FName SessionName, bool bWasSuccessful)
+{
+	LobbyUI->SearchComplete();
 }
 
