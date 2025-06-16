@@ -72,6 +72,12 @@ void UNotEvenGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 
 	auto results = SessionSearch->SearchResults;
 
+	if (results.Num() <= 0)
+	{
+		OnSearchComplete.Broadcast();
+		return;
+	}
+
 	auto result = results[FMath::RandRange(0, results.Num() - 1)];
 
 	if (!result.IsValid()) return;
@@ -81,7 +87,7 @@ void UNotEvenGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 	result.Session.SessionSettings.Get(FName("ROOM_NAME"), mySessionName);
 
 	UE_LOG(LogTemp, Warning, TEXT("SuccessFindSession"));
-	OnSearchComplete.Broadcast();
+	
 	SessionInterface->JoinSession(0, FName(mySessionName), result);
 }
 
