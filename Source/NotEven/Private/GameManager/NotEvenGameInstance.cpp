@@ -94,6 +94,7 @@ void UNotEvenGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessi
 		auto pc = GetWorld()->GetFirstPlayerController();
 		FString url;
 		SessionInterface->GetResolvedConnectString(SessionName, url);
+		bIsJoinSession = true;
 
 		if (!url.IsEmpty())
 		{
@@ -139,6 +140,7 @@ void UNotEvenGameInstance::DestroySession()
 {
 	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UNotEvenGameInstance::QuitGame);
 	SessionInterface->DestroySession(FName(*mySessionName));
+	bIsJoinSession = false;
 }
 
 void UNotEvenGameInstance::QuitGame(FName sessionName, bool bWasSuccessful)
@@ -149,7 +151,7 @@ void UNotEvenGameInstance::QuitGame(FName sessionName, bool bWasSuccessful)
 void UNotEvenGameInstance::OnMyExitRoomComplete(FName sessionName, bool bWasSuccessful)
 {
 	auto pc = GetWorld()->GetFirstPlayerController();
-	FString url = TEXT("/Game/Net/Maps/LobbyMap");
+	FString url = TEXT("/Game/Net/Maps/Lobby");
 	pc->ClientTravel(url, TRAVEL_Absolute);
 	SessionInterface->OnDestroySessionCompleteDelegates.RemoveAll(this);
 }
@@ -182,12 +184,14 @@ void UNotEvenGameInstance::MultiRPC_ExitRoom_Implementation()
 	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UNotEvenGameInstance::OnMyExitRoomComplete);
 	// 세션종료
 	SessionInterface->DestroySession(FName(*mySessionName));
+	bIsJoinSession = false;
 }
 
 void UNotEvenGameInstance::TravelLobby(FName sessionName, bool bWasSuccessful)
 {
 	if (bWasSuccessful)
 	{
+		bIsJoinSession = true;
 		GetWorld()->ServerTravel("/Game/KHB/Maps/Lobby?listen?port=7777");
 		FString url;
 		SessionInterface->GetResolvedConnectString(sessionName, url);

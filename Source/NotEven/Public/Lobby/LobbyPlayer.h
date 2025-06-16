@@ -43,4 +43,6 @@ public:
 
 	UFUNCTION()
 	void CompleteCreateSession(FName SessionName, bool bWasSuccessful);
+
+	FDelegateHandle CreateSessionDelegate;
 };

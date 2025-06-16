@@ -30,16 +30,21 @@ void ALobbyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	LobbyUI = CreateWidget<ULobbyUI>(GetWorld(), LobbyUIClass);
-	LobbyUI->AddToViewport();
-
-	if (auto gi = Cast<UNotEvenGameInstance>(GetWorld()->GetGameInstance()))
+	if (IsLocallyControlled())
 	{
-		if (!gi->IsInRoom())
+		LobbyUI = CreateWidget<ULobbyUI>(GetWorld(), LobbyUIClass);
+		LobbyUI->AddToViewport();
+
+		LobbyUI->SetButtonEnabled(HasAuthority());
+		
+		if (auto gi = Cast<UNotEvenGameInstance>(GetWorld()->GetGameInstance()))
 		{
-			gi->CreateMySession(2);
-			LobbyUI->SearchStart();
-			gi->SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &ALobbyPlayer::CompleteCreateSession);
+			if (!gi->bIsJoinSession)
+			{
+				LobbyUI->SearchStart();
+				CreateSessionDelegate = gi->SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &ALobbyPlayer::CompleteCreateSession);
+				gi->CreateMySession(2);
+			}
 		}
 	}
 }
@@ -61,5 +66,9 @@ void ALobbyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ALobbyPlayer::CompleteCreateSession(FName SessionName, bool bWasSuccessful)
 {
 	LobbyUI->SearchComplete();
+	if (auto gi = Cast<UNotEvenGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		gi->SessionInterface->OnCreateSessionCompleteDelegates.Remove(CreateSessionDelegate);
+	}
 }
 

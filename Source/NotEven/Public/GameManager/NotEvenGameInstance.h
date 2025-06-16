@@ -25,6 +25,8 @@ public:
 	virtual void Init() override;
 
 	void CreateMySession(int32 playerCount);
+
+	bool bIsJoinSession = false;
 	
 	IOnlineSessionPtr SessionInterface;
 
