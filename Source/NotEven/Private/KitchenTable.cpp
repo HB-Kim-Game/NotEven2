@@ -35,6 +35,8 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
 
+	AMovableObject* temp = nullptr;
+	
 	if (player -> isGrab == true)
 	{
 		if (moveObject!=nullptr)
@@ -51,9 +53,12 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 				return;
 			}
 		}
+		
+		temp = player->OwnedObj;
+		player->DetachGrabObj(false);
 	}
-	
-	NetMulticast_Interact(player);
+
+	NetMulticast_Interact(player, temp);
 }
 
 void AKitchenTable::Server_SpawnObject_Implementation()
@@ -81,40 +86,22 @@ void AKitchenTable::BeginPlay()
 
 }
 
-void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
+void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player, class AMovableObject* ownedObj)
 {
 	// 만약에 플레이어가 isGrab 상태이면
-	if (player -> isGrab == true)
+	if (ownedObj)
 	{
-		if (moveObject!=nullptr)
-		{
-			if(auto onplateObj = Cast<APlate>(moveObject))
-			{
-				//onplate 에 음식이 들어간다
-				onplateObj->Interact(player);
-				return;
-			}
-			if (auto onPotObj = Cast<APot>(moveObject))
-			{
-				onPotObj->Interact(player);
-				return;
-			}
-		}
-		// moveObject을 Grad 하고 있으면
-		moveObject = player->OwnedObj;
+		moveObject = ownedObj;
 		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		player->DetachGrabObj(false);
 		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 	else
 	{
-		if (moveObject == nullptr)
-			return;
-		
+		if (moveObject == nullptr) return;
+		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		auto attachObj = moveObject;
-		player->AttachGrabObj(attachObj);
+		player->AttachGrabObj(moveObject);
 		moveObject= nullptr;
 	}
 }

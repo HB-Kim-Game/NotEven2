@@ -67,7 +67,7 @@ void AIngredientBox::Interact(class ANotEvenPlayer* player)
 
 	ingredient->InitializeIngredient(Data, PlaceData);
 	
-	NetRPC_Interact(player, ingredient);
+	player->AttachGrabObj(ingredient);
 }
 
 // Called when the game starts or when spawned
@@ -106,6 +106,6 @@ void AIngredientBox::Tick(float DeltaTime)
 
 void AIngredientBox::NetRPC_Interact_Implementation(class ANotEvenPlayer* player, class AFoodIngredient* Ingredient)
 {
-	player->AttachGrabObj(Ingredient);
+	
 }
 

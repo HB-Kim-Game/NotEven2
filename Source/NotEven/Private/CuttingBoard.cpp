@@ -39,33 +39,41 @@ ACuttingBoard::ACuttingBoard()
 void ACuttingBoard::Interact(class ANotEvenPlayer* player)
 {
 	Super::Interact(player);
-	
-	NetMulticast_Interact(player);
-}
 
-void ACuttingBoard::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
-{
+	AFoodIngredient* temp = nullptr;
+
 	// 만약에 플레이어가 isGrab 상태이면
-	if (player -> isGrab == true)//
+	if (player -> isGrab == true)
 	{
 		// moveObject을 Grad 하고 있으면
 		auto food = Cast<AFoodIngredient>(player->OwnedObj);
 		if (food)
 		{
-			moveObject = food;
+			temp = food;
 			player->DetachGrabObj(false);
-			moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-			isOnCuttingBoard = true;
 		}
+	}
+	
+	NetMulticast_Interact(player, temp);
+}
+
+void ACuttingBoard::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player, class AFoodIngredient* food)
+{
+	// 만약에 플레이어가 isGrab 상태이면
+	if (food)
+	{
+		moveObject = food;
+		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		isOnCuttingBoard = true;
 	}
 	else
 	{
-		if (moveObject == nullptr)
-			return;
+		if (moveObject == nullptr) return;
 		
 		isOnCuttingBoard = false;
 		moveObject->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		player->AttachGrabObj(moveObject);
+		moveObject = nullptr;
 	}
 }
 
