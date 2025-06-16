@@ -61,7 +61,23 @@ ANotEvenPlayer::ANotEvenPlayer()
 		ObjectTrail = tempTrailEffect.Object;
 	}
 
-	
+	ConstructorHelpers::FObjectFinder<USoundWave>tempDashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/521996__kastenfrosch__whoosh-dash-2.521996__kastenfrosch__whoosh-dash-2'"));
+	if (tempDashSound.Succeeded())
+	{
+		DashSound = tempDashSound.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<USoundWave>tempGradSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/mouth-bubble-pop-om-fx-4-4-00-00.mouth-bubble-pop-om-fx-4-4-00-00'"));
+	if (tempGradSound.Succeeded())
+	{
+		GrabSound = tempGradSound.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<USoundWave>tempThrowingSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/cartoon-slide-whistle-down-1-176647.cartoon-slide-whistle-down-1-176647'"));
+	if (tempThrowingSound.Succeeded())
+	{
+		ThrowingSound = tempThrowingSound.Object;
+	}
 	bReplicates = true;
 }
 
@@ -181,6 +197,11 @@ void ANotEvenPlayer::NetMulticast_AttachGrabObj_Implementation(class AMovableObj
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *OwnedObj->GetName());
 	obj->SetGrab(true);
 	obj->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GrabPoint"));
+	
+	if (GrabSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), GrabSound);
+	}
 }
 
 // 오브젝트 떼기
@@ -199,6 +220,11 @@ void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation(bool bIsSimulated
 	OwnedObj->BoxComp->SetSimulatePhysics(bIsSimulatedPhysics);
 	OwnedObj->BoxComp->SetCollisionEnabled(bIsSimulatedPhysics ? ECollisionEnabled::Type::QueryAndPhysics : ECollisionEnabled::Type::NoCollision);
 	OwnedObj = nullptr;
+	
+	if (GrabSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), GrabSound);
+	}
 }
 
 void ANotEvenPlayer::Server_DetachGrabObj_Implementation(bool bIsSimulatedPhysics)
@@ -281,18 +307,28 @@ void ANotEvenPlayer::NetMulticast_Dash_Implementation()
 		auto effect = UNiagaraFunctionLibrary::SpawnSystemAttached(DashEffect, GetMesh(), FName(), effectLocation, GetActorRotation(),
 			EAttachLocation::Type::KeepWorldPosition, true);
 	}
+	if (DashSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), DashSound);
+	}
 	FVector forwordDir = this->GetActorRotation().Vector();
 	LaunchCharacter(forwordDir*DashDistance,true,true);
 }
 
 void ANotEvenPlayer::NetMulticast_Throwing_Implementation(class AFoodIngredient* foodobj)
 {
+	if (!foodobj) return;
+	
 	if (ObjectTrail)
 	{
 		FVector effectLocation = foodobj->GetActorLocation();
 		effectLocation -= GetActorForwardVector() * 30.f;
 		auto effect = UNiagaraFunctionLibrary::SpawnSystemAttached(ObjectTrail, foodobj->MeshComp, FName(), effectLocation, GetActorRotation(),
 		EAttachLocation::Type::KeepWorldPosition, true);
+	}
+	if (ThrowingSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), ThrowingSound);
 	}
 	FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
 	NetMulticast_DetachGrabObj_Implementation(true);

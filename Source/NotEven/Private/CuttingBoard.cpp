@@ -7,6 +7,7 @@
 #include "NotEvenPlayer.h"
 #include "Plate.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ACuttingBoard::ACuttingBoard()
 {
@@ -30,6 +31,12 @@ ACuttingBoard::ACuttingBoard()
 	if (tempDashEffect.Succeeded())
 	{
 		CuttingEffect = tempDashEffect.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<USoundWave>tempCuttingSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/BUTTON_Clean_Tap_mono.BUTTON_Clean_Tap_mono'"));
+	if (tempCuttingSound.Succeeded())
+	{
+		CuttingSound = tempCuttingSound.Object;
 	}
 
 	bReplicates = true;
@@ -81,6 +88,11 @@ void ACuttingBoard::NetMulticast_Cutting_Implementation(class ANotEvenPlayer* pl
 		if (animInst && InteractMontage && !animInst->IsAnyMontagePlaying())
 		{
 			animInst->Montage_Play(InteractMontage);
+		}
+		
+		if (CuttingSound)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), CuttingSound);
 		}
 		
 		auto effect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), CuttingEffect, FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 60.f));

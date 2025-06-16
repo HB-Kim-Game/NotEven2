@@ -44,4 +44,7 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* CuttingEffect;
+
+	UPROPERTY(EditDefaultsOnly, category=VFX)
+	class USoundWave* CuttingSound;
 };

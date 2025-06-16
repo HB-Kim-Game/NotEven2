@@ -138,5 +138,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category=VFX)
 	class USoundWave* DashSound;
+
+	UPROPERTY(EditDefaultsOnly,Category=VFX)
+	class USoundWave* GrabSound;
+
+	UPROPERTY(EditDefaultsOnly,Category=VFX)
+	class USoundWave* ThrowingSound;
 	
 };
