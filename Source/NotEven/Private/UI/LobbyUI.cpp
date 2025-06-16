@@ -19,6 +19,7 @@ void ULobbyUI::NativeConstruct()
 
 	StartButton->OnClicked.AddDynamic(this, &ULobbyUI::StartGame);
 	FindButton->OnClicked.AddDynamic(this, &ULobbyUI::FindGame);
+	ExitButton->OnClicked.AddDynamic(this, &ULobbyUI::ExitGame);
 
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeUIOnly());
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
@@ -27,6 +28,7 @@ void ULobbyUI::NativeConstruct()
 void ULobbyUI::StartGame()
 {
 	LoadingPanel->SetVisibility(ESlateVisibility::Visible);
+	UGameplayStatics::PlaySound2D(GetWorld(), ConfirmSound);
 	
 	if (GetWorld()->GetFirstPlayerController()->HasAuthority())
 	{
@@ -38,6 +40,7 @@ void ULobbyUI::FindGame()
 {
 	if (GameInstance)
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), ConfirmSound);
 		GameInstance->FindOtherSessions();
 	}
 }
@@ -46,6 +49,7 @@ void ULobbyUI::ExitGame()
 {
 	if (GameInstance)
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), ConfirmSound);
 		GameInstance->DestroySession();
 	}
 }

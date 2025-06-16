@@ -35,7 +35,7 @@ public:
 	void NetMulticast_SpawnObject(class APot* pot);
 	
 protected:
-	UPROPERTY(VisibleAnywhere, Replicated)
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Pot)
 	class APot* Pot;
 
 	UPROPERTY(EditAnywhere)
@@ -44,6 +44,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float AddAmount = 10.f;
 
+	UPROPERTY(EditAnywhere)
+	class UPointLightComponent* FireComp;
+
 	UFUNCTION(Server, Reliable)
 	void AddProgress();
+
+	UFUNCTION()
+	void OnRep_Pot();
 };

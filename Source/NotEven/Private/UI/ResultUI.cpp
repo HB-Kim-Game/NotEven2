@@ -107,6 +107,8 @@ void UResultUI::OnClickedRestartButton()
 
 	this->GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
 	this->GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+	
+	UGameplayStatics::PlaySound2D(GetWorld(), ConfirmSound);
 }
 
 void UResultUI::OnClickedQuitButton()
@@ -114,5 +116,6 @@ void UResultUI::OnClickedQuitButton()
 	if (auto gi = Cast<UNotEvenGameInstance>(GetWorld()->GetGameInstance()))
 	{
 		gi->ExitRoom();
+		UGameplayStatics::PlaySound2D(GetWorld(), ConfirmSound);
 	}
 }
