@@ -23,7 +23,7 @@ protected:
 
 	// 게임플레이 중 앸터가 소멸되었을 때 호출
 	// virtual void Destroyed();
-
+ 
 
 public:	
 	// Called every frame
@@ -33,6 +33,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void NotifyControllerChanged() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void PostNetInit() override;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FVector Direction;
@@ -51,6 +57,12 @@ public:
 	
 	UPROPERTY(EditAnywhere,category=input)
 	class UInputAction* IA_PlayerChopAndThrow;
+
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerIndex)
+	int32 PlayerIndex = 0;
+
+	UFUNCTION()
+	void OnRep_PlayerIndex();
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* DashEffect;
@@ -144,5 +156,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category=VFX)
 	class USoundWave* ThrowingSound;
+
+	UPROPERTY(EditDefaultsOnly,Category=PlayerColor)
+	class UMaterialInstance* BlueColor;
+
+	UPROPERTY(EditDefaultsOnly,Category=PlayerColor)
+	class UMaterialInstance* RedColor;
 	
 };
