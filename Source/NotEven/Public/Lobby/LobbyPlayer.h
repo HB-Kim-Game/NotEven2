@@ -26,6 +26,24 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerIndex)
+	int32 PlayerIndex;
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_PlayerIndex();
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void PostNetInit() override;
+
+	UPROPERTY(EditDefaultsOnly,Category=PlayerColor)
+	class UMaterialInstance* BlueColor;
+
+	UPROPERTY(EditDefaultsOnly,Category=PlayerColor)
+	class UMaterialInstance* RedColor;
+	
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* RootComp;
 

@@ -5,7 +5,9 @@
 #include "NiagaraComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "LobbyUI.h"
+#include "GameFramework/GameStateBase.h"
 #include "GameManager/NotEvenGameInstance.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ALobbyPlayer::ALobbyPlayer()
@@ -61,6 +63,37 @@ void ALobbyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ALobbyPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ALobbyPlayer, PlayerIndex);
+}
+
+void ALobbyPlayer::OnRep_PlayerIndex()
+{
+	MeshComp->SetMaterial(0,PlayerIndex > 0 ? RedColor : BlueColor);
+}
+
+void ALobbyPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	if (HasAuthority())
+	{
+		PlayerIndex = GetWorld()->GetGameState()->PlayerArray.IndexOfByKey(GetPlayerState());
+		OnRep_PlayerIndex();
+		UE_LOG(LogTemp,Display,TEXT("Player Index is %d"),PlayerIndex);
+	}
+}
+
+void ALobbyPlayer::PostNetInit()
+{
+	Super::PostNetInit();
+
+	OnRep_PlayerIndex();
 }
 
 void ALobbyPlayer::CompleteCreateSession(FName SessionName, bool bWasSuccessful)
