@@ -20,7 +20,7 @@ public:
 	virtual void Interact(class ANotEvenPlayer* player) override;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_Interact(class ANotEvenPlayer* player);
+	void NetMulticast_Interact(class ANotEvenPlayer* player, class AFoodIngredient* food);
 	
 	virtual void Cutting(class ANotEvenPlayer* player);
 

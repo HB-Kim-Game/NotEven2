@@ -21,7 +21,7 @@ public:
 	virtual void Interact(class ANotEvenPlayer* player) override;
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_Interact(class ANotEvenPlayer* player);
+	void NetMulticast_Interact(class ANotEvenPlayer* player, class AMovableObject* ownedObj);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnObject();

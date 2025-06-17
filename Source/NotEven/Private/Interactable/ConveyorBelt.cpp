@@ -83,7 +83,11 @@ void AConveyorBelt::MoveObject(float DeltaTime)
 	{
 		if (auto cast = Cast<AMovableObject>(actor))
 		{
-			if (OwnedObj.Contains(cast)) cast->AddActorWorldOffset(offset);
+			if (OwnedObj.Contains(cast))
+			{
+				if (cast->BoxComp->GetCollisionEnabled() == ECollisionEnabled::NoCollision) cast->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+				cast->AddActorWorldOffset(offset);
+			}
 		}
 	}
 }
