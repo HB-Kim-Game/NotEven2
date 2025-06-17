@@ -52,6 +52,8 @@ void AKitchenTable::Interact(class ANotEvenPlayer* player)
 				onPotObj->Interact(player);
 				return;
 			}
+
+			return;
 		}
 		
 		temp = player->OwnedObj;
@@ -89,14 +91,14 @@ void AKitchenTable::BeginPlay()
 void AKitchenTable::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player, class AMovableObject* ownedObj)
 {
 	// 만약에 플레이어가 isGrab 상태이면
-	if (ownedObj)
+	if (ownedObj && !moveObject)
 	{
 		moveObject = ownedObj;
 		moveObject->BoxComp->SetSimulatePhysics(false);
 		moveObject->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 		moveObject->AttachToComponent(attachBox,FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
-	else
+	else if (!player->isGrab)
 	{
 		if (moveObject == nullptr) return;
 		moveObject->BoxComp->SetSimulatePhysics(false);

@@ -50,8 +50,9 @@ void ACuttingBoard::Interact(class ANotEvenPlayer* player)
 	AFoodIngredient* temp = nullptr;
 
 	// 만약에 플레이어가 isGrab 상태이면
-	if (player -> isGrab == true)
+	if (player -> isGrab)
 	{
+		if (moveObject) return;
 		// moveObject을 Grad 하고 있으면
 		auto food = Cast<AFoodIngredient>(player->OwnedObj);
 		if (food)

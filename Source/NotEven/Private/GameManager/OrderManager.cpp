@@ -237,6 +237,7 @@ void AOrderManager::NetRPC_ShowResult_Implementation(int32 successOrder, int32 f
 		PlayerUI->ResultUI->ShowResult(data);
 		GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
 		GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+		GetWorld()->GetFirstPlayerController()->DefaultMouseCursor = EMouseCursor::Type::Default;
 	}
 }
 
