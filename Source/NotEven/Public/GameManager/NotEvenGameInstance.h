@@ -21,6 +21,8 @@ class NOTEVEN_API UNotEvenGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
+
+	UNotEvenGameInstance();
 	
 	virtual void Init() override;
 
@@ -29,6 +31,16 @@ public:
 	bool bIsJoinSession = false;
 	
 	IOnlineSessionPtr SessionInterface;
+
+public: // Loading
+	UPROPERTY()
+	class ULoadingUI* LoadingUI;
+
+	UPROPERTY()
+	TSubclassOf<ULoadingUI> LoadingUIClass;
+
+	void ShowLoadingScreen();
+	void HideLoadingScreen();
 
 public:
 	// 방찾기

@@ -3,8 +3,20 @@
 
 #include "GameManager/NotEvenGameInstance.h"
 #include "OnlineSessionSettings.h"
+#include "Blueprint/UserWidget.h"
+#include "LoadingUI.h"
 #include "Kismet/GameplayStatics.h"
 #include "Online/OnlineSessionNames.h"
+
+UNotEvenGameInstance::UNotEvenGameInstance()
+{
+	ConstructorHelpers::FClassFinder<ULoadingUI> loadingUIClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/KHB/UI/WBP_Loading.WBP_Loading_C'"));
+
+	if (loadingUIClass.Succeeded())
+	{
+		LoadingUIClass = loadingUIClass.Class;
+	}
+}
 
 void UNotEvenGameInstance::Init()
 {
@@ -54,6 +66,24 @@ void UNotEvenGameInstance::CreateMySession(int32 playerCount)
 	FUniqueNetIdPtr netID = GetWorld()->GetFirstLocalPlayerFromController()->GetUniqueNetIdForPlatformUser().GetUniqueNetId();
 
 	SessionInterface->CreateSession(*netID, FName(mySessionName), sessionSettings);
+}
+
+void UNotEvenGameInstance::ShowLoadingScreen()
+{
+	if (!LoadingUI)
+	{
+		LoadingUI = CreateWidget<ULoadingUI>(this, LoadingUIClass);
+	}
+	LoadingUI->AddToViewport(100);
+}
+
+void UNotEvenGameInstance::HideLoadingScreen()
+{
+	if (LoadingUI)
+	{
+		LoadingUI->RemoveFromParent();
+		LoadingUI = nullptr;
+	}
 }
 
 void UNotEvenGameInstance::FindOtherSessions()

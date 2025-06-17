@@ -4,6 +4,7 @@
 #include "NotEvenGameMode.h"
 #include "NotEvenPlayer.h"
 #include "Camera/CameraActor.h"
+#include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 
 ANotEvenGameMode::ANotEvenGameMode()
@@ -50,6 +51,28 @@ void ANotEvenGameMode::PlayerDied(ANotEvenPlayer* Player)
 	// 캐릭터의 플레이어 컨트롤러에 대한 래퍼런스 구하기
 	// AController* CharactorController = Player->GetController();
 	// RestartPlayer(CharactorController);
+}
+
+void ANotEvenGameMode::NotifyClientLoaded()
+{
+	ClientReady++;
+
+	if (ClientReady >= GameState->PlayerArray.Num())
+	{
+		StartGame();
+	}
+}
+
+void ANotEvenGameMode::StartGame()
+{
+	for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; ++it)
+	{
+		APlayerController* pc = it->Get();
+		if (auto p = Cast<ANotEvenPlayer>(pc->GetPawn()))
+		{
+			p->NetMulticast_GameStart();
+		}
+	}
 }
 
 // void ANotEvenGameMode::RequestRespawn(AController* Controller)

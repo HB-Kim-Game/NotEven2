@@ -63,4 +63,7 @@ public:
 	void CompleteCreateSession(FName SessionName, bool bWasSuccessful);
 
 	FDelegateHandle CreateSessionDelegate;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ShowLoadingScreen();
 };

@@ -22,8 +22,10 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "PlayerUI.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
+#include "GameManager/NotEvenGameInstance.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -123,8 +125,27 @@ void ANotEvenPlayer::BeginPlay()
 		{
 			ui -> InitWidget();
 		}
+
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ANotEvenPlayer::ServerRPC_NotifyReady);
 	}
-	
+}
+
+void ANotEvenPlayer::ServerRPC_NotifyReady_Implementation()
+{
+	if (auto gm = Cast<ANotEvenGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		gm->NotifyClientLoaded();
+	}
+}
+
+void ANotEvenPlayer::NetMulticast_GameStart_Implementation()
+{
+	if (!IsLocallyControlled()) return;
+	if (auto order = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(),AOrderManager::StaticClass())))
+	{
+		Cast<UNotEvenGameInstance>(GetGameInstance())->HideLoadingScreen();
+		order->PlayerUI->GameStart();
+	}
 }
 
 void ANotEvenPlayer::PossessedBy(AController* NewController)

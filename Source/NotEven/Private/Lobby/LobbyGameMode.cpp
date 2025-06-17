@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
+#include "Lobby/LobbyPlayer.h"
 
 AActor* ALobbyGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
@@ -30,4 +31,16 @@ AActor* ALobbyGameMode::ChoosePlayerStart_Implementation(AController* Player)
 	}
 	
 	return Super::ChoosePlayerStart_Implementation(Player);
+}
+
+void ALobbyGameMode::ShowLoadingScreen()
+{
+	for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; ++it)
+	{
+		APlayerController* pc = it->Get();
+		if (auto p = Cast<ALobbyPlayer>(pc->GetPawn()))
+		{
+			p->ShowLoadingScreen();
+		}
+	}
 }
