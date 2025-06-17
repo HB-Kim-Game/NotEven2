@@ -32,12 +32,12 @@ AFoodIngredient::AFoodIngredient()
 	}
 	
 	bReplicates = true;
+	AActor::SetReplicateMovement(true);
 }
 
 void AFoodIngredient::BeginPlay()
 {
 	Super::BeginPlay();
-
 	BoxComp->SetSimulatePhysics(false);
 
 	IconWidget = CreateWidget<UIngredientActorIcon>(GetWorld(), IconClass);
