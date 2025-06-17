@@ -125,9 +125,14 @@ void ANotEvenPlayer::BeginPlay()
 		{
 			ui -> InitWidget();
 		}
-
+		
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ANotEvenPlayer::ServerRPC_NotifyReady);
 	}
+}
+
+void ANotEvenPlayer::ServerRPC_GameStart_Implementation()
+{
+	NetRPC_GameStart();	
 }
 
 void ANotEvenPlayer::ServerRPC_NotifyReady_Implementation()
@@ -138,13 +143,17 @@ void ANotEvenPlayer::ServerRPC_NotifyReady_Implementation()
 	}
 }
 
-void ANotEvenPlayer::NetMulticast_GameStart_Implementation()
+void ANotEvenPlayer::NetRPC_GameStart_Implementation()
 {
-	if (!IsLocallyControlled()) return;
-	if (auto order = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(),AOrderManager::StaticClass())))
+	UE_LOG(LogTemp,Display,TEXT("HasAuthority : %d"), HasAuthority());
+	
+	if (IsLocallyControlled())
 	{
-		Cast<UNotEvenGameInstance>(GetGameInstance())->HideLoadingScreen();
-		order->PlayerUI->GameStart();
+		if (auto order = Cast<AOrderManager>(UGameplayStatics::GetActorOfClass(GetWorld(),AOrderManager::StaticClass())))
+		{
+			Cast<UNotEvenGameInstance>(GetGameInstance())->HideLoadingScreen();
+			order->PlayerUI->GameStart();
+		}	
 	}
 }
 

@@ -59,7 +59,7 @@ void ANotEvenGameMode::NotifyClientLoaded()
 
 	ClientReady++;
 
-	if (ClientReady >= GameState->PlayerArray.Num())
+	if (ClientReady >= 2)
 	{
 		StartGame();
 	}
@@ -68,15 +68,23 @@ void ANotEvenGameMode::NotifyClientLoaded()
 void ANotEvenGameMode::StartGame()
 {
 	isPlaying = true;
-	
-	for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; ++it)
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		APlayerController* pc = it->Get();
-		if (auto p = Cast<ANotEvenPlayer>(pc->GetPawn()))
+		for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; ++it)
 		{
-			p->NetMulticast_GameStart();
+			APlayerController* pc = it->Get();
+			UE_LOG(LogTemp,Warning,TEXT("Player Controller : %d"), it.GetIndex());
+		
+			if (auto p = Cast<ANotEvenPlayer>(pc->GetPawn()))
+			{
+				p->NetRPC_GameStart();
+			}
 		}
-	}
+	}), 2.f, false);
+	
+	
 }
 
 // void ANotEvenGameMode::RequestRespawn(AController* Controller)

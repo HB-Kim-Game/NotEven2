@@ -15,8 +15,6 @@ void UPlayerUI::GameStart()
 	if (!Dynamic_Mask)
 	{
 		Dynamic_Mask = UMaterialInstanceDynamic::Create(MaskMaterial, nullptr);
-		//float aspect = Mask->GetDesiredSize().Y / Mask->GetDesiredSize().X; 
-		//Dynamic_Mask->SetScalarParameterValue(FName("AspectScale"), aspect);
 		Mask->SetBrushFromMaterial(Dynamic_Mask);
 	}
 	

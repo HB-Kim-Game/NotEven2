@@ -28,9 +28,12 @@ protected:
 public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_NotifyReady();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_GameStart();
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_GameStart();
+	void NetRPC_GameStart();
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
