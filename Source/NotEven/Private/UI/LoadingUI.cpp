@@ -22,25 +22,23 @@ ULoadingUI::ULoadingUI(const FObjectInitializer& ObjectInitializer) : Super(Obje
 void ULoadingUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	StarOneImage->SetVisibility(ESlateVisibility::Collapsed);
-	StarTwoImage->SetVisibility(ESlateVisibility::Collapsed);
-	StarThreeImage->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ULoadingUI::ShowStageInfo()
 {
-	if (FStageRequireScore* find = ScoreTable->FindRow<FStageRequireScore>(FName(TEXT("Stage0")), FString("")))
+	StarOneImage->SetVisibility(ESlateVisibility::Collapsed);
+	StarTwoImage->SetVisibility(ESlateVisibility::Collapsed);
+	StarThreeImage->SetVisibility(ESlateVisibility::Collapsed);
+
+	if (FStageRequireScore* find = ScoreTable->FindRow<FStageRequireScore>(FName("Stage0"), FString("")))
 	{
 		StageText->SetText(FText::FromString(find->DisplayName));
 
-		auto Save = Cast<UNotEvenSave>(UGameplayStatics::LoadGameFromSlot(TEXT("Stage0"), 0));
-
-		if (Save)
+		if (auto Save = Cast<UNotEvenSave>(UGameplayStatics::LoadGameFromSlot(TEXT("Stage0"), 0)))
 		{
 			if (Save->HighScore >= find->RequireScores[0]) StarOneImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			if (Save->HighScore >= find->RequireScores[1]) StarOneImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			if (Save->HighScore >= find->RequireScores[2]) StarOneImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (Save->HighScore >= find->RequireScores[1]) StarTwoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (Save->HighScore >= find->RequireScores[2]) StarThreeImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 			BestScoreText->SetText(FText::FromString(FString::FromInt(Save->HighScore)));
 		}

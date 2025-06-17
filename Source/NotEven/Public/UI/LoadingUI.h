@@ -41,6 +41,6 @@ public:
 	void ShowStageInfo();
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	class UDataTable* ScoreTable;
 };

@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "GameManager/NotEvenGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Lobby/LobbyGameMode.h"
 
 void ULobbyUI::NativeConstruct()
 {
@@ -32,6 +33,7 @@ void ULobbyUI::StartGame()
 	
 	if (GetWorld()->GetFirstPlayerController()->HasAuthority())
 	{
+		Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode())->ShowLoadingScreen();
 		GetWorld()->ServerTravel("/Game/KHB/Maps/MapDesign?listen?port=7777");
 	}
 }

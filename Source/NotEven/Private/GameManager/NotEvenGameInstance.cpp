@@ -75,6 +75,7 @@ void UNotEvenGameInstance::ShowLoadingScreen()
 		LoadingUI = CreateWidget<ULoadingUI>(this, LoadingUIClass);
 	}
 	LoadingUI->AddToViewport(100);
+	LoadingUI->ShowStageInfo();
 }
 
 void UNotEvenGameInstance::HideLoadingScreen()
