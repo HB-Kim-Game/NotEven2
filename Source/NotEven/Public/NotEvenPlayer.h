@@ -131,11 +131,11 @@ public:
 	void NetMulticast_AttachGrabObj(class AMovableObject* obj, bool bIsGrab);
 	
 	void DetachGrabObj(bool bIsSimulatedPhysics);
-
+	
 	UFUNCTION(Server, Reliable)
 	void Server_DetachGrabObj(bool bIsSimulatedPhysics);
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_DetachGrabObj(bool bIsSimulatedPhysics);
+	void NetMulticast_DetachGrabObj(class AMovableObject* detach, bool bIsSimulatedPhysics);
 
 //-----------------------던지기-----------------------
 	bool isThrown = false;

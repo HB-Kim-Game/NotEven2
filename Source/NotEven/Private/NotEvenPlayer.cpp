@@ -247,16 +247,16 @@ void ANotEvenPlayer::DetachGrabObj(bool bIsSimulatedPhysics)
 	Server_DetachGrabObj(bIsSimulatedPhysics);
 }
 
-void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation(bool bIsSimulatedPhysics)
+void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation(AMovableObject* detach, bool bIsSimulatedPhysics)
 {
-	if (!OwnedObj) return;
+	if (!detach) return;
 	isGrab = false;
-	OwnedObj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	OwnedObj->SetOwner(nullptr);
-	OwnedObj->SetGrab(false);
-	OwnedObj->BoxComp->SetSimulatePhysics(bIsSimulatedPhysics);
-	OwnedObj->BoxComp->SetCollisionEnabled(bIsSimulatedPhysics ? ECollisionEnabled::Type::QueryAndPhysics : ECollisionEnabled::Type::NoCollision);
 	OwnedObj = nullptr;
+	detach->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	detach->SetOwner(nullptr);
+	detach->SetGrab(false);
+	detach->BoxComp->SetSimulatePhysics(bIsSimulatedPhysics);
+	detach->BoxComp->SetCollisionEnabled(bIsSimulatedPhysics ? ECollisionEnabled::Type::QueryAndPhysics : ECollisionEnabled::Type::NoCollision);
 	
 	if (GrabSound)
 	{
@@ -267,7 +267,9 @@ void ANotEvenPlayer::NetMulticast_DetachGrabObj_Implementation(bool bIsSimulated
 void ANotEvenPlayer::Server_DetachGrabObj_Implementation(bool bIsSimulatedPhysics)
 {
 	isGrab = false;
-	NetMulticast_DetachGrabObj(bIsSimulatedPhysics);
+	AMovableObject* temp = OwnedObj;
+	OwnedObj = nullptr;
+	NetMulticast_DetachGrabObj(temp, bIsSimulatedPhysics);
 }
 
 // 다지기 및 던지기
@@ -294,7 +296,10 @@ void ANotEvenPlayer::ServerRPC_ChopAndThrow_Implementation()
 		{
 			//OwnedObj를 떼어내고
 			//힘을 가하고 싶다
-			NetMulticast_Throwing(foodobj);
+			AFoodIngredient* temp = foodobj;
+			OwnedObj = nullptr;
+			isGrab = false;
+			NetMulticast_Throwing(temp);
 		}
 	}
 	
@@ -355,6 +360,12 @@ void ANotEvenPlayer::NetMulticast_Dash_Implementation()
 void ANotEvenPlayer::NetMulticast_Throwing_Implementation(class AFoodIngredient* foodobj)
 {
 	if (!foodobj) return;
+
+	foodobj->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	foodobj->SetOwner(nullptr);
+	foodobj->SetGrab(false);
+	foodobj->BoxComp->SetSimulatePhysics(true);
+	foodobj->BoxComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
 	
 	if (ObjectTrail)
 	{
@@ -368,9 +379,8 @@ void ANotEvenPlayer::NetMulticast_Throwing_Implementation(class AFoodIngredient*
 		UGameplayStatics::PlaySound2D(GetWorld(), ThrowingSound);
 	}
 	FVector impulse = (GetActorForwardVector() * 1500.f + GetActorUpVector()*300.f) * 200.f;
-	NetMulticast_DetachGrabObj_Implementation(true);
-	foodobj->BoxComp->AddImpulse(impulse);
 	
+	foodobj->BoxComp->AddImpulse(impulse);
 }
 
 void ANotEvenPlayer::OnGrab()
