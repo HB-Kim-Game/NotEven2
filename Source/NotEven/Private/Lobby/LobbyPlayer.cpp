@@ -105,3 +105,11 @@ void ALobbyPlayer::CompleteCreateSession(FName SessionName, bool bWasSuccessful)
 	}
 }
 
+void ALobbyPlayer::ShowLoadingScreen_Implementation()
+{
+	if (IsLocallyControlled())
+	{
+		Cast<UNotEvenGameInstance>(GetGameInstance())->ShowLoadingScreen();
+	}
+}
+

@@ -15,4 +15,6 @@ class NOTEVEN_API ALobbyGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+	void ShowLoadingScreen();
 };

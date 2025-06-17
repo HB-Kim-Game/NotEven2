@@ -261,8 +261,6 @@ void AOrderManager::InitWidget()
 		PlayerUI->PlayTime->SetMaxTime(this);
 		PlayerUI->PriceUI->ShowCurrentScore();
 		PlayerUI->BindToAnimationFinished(PlayerUI->Start, OnFinishedStartAnim);
-		
-		PlayerUI->GameStart();
 	}
 }
 

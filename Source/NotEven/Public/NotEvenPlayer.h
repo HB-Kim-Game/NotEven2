@@ -20,12 +20,18 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 	// 게임플레이 중 앸터가 소멸되었을 때 호출
 	// virtual void Destroyed();
  
 
-public:	
+public:
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_NotifyReady();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_GameStart();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
