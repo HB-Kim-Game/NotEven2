@@ -61,6 +61,13 @@ class NOTEVEN_API APot : public AMovableObject
 	UPROPERTY(EditAnywhere)
 	class UCookingIcon* CookingIcon;
 
+	UPROPERTY(EditAnywhere)
+	class USoundBase* BoiledSound;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* BurnedSound;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* WarningSound;
+
 protected:
 
 	UFUNCTION()

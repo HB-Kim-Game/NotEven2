@@ -4,6 +4,7 @@
 #include "UI/PlayerUI.h"
 #include "PlayTimeUI.h"
 #include "Components/Image.h"
+#include "Kismet/GameplayStatics.h"
 
 void UPlayerUI::NativeConstruct()
 {
@@ -12,6 +13,8 @@ void UPlayerUI::NativeConstruct()
 
 void UPlayerUI::GameStart()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), StartSound);
+	
 	if (!Dynamic_Mask)
 	{
 		Dynamic_Mask = UMaterialInstanceDynamic::Create(MaskMaterial, nullptr);
@@ -27,10 +30,12 @@ void UPlayerUI::GameStart()
 
 		if (maskRadius > 0.75f && !IsPlayingAnimation())
 		{
+			UGameplayStatics::PlaySound2D(GetWorld(), StartSound3);
 			PlayAnimation(Start);
 		}
-		if (maskRadius > 1.f)
+		if (maskRadius > 1.2f)
 		{
+			UGameplayStatics::PlaySound2D(GetWorld(), StartSound2);
 			GetWorld()->GetTimerManager().ClearTimer(StartHandle);
 		}
 	}), 0.05f, true);

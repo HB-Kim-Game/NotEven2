@@ -110,7 +110,7 @@ void APot::AddProgress(float progress)
 		OnRep_Boiled();
 	}
 	
-	if (bIsBoiled &&  SubmitFood->GetCurrentCookingProgress() > 110.f && static_cast<int32>(SubmitFood->GetCurrentCookingProgress()) % 3 == 0)
+	if (bIsBoiled &&  SubmitFood->GetCurrentCookingProgress() > 110.f && static_cast<int32>(SubmitFood->GetCurrentCookingProgress()) % 5 == 0)
 	{
 		NetMulticast_ShowWarning(SubmitFood->GetCurrentCookingProgress() , SubmitFood->GetMaxCookingProgress());
 	}
@@ -186,6 +186,8 @@ void APot::NetMulticast_ShowWarning_Implementation(float currentProgress, float 
 	
 	CookingIcon->ShowWarning(
 		FMath::Lerp(1.f, 5.f, DangerRatio));
+
+	UGameplayStatics::PlaySound2D(GetWorld(), WarningSound);
 }
 
 void APot::OnRep_Burned()
@@ -194,6 +196,7 @@ void APot::OnRep_Burned()
 	{
 		SubmitFood->SetState(EIngredientState::Burned);
 		CookingIcon->ShowIcon(EIngredientState::Burned);
+		UGameplayStatics::PlaySound2D(GetWorld(), BurnedSound);
 	}
 	else
 	{
@@ -207,6 +210,7 @@ void APot::OnRep_Boiled()
 	{
 		SubmitFood->SetState(EIngredientState::Boiled);
 		CookingIcon->ShowIcon(EIngredientState::Boiled);
+		UGameplayStatics::PlaySound2D(GetWorld(), BoiledSound);
 	}
 	else
 	{

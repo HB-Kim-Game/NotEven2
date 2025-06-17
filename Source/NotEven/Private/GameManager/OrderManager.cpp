@@ -66,7 +66,7 @@ void AOrderManager::BeginPlay()
 			{
 				if (this->OrderList.Num() >= this->PlayerUI->OrderListViewer->GetSpawnItemsCount()) return;
 				this->AddOrder();
-			}, FMath::RandRange(5.f, 7.f), true);
+			}, FMath::RandRange(7.5f, 15.f), true);
 
 			TArray<AActor*> tables;
 			UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), AKitchenTable::StaticClass(), tables);

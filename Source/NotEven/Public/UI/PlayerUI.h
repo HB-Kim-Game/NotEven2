@@ -32,6 +32,13 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* Mask;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* StartSound;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* StartSound2;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* StartSound3;
 	
 	void GameStart();
 
