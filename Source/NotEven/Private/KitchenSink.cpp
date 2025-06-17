@@ -6,6 +6,7 @@
 #include "CookingProgress.h"
 #include "NotEvenPlayer.h"
 #include "Plate.h"
+#include "Kismet/GameplayStatics.h"
 
 AKitchenSink::AKitchenSink()
 {
@@ -18,6 +19,12 @@ AKitchenSink::AKitchenSink()
 	}
 
 	BoxComp->SetRelativeScale3D(FVector(1.35,0,0));
+
+	ConstructorHelpers::FObjectFinder<USoundWave>tempWashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/mixkit-sea-water-splash-1198__cut_1sec_.mixkit-sea-water-splash-1198__cut_1sec_'"));
+	if (tempWashSound.Succeeded())
+	{
+		WashingSound = tempWashSound.Object;
+	}
 
 	bIsInteractable=true;
 	bReplicates=true;
@@ -81,6 +88,11 @@ void AKitchenSink::NetMulticast_Washing_Implementation(class ANotEvenPlayer* pla
 		if (animInst && InteractMontage && !animInst->IsAnyMontagePlaying())
 		{
 			animInst->Montage_Play(InteractMontage);
+		}
+
+		if (WashingSound)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), WashingSound);
 		}
 	}
 }

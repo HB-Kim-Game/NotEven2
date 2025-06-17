@@ -35,5 +35,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	class UAnimMontage* InteractMontage;
+
+	UPROPERTY(EditDefaultsOnly,Category=VFX)
+	class USoundWave* WashingSound;
+	
 	
 };

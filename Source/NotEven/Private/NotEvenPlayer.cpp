@@ -22,6 +22,9 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -92,8 +95,17 @@ void ANotEvenPlayer::NotifyControllerChanged()
 			subsystem->AddMappingContext(IMC_Player,0);
 		}
 	}
+	
+	
 }
 
+void ANotEvenPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ANotEvenPlayer,PlayerIndex);
+	
+}
 
 
 // Called when the game starts or when spawned
@@ -112,6 +124,26 @@ void ANotEvenPlayer::BeginPlay()
 			ui -> InitWidget();
 		}
 	}
+	
+}
+
+void ANotEvenPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	if (HasAuthority())
+	{
+		PlayerIndex = GetWorld()->GetGameState()->PlayerArray.IndexOfByKey(GetPlayerState());
+		OnRep_PlayerIndex();
+		UE_LOG(LogTemp,Display,TEXT("Player Index is %d"),PlayerIndex);
+	}
+}
+
+void ANotEvenPlayer::PostNetInit()
+{
+	Super::PostNetInit();
+
+	OnRep_PlayerIndex();
 }
 
 // Called every frame
@@ -152,6 +184,11 @@ void ANotEvenPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		//던지기/ 다지기
 		input ->BindAction(IA_PlayerChopAndThrow,ETriggerEvent::Started,this,&ANotEvenPlayer::OnActionObjChoppingAndThrowing);
 	}
+}
+
+void ANotEvenPlayer::OnRep_PlayerIndex()
+{
+	GetMesh()->SetMaterial(0,PlayerIndex > 0 ? RedColor : BlueColor);
 }
 
 // 캐릭터 이동
