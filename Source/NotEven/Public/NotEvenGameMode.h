@@ -38,6 +38,8 @@ public:
 	
 	void NotifyClientLoaded();
 
+	bool isPlaying = false;
+
 	void StartGame();
 	
 };

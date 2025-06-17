@@ -55,6 +55,8 @@ void ANotEvenGameMode::PlayerDied(ANotEvenPlayer* Player)
 
 void ANotEvenGameMode::NotifyClientLoaded()
 {
+	if (isPlaying) return;
+
 	ClientReady++;
 
 	if (ClientReady >= GameState->PlayerArray.Num())
@@ -65,6 +67,8 @@ void ANotEvenGameMode::NotifyClientLoaded()
 
 void ANotEvenGameMode::StartGame()
 {
+	isPlaying = true;
+	
 	for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; ++it)
 	{
 		APlayerController* pc = it->Get();
