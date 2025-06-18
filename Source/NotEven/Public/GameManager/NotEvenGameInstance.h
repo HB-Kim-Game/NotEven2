@@ -83,5 +83,5 @@ private:
 	UFUNCTION()
 	void TravelLobby(FName sessionName, bool bWasSuccessful);
 
-	FString mySessionName = "MyRoom";
+	FString mySessionName = "NotEven";
 };

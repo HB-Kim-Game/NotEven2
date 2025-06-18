@@ -110,13 +110,27 @@ void UNotEvenGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 		return;
 	}
 
-	auto results = SessionSearch->SearchResults;
+	TArray<FOnlineSessionSearchResult> results;
 
-	if (results.Num() <= 0)
+	if (SessionSearch->SearchResults.Num() <= 0)
 	{
 		OnSearchComplete.Broadcast();
 		return;
 	}
+
+	for (auto r : SessionSearch->SearchResults)
+	{
+		FString temp;
+		if (r.Session.SessionSettings.Get(FName("ROOM_NAME"), temp))
+		{
+			if (temp.Equals(mySessionName))
+			{
+				results.Add(r);
+			}
+		}
+	}
+
+	UE_LOG(LogTemp,Warning, TEXT("Found Sessions : %d"), results.Num());
 
 	auto result = results[FMath::RandRange(0, results.Num() - 1)];
 
