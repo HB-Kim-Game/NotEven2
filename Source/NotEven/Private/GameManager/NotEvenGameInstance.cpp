@@ -62,6 +62,9 @@ void UNotEvenGameInstance::CreateMySession(int32 playerCount)
 	// EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	if (!GetWorld()->GetFirstLocalPlayerFromController()) return;
+
+	ConnectedPlayers = 0;
+	
 	// NetID
 	FUniqueNetIdPtr netID = GetWorld()->GetFirstLocalPlayerFromController()->GetUniqueNetIdForPlatformUser().GetUniqueNetId();
 

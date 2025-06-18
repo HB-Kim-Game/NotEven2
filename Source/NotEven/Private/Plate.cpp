@@ -104,6 +104,7 @@ void APlate::NetMulticast_Interact_Implementation(class ANotEvenPlayer* player)
 		if (APot* pot = Cast<APot>(player->OwnedObj))
 		{
 			if(!pot->SubmitFood) return;
+			if (submitFood) return;
 			if (pot->SubmitFood->GetIngredients().ContainsByPredicate([](FRecipeIngredientData& data)
 			{
 				return data.RequireState == EIngredientState::Boiled;
