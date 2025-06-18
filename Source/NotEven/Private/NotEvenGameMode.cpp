@@ -76,14 +76,14 @@ void ANotEvenGameMode::StartGame()
 		for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; ++it)
 		{
 			APlayerController* pc = it->Get();
-			UE_LOG(LogTemp,Warning,TEXT("Player Controller : %d"), it.GetIndex());
+			//UE_LOG(LogTemp,Warning,TEXT("Player Controller : %d"), it.GetIndex());
 		
 			if (auto p = Cast<ANotEvenPlayer>(pc->GetPawn()))
 			{
 				p->NetRPC_GameStart();
 			}
 		}
-	}), 7.f, false);
+	}), 5.f, false);
 	
 	
 }
