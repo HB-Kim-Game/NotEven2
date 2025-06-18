@@ -113,7 +113,11 @@ void UNotEvenGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 
 	auto result = results[FMath::RandRange(0, results.Num() - 1)];
 
-	if (!result.IsValid()) return;
+	if (!result.IsValid())
+	{
+		OnSearchComplete.Broadcast();
+		return;
+	}
 
 	result.Session.SessionSettings.bUsesPresence = true;
 	result.Session.SessionSettings.bUseLobbiesIfAvailable = true;
@@ -139,6 +143,10 @@ void UNotEvenGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessi
 		{
 			pc->ClientTravel(url, TRAVEL_Absolute);
 		}
+	}
+	else
+	{
+		OnSearchComplete.Broadcast();
 	}
 }
 
