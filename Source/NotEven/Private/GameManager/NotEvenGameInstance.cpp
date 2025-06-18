@@ -5,6 +5,7 @@
 #include "OnlineSessionSettings.h"
 #include "Blueprint/UserWidget.h"
 #include "LoadingUI.h"
+#include "NotEvenPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Online/OnlineSessionNames.h"
 
@@ -78,6 +79,8 @@ void UNotEvenGameInstance::ShowLoadingScreen()
 		LoadingUI = CreateWidget<ULoadingUI>(this, LoadingUIClass);
 	}
 	LoadingUI->AddToViewport(100);
+	GetWorld()->GetGameViewport()->AddViewportWidgetContent(LoadingUI->TakeWidget());
+	
 	LoadingUI->ShowStageInfo();
 }
 
@@ -85,6 +88,7 @@ void UNotEvenGameInstance::HideLoadingScreen()
 {
 	if (LoadingUI)
 	{
+		GetWorld()->GetGameViewport()->RemoveViewportWidgetContent(LoadingUI->TakeWidget());
 		LoadingUI->RemoveFromParent();
 		LoadingUI = nullptr;
 	}
