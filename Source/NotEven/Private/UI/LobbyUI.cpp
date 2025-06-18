@@ -24,6 +24,7 @@ void ULobbyUI::NativeConstruct()
 
 	GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeUIOnly());
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+	GetWorld()->GetFirstPlayerController()->DefaultMouseCursor = EMouseCursor::Type::Default;
 }
 
 void ULobbyUI::StartGame()

@@ -5,6 +5,7 @@
 #include "NotEvenPlayer.h"
 #include "Camera/CameraActor.h"
 #include "GameFramework/GameStateBase.h"
+#include "GameManager/NotEvenGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 ANotEvenGameMode::ANotEvenGameMode()
@@ -58,8 +59,8 @@ void ANotEvenGameMode::NotifyClientLoaded()
 	if (isPlaying) return;
 
 	ClientReady++;
-
-	if (ClientReady >= 2)
+	
+	if (ClientReady >= Cast<UNotEvenGameInstance>(GetGameInstance())->ConnectedPlayers)
 	{
 		StartGame();
 	}

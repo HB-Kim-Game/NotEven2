@@ -13,6 +13,7 @@
 #include "Stove.h"
 #include "Data/RecipeData.h"
 #include "Data/ResultData.h"
+#include "GameManager/NotEvenGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/AmbientSound.h"
@@ -93,6 +94,7 @@ void AOrderManager::BeginPlay()
 		OnGameEnd.Add(FSimpleDelegate::CreateLambda([&]()
 		{
 			this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
+			Cast<UNotEvenGameInstance>(GetGameInstance())->ConnectedPlayers = 0;
 			NetRPC_ShowResult(CurrentSuccessOrder, CurrentFailedOrder, CurrentScore, SuccessScore, TipScore, FailureScore);
 		}));
 
@@ -237,6 +239,7 @@ void AOrderManager::NetRPC_ShowResult_Implementation(int32 successOrder, int32 f
 		PlayerUI->ResultUI->ShowResult(data);
 		GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameAndUI());
 		GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+		GetWorld()->GetFirstPlayerController()->DefaultMouseCursor = EMouseCursor::Type::Default;
 	}
 }
 
