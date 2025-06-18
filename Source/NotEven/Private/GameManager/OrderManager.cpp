@@ -13,6 +13,7 @@
 #include "Stove.h"
 #include "Data/RecipeData.h"
 #include "Data/ResultData.h"
+#include "GameManager/NotEvenGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/AmbientSound.h"
@@ -93,6 +94,7 @@ void AOrderManager::BeginPlay()
 		OnGameEnd.Add(FSimpleDelegate::CreateLambda([&]()
 		{
 			this->GetWorld()->GetTimerManager().ClearTimer(this->TimerHandle);
+			Cast<UNotEvenGameInstance>(GetGameInstance())->ConnectedPlayers = 0;
 			NetRPC_ShowResult(CurrentSuccessOrder, CurrentFailedOrder, CurrentScore, SuccessScore, TipScore, FailureScore);
 		}));
 

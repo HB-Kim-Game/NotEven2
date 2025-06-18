@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
+#include "GameManager/NotEvenGameInstance.h"
 #include "Lobby/LobbyPlayer.h"
 
 AActor* ALobbyGameMode::ChoosePlayerStart_Implementation(AController* Player)
@@ -43,4 +44,13 @@ void ALobbyGameMode::ShowLoadingScreen()
 			p->ShowLoadingScreen();
 		}
 	}
+}
+
+void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	Cast<UNotEvenGameInstance>(GetGameInstance())->ConnectedPlayers++;
+
+	UE_LOG(LogTemp, Warning, TEXT("ConnectedPlayers : %d"), Cast<UNotEvenGameInstance>(GetGameInstance())->ConnectedPlayers);
 }

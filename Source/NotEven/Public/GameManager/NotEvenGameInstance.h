@@ -32,6 +32,8 @@ public:
 	
 	IOnlineSessionPtr SessionInterface;
 
+	int32 ConnectedPlayers = 0;
+
 public: // Loading
 	UPROPERTY()
 	class ULoadingUI* LoadingUI;

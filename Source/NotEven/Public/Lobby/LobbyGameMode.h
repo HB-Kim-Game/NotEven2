@@ -19,4 +19,6 @@ class NOTEVEN_API ALobbyGameMode : public AGameModeBase
 public:
 	
 	void ShowLoadingScreen();
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };
