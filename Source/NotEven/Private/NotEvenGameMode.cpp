@@ -83,7 +83,7 @@ void ANotEvenGameMode::StartGame()
 				p->NetRPC_GameStart();
 			}
 		}
-	}), 2.f, false);
+	}), 7.f, false);
 	
 	
 }
