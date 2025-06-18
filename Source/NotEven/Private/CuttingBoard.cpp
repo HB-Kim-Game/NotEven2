@@ -33,7 +33,7 @@ ACuttingBoard::ACuttingBoard()
 		CuttingEffect = tempDashEffect.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<USoundWave>tempCuttingSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/BUTTON_Clean_Tap_mono.BUTTON_Clean_Tap_mono'"));
+	ConstructorHelpers::FObjectFinder<USoundWave>tempCuttingSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/Chopping.Chopping'"));
 	if (tempCuttingSound.Succeeded())
 	{
 		CuttingSound = tempCuttingSound.Object;

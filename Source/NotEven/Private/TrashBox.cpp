@@ -9,6 +9,7 @@
 #include "Pot.h"
 #include "SubmitFood.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATrashBox::ATrashBox()
 {
@@ -25,6 +26,12 @@ ATrashBox::ATrashBox()
 
 	OverlapBox->SetBoxExtent(FVector(10.f, 10.f, 10.f));
 	OverlapBox->SetupAttachment(BoxComp);
+
+	ConstructorHelpers::FObjectFinder<USoundWave>tempTrashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/Grab.Grab'"));
+	if (tempTrashSound.Succeeded())
+	{
+		TrashSound = tempTrashSound.Object;
+	}
 
 	bIsInteractable = true;
 	bReplicates = true;
@@ -53,23 +60,27 @@ void ATrashBox::NetMulticast_Interact_Implementation(class ANotEvenPlayer* playe
 				player -> OwnedObj = nullptr;
 				food-> Destroy(); 
 				player->isGrab = false; // 들고 있는 상태 초기화
+				UGameplayStatics::PlaySound2D(GetWorld(),TrashSound);
 			}
 
 			// 접시이면
 			if (APlate* plate = Cast<APlate>(moveObject))
 			{
-				//접시의 제출음식을 파괴
+				//접시 안의 제출음식을 파괴
 				auto food = plate->submitFood;
 				plate->submitFood = nullptr;
 				
 				if (food)
 				{
 					food->Destroy();
+					UGameplayStatics::PlaySound2D(GetWorld(),TrashSound);
 				}
 			}
 
+			//냄비이면
 			if (APot* pot = Cast<APot>(moveObject))
 			{
+				//냄비 안의 제출음식을 파괴
 				auto food = pot->SubmitFood;
 				pot->SubmitFood = nullptr;
 				if (HasAuthority())
@@ -81,6 +92,7 @@ void ATrashBox::NetMulticast_Interact_Implementation(class ANotEvenPlayer* playe
 				if (food)
 				{
 					food->Destroy();
+					UGameplayStatics::PlaySound2D(GetWorld(),TrashSound);
 				}
 			}
 		}

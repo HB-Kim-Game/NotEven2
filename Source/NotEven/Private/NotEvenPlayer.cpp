@@ -66,19 +66,19 @@ ANotEvenPlayer::ANotEvenPlayer()
 		ObjectTrail = tempTrailEffect.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<USoundWave>tempDashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/521996__kastenfrosch__whoosh-dash-2.521996__kastenfrosch__whoosh-dash-2'"));
+	ConstructorHelpers::FObjectFinder<USoundWave>tempDashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/Dash.Dash'"));
 	if (tempDashSound.Succeeded())
 	{
 		DashSound = tempDashSound.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<USoundWave>tempGradSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/mouth-bubble-pop-om-fx-4-4-00-00.mouth-bubble-pop-om-fx-4-4-00-00'"));
+	ConstructorHelpers::FObjectFinder<USoundWave>tempGradSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/Grab.Grab'"));
 	if (tempGradSound.Succeeded())
 	{
 		GrabSound = tempGradSound.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<USoundWave>tempThrowingSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/cartoon-slide-whistle-down-1-176647.cartoon-slide-whistle-down-1-176647'"));
+	ConstructorHelpers::FObjectFinder<USoundWave>tempThrowingSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/Throwing.Throwing'"));
 	if (tempThrowingSound.Succeeded())
 	{
 		ThrowingSound = tempThrowingSound.Object;

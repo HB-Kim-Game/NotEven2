@@ -20,7 +20,7 @@ AKitchenSink::AKitchenSink()
 
 	BoxComp->SetRelativeScale3D(FVector(1.35,0,0));
 
-	ConstructorHelpers::FObjectFinder<USoundWave>tempWashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/mixkit-sea-water-splash-1198__cut_1sec_.mixkit-sea-water-splash-1198__cut_1sec_'"));
+	ConstructorHelpers::FObjectFinder<USoundWave>tempWashSound(TEXT("/Script/Engine.SoundWave'/Game/LGJ/Sound/Washing.Washing'"));
 	if (tempWashSound.Succeeded())
 	{
 		WashingSound = tempWashSound.Object;

@@ -33,4 +33,7 @@ public:
 	class UBoxComponent* OverlapBox;
 
 	void DestroyOverlapObjects();
+
+	UPROPERTY(EditDefaultsOnly,Category=VFX)
+	class USoundWave* TrashSound;
 };
